@@ -51,7 +51,12 @@
 
 ## Próxima tarea
 
-- **P3 · Tarea 6** en adelante (solo cuando el responsable lo pida). Ojo: la plantilla "Clásica" ya existe con los 3 estilos; ajustar el plan de T6/T7 (la "Visual" del plan aún no tiene componente) y cumpleaños (T8/T9) en el mismo lenguaje visual.
+P3 sigue en la rama `fase1/p3-plantillas-y-temas` (sin subir). T1–T5 hechas (T5 = rediseño: estilos Himnario, Almanaque y Cartel). Antes de seguir hay que **ajustar el plan de T6–T12** al rediseño (3 estilos, 1–3 logos, mínimos v1.4). Reparto acordado con el responsable:
+
+- **Cumpleaños (T8 reparto y T9 plantillas) → la sesión del rediseño** ("Rediseño visual de las slides (P3 · Tarea 5)"), en el mismo lenguaje visual de los 3 estilos.
+- **El resto (T6 pruebas de la Clásica, T7 Visual, T10 imagen, T11 cierre, T12 matriz §5.7 y capturas) → la sesión principal.** No tocar los mismos archivos que la de cumpleaños a la vez.
+- Al terminar P3: revisión final de la rama, unir a `master`, `git push origin master` y borrar la rama local `backup/p3-antes-de-limpiar`.
+- Después, **P4** (formularios y vista previa): presentar 3 `DESIGN.md` de designmd.app para la interfaz y que el responsable elija.
 
 ## Decisiones tomadas
 
