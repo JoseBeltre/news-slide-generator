@@ -43,21 +43,25 @@
 | 2026-11-01 | `globPatterns` de Workbox **sin** `webmanifest`: el plugin ya lo precachea y duplicarlo hace que el SW se instale vacío (`add-to-cache-list-conflicting-entries`) sin error visible. Si se toca `globPatterns`, correr `npm run test:e2e`. | Tarea 2 |
 | 2026-11-01 | `registerType: 'prompt'`: una versión nueva nunca recarga la página en medio de una presentación. El aviso "nueva versión" llega en P4. | Tarea 2 |
 | 2026-11-01 | La E2E de fuente offline usa `document.fonts.load()` (fuerza la descarga desde el precache); `check()` no carga nada. | Tarea 2 |
+| 2026-11-01 | Gestor de paquetes: **pnpm** en lugar de npm (pedido por el responsable). Migrado con `pnpm import`, conservando las versiones exactas; `engines.node >= 24`. | Responsable |
 | 2026-11-01 | `FitText`: si la fuente no carga, no dibuja nada ni emite informe (y lo registra en consola); nunca mide con la fuente de respaldo. Si llega un texto nuevo mientras carga la fuente, se descarta la medición vieja. | Tarea 8 |
 
 ## Comandos
 
+Gestor de paquetes: **pnpm** (fijado en `package.json` → `packageManager: pnpm@11.20.0`). No usar npm ni yarn: el lockfile es `pnpm-lock.yaml`.
+
 | Comando | Qué hace |
 |---|---|
-| `npm run dev` | Servidor de desarrollo (Vite). |
-| `npm run build` | Typecheck + build de producción en `dist/`. |
-| `npm run preview` | Sirve `dist/` en `http://localhost:4173`. |
-| `npm run typecheck` | `vue-tsc --noEmit`. |
-| `npm test` | Vitest: proyectos `unit` (Node) y `browser` (Chromium). |
-| `npm run test:unit` / `npm run test:browser` | Un solo proyecto de Vitest. |
-| `npm run test:e2e` | Playwright contra el build: hace `build` + `preview` en el puerto 4173 (reutiliza un servidor ya abierto ahí; ciérralo si el build cambió). |
+| `pnpm install` | Instala dependencias. |
+| `pnpm dev` | Servidor de desarrollo (Vite). |
+| `pnpm build` | Typecheck + build de producción en `dist/`. |
+| `pnpm preview` | Sirve `dist/` en `http://localhost:4173`. |
+| `pnpm typecheck` | `vue-tsc --noEmit`. |
+| `pnpm test` | Vitest: proyectos `unit` (Node) y `browser` (Chromium). |
+| `pnpm test:unit` / `pnpm test:browser` | Un solo proyecto de Vitest. |
+| `pnpm test:e2e` | Playwright contra el build: hace `build` + `preview` en el puerto 4173 (reutiliza un servidor ya abierto ahí; ciérralo si el build cambió). |
 
-Requisito de una sola vez: `npx playwright install chromium`.
+Requisito de una sola vez: `pnpm exec playwright install chromium`.
 
 ## Problemas abiertos / bloqueos
 
@@ -84,4 +88,5 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | P1 · T8: `FitText.vue`, `summarizeFit`; helper de pruebas `tests/browser/helpers/mount.ts` | `npm test` 101/101 | 8d6d591 |
 | 2026-11-01 | P1 · T9: `selectLogoVariant` con placa, `clampLogoHeight` | `npm test` 112/112 | 2a45c46 |
 | 2026-11-01 | P1 · T10: `auditSlide`, `index.ts`, verificación completa | typecheck 0 errores; `npm test` 126/126; `test:e2e` 2/2; build OK | b4ca2ad |
-| 2026-11-01 | P1 · revisión final: `ensureGradientContrast`; `ensureFontLoaded` carga también Latin Extended | `npm test` 136/136; `test:e2e` 2/2 | ver `git log` |
+| 2026-11-01 | P1 · revisión final: `ensureGradientContrast`; `ensureFontLoaded` carga también Latin Extended | `npm test` 136/136; `test:e2e` 2/2 | 9509bfd |
+| 2026-11-01 | Migración de npm a pnpm | `pnpm typecheck` 0 errores; `pnpm test` 136/136; `pnpm test:e2e` 2/2; `pnpm build` OK | ver `git log` |

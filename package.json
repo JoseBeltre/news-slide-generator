@@ -37,5 +37,9 @@
     "vue-tsc": "^3.3.14"
   },
   "private": true,
-  "type": "module"
+  "type": "module",
+  "packageManager": "pnpm@11.20.0",
+  "engines": {
+    "node": ">=24"
+  }
 }
