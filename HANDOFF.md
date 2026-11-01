@@ -83,6 +83,7 @@
 | 2026-11-01 | **Interlineado por rol (§5.2 v1.4):** títulos y nombres 1.05, secundario 1.1, datos de una línea y metadatos 1.2. Las descripciones cortas reservan una sola línea. | Responsable |
 | 2026-11-01 | **Logos:** existe el **isotipo** (logo circular, variante `cuadrado`) y un anuncio puede llevar **hasta 2 ministerios y, en casos especiales, 3**. `LogoSelection` gana `form` (`logotipo`/`isotipo`) y `kind: 'varios'`. | Responsable |
 | 2026-11-01 | `PRODUCT.md` (resumen de producto para el skill `impeccable`; manda el SRS). Las slides **no** usan el `DESIGN.md` de la interfaz. | Tarea 5 |
+| 2026-11-01 | **Capturas de slides solo en local:** `docs/slides-direcciones/` está en `.gitignore` (pedido del responsable; pesaban 52 MB). Se sacaron del historial no subido de la rama P3 (respaldo: rama local `backup/p3-antes-de-limpiar`). Se regeneran con la galería (`pnpm dev` → `/galeria.html?only=<id>`). | Responsable |
 | 2026-11-01 | `FitText`: si la fuente no carga, no dibuja nada ni emite informe (y lo registra en consola); nunca mide con la fuente de respaldo. Si llega un texto nuevo mientras carga la fuente, se descarta la medición vieja. | Tarea 8 |
 
 ## Comandos

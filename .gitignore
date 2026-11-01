@@ -7,3 +7,6 @@ playwright-report
 __screenshots__
 .env*
 .superpowers
+
+# Capturas de la galería de slides: solo locales (se regeneran con pnpm dev → /galeria.html)
+docs/slides-direcciones/
