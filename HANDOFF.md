@@ -10,11 +10,11 @@
 - **Aprobación:** P1 aprobado el 2026-11-01; ejecución **nativa** (inline, una revisión final de toda la rama).
 - **Rama:** `fase1/p1-base-y-motor`.
 - **Ledger de ejecución:** `.superpowers/sdd/2026-11-01-fase1-p1-base-y-motor/progress.md` (ignorado por git).
-- **Hecho:** P1 · Tareas 1–5 (proyecto montado; PWA offline; lienzo escalado; contraste WCAG; reglas de legibilidad §5.2–§5.4).
+- **Hecho:** P1 · Tareas 1–6 (proyecto montado; PWA offline; lienzo escalado; contraste WCAG; reglas de legibilidad; búsqueda binaria del tamaño).
 
 ## Próxima tarea
 
-- P1 · Tarea 6: búsqueda binaria del tamaño de fuente (`src/slides/engine/fit.ts`).
+- P1 · Tarea 7: medición en el DOM, `measureTextFit` (`src/slides/engine/measure.ts`).
 
 ## Decisiones tomadas
 
@@ -58,4 +58,5 @@ Requisito de una sola vez: `npx playwright install chromium`.
 | 2026-11-01 | P1 · T2: PWA offline, `.htaccess`, E2E sin red | `npm test` 5/5; `test:e2e` 2/2 | 4d86e46 |
 | 2026-11-01 | P1 · T3: lienzo, área segura, `SlideCanvas.vue` | `npm test` 22/22 | e43e3b6 |
 | 2026-11-01 | P1 · T4: color y contraste WCAG, `ensureContrast` | `npm test` 51/51 | b13d680 |
-| 2026-11-01 | P1 · T5: reglas de legibilidad, `TextSlotDef`, `validateTextSlot` | `npm test` 63/63 | ver `git log` |
+| 2026-11-01 | P1 · T5: reglas de legibilidad, `TextSlotDef`, `validateTextSlot` | `npm test` 63/63 | dc47cb1 |
+| 2026-11-01 | P1 · T6: `findLargestFittingSize` | `npm test` 74/74 | ver `git log` |
