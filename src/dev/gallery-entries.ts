@@ -4,6 +4,7 @@ import { FULL, MINIMAL, NORMAL, TEXT_TYPE_IDS, longTitle } from '../../tests/fix
 import { makeCtx } from '../../tests/fixtures/context'
 import { PRESET_THEMES } from '../slides/themes'
 import type { SlideContext, SlideSpec } from '../slides/templates/contract'
+import { DECORATION_VARIANTS } from '../slides/templates/parts/decoration'
 import { buildSlides, paletteFor } from '../slides/templates/registry'
 
 export interface GalleryEntry {
@@ -17,6 +18,19 @@ const THEMES = ['neutro', 'cielo'] as const
 
 export function galleryEntries(): GalleryEntry[] {
   const out: GalleryEntry[] = []
+  // Direcciones visuales (Tarea 5): la misma slide con cada decoración.
+  for (const variant of DECORATION_VARIANTS) {
+    for (const [typeId, themeId, values] of [
+      ['culto', 'neutro', FULL.culto],
+      ['culto', 'cielo', FULL.culto],
+      ['salida', 'vino', NORMAL.salida],
+      ['aviso', 'arena', NORMAL.aviso],
+    ] as const) {
+      const ctx = makeCtx({ theme: PRESET_THEMES.find((t) => t.id === themeId)! })
+      const [spec] = buildSlides({ typeId, templateId: 'clasica', values, logo: { kind: 'iglesia' } }, ctx)
+      out.push({ id: `direccion-${variant}-${typeId}-${themeId}`, label: `dirección ${variant} · ${typeId} · ${themeId}`, spec: { ...spec!, decoration: variant } as SlideSpec, ctx })
+    }
+  }
   for (const themeId of THEMES) {
     const ctx = makeCtx({ theme: PRESET_THEMES.find((t) => t.id === themeId)! })
     out.push({ id: `portada-${themeId}`, label: `Portada · ${themeId}`, spec: { kind: 'cover', palette: paletteFor({}, undefined, ctx) }, ctx })

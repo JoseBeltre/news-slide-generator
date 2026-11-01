@@ -4,12 +4,14 @@
 import { computed, onMounted, provide, reactive, watch, type Component } from 'vue'
 import { SlideCanvas, summarizeFit, type FitReport } from '../engine'
 import type { SlideContext, SlideSpec, SlideStatus } from './contract'
+import ClassicSlide from './classic/ClassicSlide.vue'
 import CoverSlide from './cover/CoverSlide.vue'
 import { FIT_COLLECTOR } from './fitCollector'
 
 const props = defineProps<{ spec: SlideSpec; ctx: SlideContext }>()
 const emit = defineEmits<{ status: [status: SlideStatus] }>()
 
+const ANNOUNCEMENT_COMPONENTS: Record<'clasica' | 'visual', Component | undefined> = { clasica: ClassicSlide, visual: undefined }
 const COMPONENTS: Partial<Record<SlideSpec['kind'], Component>> = {
   cover: CoverSlide,
 }
@@ -42,12 +44,14 @@ watch(
 )
 onMounted(emitStatus)
 
-const component = computed(() => COMPONENTS[props.spec.kind])
+const component = computed(() =>
+  props.spec.kind === 'announcement' ? ANNOUNCEMENT_COMPONENTS[props.spec.templateId] : COMPONENTS[props.spec.kind],
+)
 const fontFamily = computed(() => ('palette' in props.spec ? props.spec.palette.fontFamily : undefined))
 </script>
 
 <template>
   <SlideCanvas :font-family="fontFamily">
-    <component :is="component" v-if="component" v-bind="spec" :spec="spec" :ctx="ctx" />
+    <component :is="component" v-if="component" :spec="spec" :ctx="ctx" />
   </SlideCanvas>
 </template>

@@ -2,6 +2,7 @@
 // Galería de slides para revisar plantillas a ojo y para las capturas de regresión.
 // ?only=<id> muestra una sola slide a 1920×1080; ?q=<texto> filtra por etiqueta.
 import { computed, reactive } from 'vue'
+import { auditSlide } from '../slides/engine'
 import SlideView from '../slides/templates/SlideView.vue'
 import type { SlideStatus } from '../slides/templates/contract'
 import { galleryEntries } from './gallery-entries'
@@ -15,6 +16,12 @@ const shown = computed(() =>
   only ? entries.filter((e) => e.id === only) : entries.filter((e) => e.label.includes(query)),
 )
 const statuses = reactive<Record<string, SlideStatus>>({})
+
+// Para las capturas y revisiones automáticas: violaciones de §5 de la slide mostrada.
+;(window as unknown as { auditSlide: () => string[] }).auditSlide = () => {
+  const canvas = document.querySelector<HTMLElement>('.slide-canvas')
+  return canvas ? auditSlide(canvas).map((v) => `${v.code}: ${v.detail}`) : ['sin lienzo']
+}
 </script>
 
 <template>

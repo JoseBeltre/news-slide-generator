@@ -3,13 +3,13 @@
 import { computed } from 'vue'
 import { formatEventDate } from '../../../lib/format'
 import type { TextSlotDef } from '../../engine'
-import type { SlidePalette } from '../../themes'
-import { referenceDate, type SlideContext } from '../contract'
+import { referenceDate, type SlideContext, type SlideSpec } from '../contract'
 import LogoSlot from '../parts/LogoSlot.vue'
 import SlideBackground from '../parts/SlideBackground.vue'
 import SlideText from '../parts/SlideText.vue'
 
-const props = defineProps<{ palette: SlidePalette; ctx: SlideContext }>()
+const props = defineProps<{ spec: Extract<SlideSpec, { kind: 'cover' | 'closing' }>; ctx: SlideContext }>()
+const palette = computed(() => props.spec.palette)
 
 const LOGO_BOX = { x: 460, y: 112, width: 1000, height: 400 }
 const TITLE: TextSlotDef = { id: 'portada-titulo', role: 'title', box: { x: 96, y: 576, width: 1728, height: 240 }, maxLines: 2, align: 'center' }

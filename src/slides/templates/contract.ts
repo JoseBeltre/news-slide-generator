@@ -5,6 +5,7 @@ import type { DateStyle } from '../../lib/format'
 import type { Announcement, LogoSelection, Ministry, Settings, Theme } from '../../data/models'
 import type { NormalizedData } from '../normalize'
 import type { SlidePalette } from '../themes'
+import type { DecorationVariant } from './parts/decoration'
 import type { Person } from '../types/validation'
 import type { AnnouncementTypeId } from '../types/fields'
 
@@ -25,7 +26,15 @@ export interface SlideContext {
 }
 
 export type SlideSpec =
-  | { kind: 'announcement'; templateId: 'clasica' | 'visual'; data: NormalizedData; logo: LogoSelection; palette: SlidePalette }
+  | {
+      kind: 'announcement'
+      templateId: 'clasica' | 'visual'
+      data: NormalizedData
+      logo: LogoSelection
+      palette: SlidePalette
+      /** Solo para comparar direcciones visuales en la galería; si falta, la elegida. */
+      decoration?: DecorationVariant
+    }
   | {
       kind: 'birthday-single'
       person: Person
