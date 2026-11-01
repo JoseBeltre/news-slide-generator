@@ -5,7 +5,7 @@
 ## Estado actual
 
 - **Fase:** 1 (MVP), pasos 1–7 en modo **solo local** (sin backend), según SRS §11.
-- **P3 en curso** (rama `fase1/p3-plantillas-y-temas`, sin subir): Tareas 1–5 hechas. T5 cerró con **3 estilos de slide aprobados** (Himnario, Almanaque, Cartel), todos elegibles por anuncio, más la portada en cada estilo. Capturas: `docs/slides-direcciones/` (`hoja-<estilo>.png` resume cada uno; rondas rechazadas en `ronda-1/` y `ronda-2/`).
+- **P3 en curso** (rama `fase1/p3-plantillas-y-temas`, sin subir): **todo hecho salvo cumpleaños** (T8/T9, en la sesión del rediseño). T1–T5 (fechas, normalización, temas, `SlideView`, 3 estilos Himnario/Almanaque/Cartel), T6 (pruebas de la Clásica), T7 (Visual con foto), T10 (imagen), T11 (cierre), T12 (matriz §5.7 de 149 casos y 19 capturas de regresión). Capturas de revisión: `docs/slides-direcciones/` (local).
 - **Plan vigente:** `docs/superpowers/plans/2026-11-01-fase1-p2-tipos-datos-logos.md` (paso 3), aprobado; ejecución **nativa** en la rama `fase1/p2-tipos-datos-logos`. Ledger: `.superpowers/sdd/2026-11-01-fase1-p2-tipos-datos-logos/progress.md`. P1 está terminado y unido a `master`.
 - **P2 hecho:** Tareas 1–7 (formato es-DO; 7 tipos declarativos; validación con Zod; Dexie y repositorio; imágenes comprimidas sin duplicados; color dominante; ministerios con logo IASD precargado). Revisión final hecha (sin Critical/Important del revisor; 3 menores re-graduados y arreglados). **Unido a `master`** (fast-forward, rama borrada); verificado en `master`: typecheck 0, `pnpm test` 233/233, `test:e2e` 2/2.
 - **Hoja de ruta de la fase:** `docs/superpowers/plans/2026-11-01-fase1-hoja-de-ruta.md` (pasos 1–7).
@@ -43,7 +43,12 @@
 |---|---|
 | `src/slides/styles.ts` | `SlideStyleId` (`himnario` / `almanaque` / `cartel`), `SLIDE_STYLES`, `DEFAULT_SLIDE_STYLE` (`almanaque`, provisional) |
 | `templates/classic/` | `ClassicSlide` elige `HimnarioSlide` / `AlmanaqueSlide` / `CartelSlide` por `spec.slideStyle`; `layout.ts`: `stackRows` (filas desde abajo), `rowLines`, `titleSlot` (hasta 4 líneas), `lineSlot`, `detailRows`, `monthLabel` |
-| `templates/cover/` | `CoverSlide` → `CoverHimnario` / `CoverAlmanaque` / `CoverCartel` |
+| `templates/cover/` | `CoverSlide` → `CoverHimnario` / `CoverAlmanaque` / `CoverCartel`; dibuja portada y cierre (`frameTitle`: el cierre dice "¡Feliz sábado!") |
+| `templates/registry.ts` | `buildSlides`, `templatesFor` (la Visual solo en tipos con campo de imagen: culto), `paletteFor`, `frameSlide('cover' \| 'closing', ctx)` |
+| `templates/image/ImageSlide.vue` | Flyer completo (`data-image="nitida"`) con relleno de la misma imagen difuminada (`data-image="relleno"`) |
+| `templates/parts/PhotoCutout.vue` | Foto recortada de la Visual (`data-photo`), de pie en su caja; `classic/layout.ts` → `visualPhoto(spec)` |
+| `tests/browser/helpers/slides.ts` | `renderSlide(spec, ctx)` → `{ status, canvas, host }` cuando todo texto se ajustó y toda imagen cargó; `canvasRect` |
+| `tests/fixtures/images.ts` | `syntheticFlyer(w, h)`, `syntheticCutout()`: imágenes generadas en el navegador (sin binarios en el repo) |
 | `templates/parts/` | `LogoGroup` (1–3 logos en partes iguales), `LogoSlot` (un logo por candidatos), `HimnarioCover`, `AlmanaqueSheet`, `CartelField`, `Texture` (tela / renglones / trama, con `texturedStops` para el data-bg), `Fleuron`, `TypeEmblem` |
 | `normalize.ts` | `NormalizedData.when`: la fecha principal en piezas (`weekday`, `day`, `month`, `relative`, `year`, `time`) para dibujarla como protagonista |
 | `themes.ts` | `SlidePalette.field`/`onField` (color puro del tipo para hojas y campos), `accentInk`, `mixColors` |
@@ -51,11 +56,11 @@
 
 ## Próxima tarea
 
-P3 sigue en la rama `fase1/p3-plantillas-y-temas` (sin subir). T1–T5 hechas (T5 = rediseño: estilos Himnario, Almanaque y Cartel). Antes de seguir hay que **ajustar el plan de T6–T12** al rediseño (3 estilos, 1–3 logos, mínimos v1.4). Reparto acordado con el responsable:
+P3 en la rama `fase1/p3-plantillas-y-temas` (sin subir): todo hecho **salvo cumpleaños**.
 
-- **Cumpleaños (T8 reparto y T9 plantillas) → la sesión del rediseño** ("Rediseño visual de las slides (P3 · Tarea 5)"), en el mismo lenguaje visual de los 3 estilos.
-- **El resto (T6 pruebas de la Clásica, T7 Visual, T10 imagen, T11 cierre, T12 matriz §5.7 y capturas) → la sesión principal.** No tocar los mismos archivos que la de cumpleaños a la vez.
-- Al terminar P3: revisión final de la rama, unir a `master`, `git push origin master` y borrar la rama local `backup/p3-antes-de-limpiar`.
+- **Cumpleaños (T8 reparto y T9 plantillas) → la sesión del rediseño** ("Rediseño visual de las slides (P3 · Tarea 5)"), en `src/slides/templates/birthday/`, con el lenguaje de los 3 estilos. Al terminar: registrar sus componentes en `SlideView.vue`, su layout en `registry.ts`, sus entradas en `gallery-entries.ts`, y añadir sus casos a `tests/browser/slides/matrix.test.ts` y `tests/e2e/galeria.spec.ts`.
+- **Pendiente del responsable:** visto bueno de la Visual (foto del predicador) y del cierre; capturas en `docs/slides-direcciones/visual/` y `cierre/`.
+- Cuando estén los cumpleaños: revisión final de toda la rama, unir a `master`, `git push origin master` y borrar la rama local `backup/p3-antes-de-limpiar`.
 - Después, **P4** (formularios y vista previa): presentar 3 `DESIGN.md` de designmd.app para la interfaz y que el responsable elija.
 
 ## Decisiones tomadas
@@ -88,6 +93,8 @@ P3 sigue en la rama `fase1/p3-plantillas-y-temas` (sin subir). T1–T5 hechas (T
 | 2026-11-01 | **Interlineado por rol (§5.2 v1.4):** títulos y nombres 1.05, secundario 1.1, datos de una línea y metadatos 1.2. Las descripciones cortas reservan una sola línea. | Responsable |
 | 2026-11-01 | **Logos:** existe el **isotipo** (logo circular, variante `cuadrado`) y un anuncio puede llevar **hasta 2 ministerios y, en casos especiales, 3**. `LogoSelection` gana `form` (`logotipo`/`isotipo`) y `kind: 'varios'`. | Responsable |
 | 2026-11-01 | `PRODUCT.md` (resumen de producto para el skill `impeccable`; manda el SRS). Las slides **no** usan el `DESIGN.md` de la interfaz. | Tarea 5 |
+| 2026-11-01 | **Plantilla Visual = la Clásica del estilo con la foto recortada del predicador**, a alto completo en su propia columna (nunca texto encima, §5.5); solo la ofrecen los tipos con un campo de imagen (hoy, culto). Sin foto se ve igual que la Clásica. **Cierre** = la portada del estilo con "¡Feliz sábado!". | P3 · T7, T11 |
+| 2026-11-01 | **Capturas de regresión solo locales:** `tests/e2e/galeria.spec.ts-snapshots/` en `.gitignore` y `updateSnapshots: 'missing'` en Playwright: la primera corrida de `pnpm test:e2e` en una máquina crea las bases y las siguientes comparan. | P3 · T12 |
 | 2026-11-01 | **Capturas de slides solo en local:** `docs/slides-direcciones/` está en `.gitignore` (pedido del responsable; pesaban 52 MB). Se sacaron del historial no subido de la rama P3 (respaldo: rama local `backup/p3-antes-de-limpiar`). Se regeneran con la galería (`pnpm dev` → `/galeria.html?only=<id>`). | Responsable |
 | 2026-11-01 | `FitText`: si la fuente no carga, no dibuja nada ni emite informe (y lo registra en consola); nunca mide con la fuente de respaldo. Si llega un texto nuevo mientras carga la fuente, se descarta la medición vieja. | Tarea 8 |
 
@@ -159,3 +166,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | P3 · T10: slide de imagen (`ImageSlide`, relleno difuminado); imágenes sintéticas en `tests/fixtures/images.ts`; la galería las muestra | `image` 2/2; typecheck 0 | ver `git log` |
 | 2026-11-01 | P3 · T11: cierre = composición de la portada con "¡Feliz sábado!" (`frameSlide`, `frameTitle`); nombre largo de iglesia en 2 líneas en la cabecera del Almanaque | `cover` 18/18; typecheck 0 | ver `git log` |
 | 2026-11-01 | P3 · T7: Visual = la Clásica del estilo con la foto recortada del predicador (`PhotoCutout`, `visualPhoto`); solo en tipos con campo de imagen (culto) | `visual` 6/6, `classic` 60/60, `definitions`; typecheck 0 | ver `git log` |
+| 2026-11-01 | P3 · T12: matriz §5.7 (3 estilos × 5 tipos × 6 casos + temas, Visual, portada, cierre, imagen = 149 casos) y 19 capturas de regresión locales | typecheck 0; `pnpm test` 530/530; `test:e2e` 21/21; build sin galería | ver `git log` |

@@ -4,6 +4,8 @@ import { defineConfig, devices } from '@playwright/test'
 // que solo existe en desarrollo.
 export default defineConfig({
   testDir: 'tests/e2e',
+  // Capturas base de la galería solo locales (en .gitignore): si faltan, se crean en la primera corrida.
+  updateSnapshots: 'missing',
   projects: [
     {
       name: 'chromium',
