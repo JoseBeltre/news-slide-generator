@@ -6,7 +6,7 @@
 
 - **Fase:** 1 (MVP), pasos 1–7 en modo **solo local** (sin backend), según SRS §11.
 - **Plan vigente:** `docs/superpowers/plans/2026-11-01-fase1-p2-tipos-datos-logos.md` (paso 3), aprobado; ejecución **nativa** en la rama `fase1/p2-tipos-datos-logos`. Ledger: `.superpowers/sdd/2026-11-01-fase1-p2-tipos-datos-logos/progress.md`. P1 está terminado y unido a `master`.
-- **P2 hecho:** Tareas 1–5 (formato es-DO; 7 tipos declarativos; validación con Zod; Dexie y repositorio; imágenes comprimidas sin duplicados).
+- **P2 hecho:** Tareas 1–6 (formato es-DO; 7 tipos declarativos; validación con Zod; Dexie y repositorio; imágenes comprimidas sin duplicados; color dominante).
 - **Hoja de ruta de la fase:** `docs/superpowers/plans/2026-11-01-fase1-hoja-de-ruta.md` (pasos 1–7).
 - **Aprobación:** P1 aprobado el 2026-11-01; ejecución **nativa** (inline, una revisión final de toda la rama).
 - **Rama:** `fase1/p1-base-y-motor`.
@@ -28,7 +28,7 @@
 
 ## Próxima tarea
 
-- P2 · Tarea 6: color dominante de logos (`src/lib/dominantColor.ts`).
+- P2 · Tarea 7: ministerios, logo IASD precargado y candidatos para el motor (`src/data/ministries.ts`).
 
 ## Decisiones tomadas
 
@@ -102,4 +102,5 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | P2 · T2: `FieldDef`/`AnnouncementTypeDef` y los 7 tipos (`src/slides/types/`) | `pnpm test` 181/181 | 62c00b6 |
 | 2026-11-01 | P2 · T3: `validateValues` con Zod 4 y mensajes en español | `pnpm test` 197/197 | 9ff24c0 |
 | 2026-11-01 | P2 · T4: `models.ts` (§7), `AppDb` v1 (7 tablas), `createRepository` con borrado lógico | `pnpm test` 203/203 | 725f60c |
-| 2026-11-01 | P2 · T5: `saveImage` (WebP 0.82, ≤2560/1600 px, SVG intacto, SHA-256, sin duplicados) | `pnpm test` 215/215 | ver `git log` |
+| 2026-11-01 | P2 · T5: `saveImage` (WebP 0.82, ≤2560/1600 px, SVG intacto, SHA-256, sin duplicados) | `pnpm test` 215/215 | 6c8cff1 |
+| 2026-11-01 | P2 · T6: `dominantColor` / `dominantColorOfBlob` | `pnpm test` 223/223 | ver `git log` |
