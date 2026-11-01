@@ -6,6 +6,7 @@ import { SlideCanvas, summarizeFit, type FitReport } from '../engine'
 import type { SlideContext, SlideSpec, SlideStatus } from './contract'
 import ClassicSlide from './classic/ClassicSlide.vue'
 import CoverSlide from './cover/CoverSlide.vue'
+import ImageSlide from './image/ImageSlide.vue'
 import { FIT_COLLECTOR } from './fitCollector'
 
 const props = defineProps<{ spec: SlideSpec; ctx: SlideContext }>()
@@ -14,6 +15,7 @@ const emit = defineEmits<{ status: [status: SlideStatus] }>()
 const ANNOUNCEMENT_COMPONENTS: Record<'clasica' | 'visual', Component | undefined> = { clasica: ClassicSlide, visual: undefined }
 const COMPONENTS: Partial<Record<SlideSpec['kind'], Component>> = {
   cover: CoverSlide,
+  image: ImageSlide,
 }
 
 const reports = reactive(new Map<string, FitReport>())

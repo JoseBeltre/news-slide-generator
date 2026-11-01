@@ -2,6 +2,7 @@
 // Las mismas entradas usan las capturas de regresión (tests/e2e/galeria.spec.ts).
 import { FULL, MINIMAL, NORMAL, TEXT_TYPE_IDS, longTitle } from '../../tests/fixtures/announcements'
 import { makeCtx } from '../../tests/fixtures/context'
+import { syntheticCutout, syntheticFlyer } from '../../tests/fixtures/images'
 import { TEST_MINISTRIES } from '../../tests/fixtures/ministries'
 import { SLIDE_STYLES } from '../slides/styles'
 import { PRESET_THEMES } from '../slides/themes'
@@ -23,6 +24,14 @@ const TRES_ISOTIPOS = { kind: 'varios', ministryIds: ['jovenes', 'mujer', 'igles
 // Extremos realistas: el máximo de §5.4 (6 líneas) y el maxLength del título (60).
 const { contacto: _, ...SALIDA_6_LINEAS } = FULL.salida
 const TITULO_60 = 'Gran campaña de evangelismo juvenil con invitados especiales'
+
+// Imágenes sintéticas (se generan al pedirlas): flyers y la foto recortada del predicador.
+const IMAGES: Record<string, () => Promise<Blob>> = {
+  'flyer-vertical': () => syntheticFlyer(1080, 1920),
+  'flyer-horizontal': () => syntheticFlyer(1920, 1080),
+  'foto-predicador': () => syntheticCutout(),
+}
+const loadImage = async (id: string) => IMAGES[id]?.()
 
 export function galleryEntries(): GalleryEntry[] {
   const out: GalleryEntry[] = []
@@ -46,6 +55,9 @@ export function galleryEntries(): GalleryEntry[] {
       const ctx = makeCtx({ theme: PRESET_THEMES.find((t) => t.id === themeId)! })
       out.push({ id: `estilo-${slideStyle}-portada-${themeId}`, label: `${slideStyle} · portada · ${themeId}`, spec: { kind: 'cover', palette: paletteFor({}, undefined, ctx), slideStyle }, ctx })
     }
+  }
+  for (const imageId of ['flyer-vertical', 'flyer-horizontal']) {
+    out.push({ id: `imagen-${imageId}`, label: `imagen · ${imageId}`, spec: { kind: 'image', imageId }, ctx: makeCtx({ loadImage }) })
   }
   for (const themeId of THEMES) {
     const ctx = makeCtx({ theme: PRESET_THEMES.find((t) => t.id === themeId)! })

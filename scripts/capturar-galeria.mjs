@@ -17,9 +17,10 @@ let failures = 0
 for (const id of ids.filter((i) => i?.startsWith(prefix))) {
   await page.goto(`${base}/galeria.html?only=${id}`)
   await page.evaluate(() => document.fonts.ready)
-  await page.waitForFunction(() => document.querySelector('[data-status]') && document.querySelectorAll('[data-fit]').length > 0)
+  // Con textos, espera a que se ajusten; la slide de imagen no tiene ninguno.
+  await page.waitForFunction(() => document.querySelector('[data-status]') && (document.querySelectorAll('[data-fit]').length > 0 || document.querySelector('[data-image]')))
   // Logos e imágenes cargados antes de medir y capturar.
-  await page.waitForFunction(() => [...document.images].every((img) => img.complete))
+  await page.waitForFunction(() => [...document.images].every((img) => img.complete && img.style.visibility !== 'hidden'))
   await page.waitForTimeout(150)
   const status = await page.getAttribute('[data-status]', 'data-status')
   const violations = await page.evaluate(() => window.auditSlide())
