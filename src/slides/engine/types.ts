@@ -32,3 +32,10 @@ export type FitResult =
   | { status: 'fits'; fontSize: number; lines: number; belowPreferred: boolean }
   | { status: 'too_long'; minFontSize: number }
   | { status: 'empty' }
+
+/** Lo que informa cada slot de texto tras medirse; la plantilla los junta con `summarizeFit`. */
+export interface FitReport {
+  slotId: string
+  fieldKey?: string
+  result: FitResult
+}

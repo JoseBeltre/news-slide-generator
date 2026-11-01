@@ -10,11 +10,11 @@
 - **Aprobación:** P1 aprobado el 2026-11-01; ejecución **nativa** (inline, una revisión final de toda la rama).
 - **Rama:** `fase1/p1-base-y-motor`.
 - **Ledger de ejecución:** `.superpowers/sdd/2026-11-01-fase1-p1-base-y-motor/progress.md` (ignorado por git).
-- **Hecho:** P1 · Tareas 1–7 (proyecto montado; PWA offline; lienzo escalado; contraste WCAG; reglas de legibilidad; búsqueda binaria; medición del texto en el DOM).
+- **Hecho:** P1 · Tareas 1–8 (proyecto montado; PWA offline; lienzo escalado; contraste WCAG; reglas de legibilidad; búsqueda binaria; medición en el DOM; `FitText` y "No cabe").
 
 ## Próxima tarea
 
-- P1 · Tarea 8: `FitText.vue` y estado "No cabe" (`fitReport.ts`).
+- P1 · Tarea 9: selección de variante de logo (`src/slides/engine/logo.ts`).
 
 ## Decisiones tomadas
 
@@ -30,6 +30,7 @@
 | 2026-11-01 | `globPatterns` de Workbox **sin** `webmanifest`: el plugin ya lo precachea y duplicarlo hace que el SW se instale vacío (`add-to-cache-list-conflicting-entries`) sin error visible. Si se toca `globPatterns`, correr `npm run test:e2e`. | Tarea 2 |
 | 2026-11-01 | `registerType: 'prompt'`: una versión nueva nunca recarga la página en medio de una presentación. El aviso "nueva versión" llega en P4. | Tarea 2 |
 | 2026-11-01 | La E2E de fuente offline usa `document.fonts.load()` (fuerza la descarga desde el precache); `check()` no carga nada. | Tarea 2 |
+| 2026-11-01 | `FitText`: si la fuente no carga, no dibuja nada ni emite informe (y lo registra en consola); nunca mide con la fuente de respaldo. Si llega un texto nuevo mientras carga la fuente, se descarta la medición vieja. | Tarea 8 |
 
 ## Comandos
 
@@ -60,4 +61,5 @@ Requisito de una sola vez: `npx playwright install chromium`.
 | 2026-11-01 | P1 · T4: color y contraste WCAG, `ensureContrast` | `npm test` 51/51 | b13d680 |
 | 2026-11-01 | P1 · T5: reglas de legibilidad, `TextSlotDef`, `validateTextSlot` | `npm test` 63/63 | dc47cb1 |
 | 2026-11-01 | P1 · T6: `findLargestFittingSize` | `npm test` 74/74 | 73eb5b2 |
-| 2026-11-01 | P1 · T7: `measureTextFit`, `ensureFontLoaded` (sin cortes a mitad de palabra; verificado con mutación) | `npm test` 92/92 | ver `git log` |
+| 2026-11-01 | P1 · T7: `measureTextFit`, `ensureFontLoaded` (sin cortes a mitad de palabra; verificado con mutación) | `npm test` 92/92 | ca52344 |
+| 2026-11-01 | P1 · T8: `FitText.vue`, `summarizeFit`; helper de pruebas `tests/browser/helpers/mount.ts` | `npm test` 101/101 | ver `git log` |

@@ -1,32 +1,16 @@
 import { afterEach, expect, it } from 'vitest'
-import { mount, type VueWrapper } from '@vue/test-utils'
 import { h, nextTick } from 'vue'
 import SlideCanvas from '../../../src/slides/engine/SlideCanvas.vue'
+import { cleanupMounted, frame, mountInHost } from '../helpers/mount'
 
-let wrapper: VueWrapper | undefined
-let host: HTMLDivElement | undefined
-
-afterEach(() => {
-  wrapper?.unmount()
-  host?.remove()
-})
-
-const frame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
+afterEach(cleanupMounted)
 
 async function montar(width: number, height: number, props: Record<string, unknown> = {}) {
-  host = document.createElement('div')
-  host.style.cssText = `position:absolute;left:0;top:0;width:${width}px;height:${height}px`
-  document.body.appendChild(host)
-  // attachTo monta dentro de un div nuevo sin tamaño: le damos el del host.
-  const mountPoint = document.createElement('div')
-  mountPoint.style.cssText = 'width:100%;height:100%'
-  host.appendChild(mountPoint)
-  wrapper = mount(SlideCanvas, { props, slots: { default: () => h('p', 'Hola') }, attachTo: mountPoint })
-  ;(mountPoint.firstElementChild as HTMLElement | null)?.style.setProperty('height', '100%')
+  const { host } = mountInHost(SlideCanvas, width, height, { props, slots: { default: () => h('p', 'Hola') } })
   await nextTick()
   await frame()
   const canvas = host.querySelector<HTMLElement>('.slide-canvas')!
-  return { canvas, rect: () => canvas.getBoundingClientRect(), hostRect: host.getBoundingClientRect() }
+  return { host, canvas, rect: () => canvas.getBoundingClientRect(), hostRect: host.getBoundingClientRect() }
 }
 
 it('se escala a 960×540 dentro de un host de 960×540', async () => {
@@ -47,9 +31,9 @@ it('se centra verticalmente en un host de 1000×1000', async () => {
 })
 
 it('reacciona al cambio de tamaño del host', async () => {
-  const { rect } = await montar(960, 540)
-  host!.style.width = '480px'
-  host!.style.height = '270px'
+  const { host, rect } = await montar(960, 540)
+  host.style.width = '480px'
+  host.style.height = '270px'
   await frame()
   expect(rect().width).toBeCloseTo(480, 0)
 })
