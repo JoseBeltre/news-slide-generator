@@ -1,0 +1,12 @@
+// API pública del motor de slides. Las plantillas (P3) y la app solo importan desde aquí.
+export * from './types'
+export * from './canvas'
+export * from './color'
+export * from './readability'
+export * from './fit'
+export * from './measure'
+export * from './fitReport'
+export * from './logo'
+export * from './audit'
+export { default as SlideCanvas } from './SlideCanvas.vue'
+export { default as FitText } from './FitText.vue'
