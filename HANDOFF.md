@@ -38,7 +38,7 @@
 
 ## Próxima tarea
 
-- Escribir el plan P3 (plantillas y temas de las slides) consultando `ui-ux-pro-max:slides` y `ecc:frontend-slides` (sin DESIGN.md: ese es para la interfaz, en P4); esperar aprobación del responsable.
+- Plan P3 escrito: `docs/superpowers/plans/2026-11-01-fase1-p3-plantillas-y-temas.md` (11 tareas). **Esperando aprobación del responsable y elección de modo de ejecución.** La Tarea 4 es un punto de parada: 3 direcciones visuales de las slides para que el responsable elija.
 
 ## Decisiones tomadas
 
