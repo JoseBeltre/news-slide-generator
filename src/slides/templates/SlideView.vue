@@ -12,7 +12,7 @@ import { FIT_COLLECTOR } from './fitCollector'
 const props = defineProps<{ spec: SlideSpec; ctx: SlideContext }>()
 const emit = defineEmits<{ status: [status: SlideStatus] }>()
 
-const ANNOUNCEMENT_COMPONENTS: Record<'clasica' | 'visual', Component | undefined> = { clasica: ClassicSlide, visual: undefined }
+const ANNOUNCEMENT_COMPONENTS: Record<'clasica' | 'visual', Component | undefined> = { clasica: ClassicSlide, visual: ClassicSlide }
 const COMPONENTS: Partial<Record<SlideSpec['kind'], Component>> = {
   cover: CoverSlide,
   closing: CoverSlide,

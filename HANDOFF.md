@@ -158,3 +158,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | P3 · plan T6–T12 ajustado a los 3 estilos; T6: pruebas de la Clásica en los 3 estilos (helper `renderSlide`) | `classic` 60/60; typecheck 0 | ver `git log` |
 | 2026-11-01 | P3 · T10: slide de imagen (`ImageSlide`, relleno difuminado); imágenes sintéticas en `tests/fixtures/images.ts`; la galería las muestra | `image` 2/2; typecheck 0 | ver `git log` |
 | 2026-11-01 | P3 · T11: cierre = composición de la portada con "¡Feliz sábado!" (`frameSlide`, `frameTitle`); nombre largo de iglesia en 2 líneas en la cabecera del Almanaque | `cover` 18/18; typecheck 0 | ver `git log` |
+| 2026-11-01 | P3 · T7: Visual = la Clásica del estilo con la foto recortada del predicador (`PhotoCutout`, `visualPhoto`); solo en tipos con campo de imagen (culto) | `visual` 6/6, `classic` 60/60, `definitions`; typecheck 0 | ver `git log` |

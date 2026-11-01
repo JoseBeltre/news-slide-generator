@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ANNOUNCEMENT_TYPES, getTypeDef } from '../../../src/slides/types/definitions'
+import { templatesFor } from '../../../src/slides/templates/registry'
 
 const obligatorios = (id: string) =>
   getTypeDef(id)
@@ -52,11 +53,20 @@ describe('tipos de anuncio del MVP (§3.2)', () => {
     }
   })
 
-  it('cada tipo (salvo imagen) tiene Clásica y Visual; imagen tiene la suya', () => {
+  // La Visual es la Clásica con una foto: solo la ofrecen los tipos que tienen un campo de imagen.
+  it('Visual solo en los tipos de texto con un campo de imagen; imagen tiene la suya', () => {
     for (const t of ANNOUNCEMENT_TYPES) {
+      const hasImage = t.fields.some((f) => f.kind === 'image')
       if (t.id === 'imagen') expect(t.templateIds).toEqual(['imagen'])
-      else expect(t.templateIds).toEqual(['clasica', 'visual'])
+      else if (t.id !== 'cumpleanos') expect(t.templateIds).toEqual(hasImage ? ['clasica', 'visual'] : ['clasica'])
       expect(t.templateIds).toContain(t.defaultTemplateId)
+    }
+    expect(getTypeDef('culto').templateIds).toEqual(['clasica', 'visual'])
+  })
+
+  it('templatesFor coincide con los templateIds de cada tipo de texto', () => {
+    for (const t of ANNOUNCEMENT_TYPES.filter((t) => t.id !== 'cumpleanos')) {
+      expect(templatesFor(t.id).map((x) => x.id)).toEqual(t.templateIds)
     }
   })
 

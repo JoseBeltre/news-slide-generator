@@ -7,7 +7,7 @@ import { TEST_MINISTRIES } from '../../tests/fixtures/ministries'
 import { SLIDE_STYLES } from '../slides/styles'
 import { PRESET_THEMES } from '../slides/themes'
 import type { SlideContext, SlideSpec } from '../slides/templates/contract'
-import { buildSlides, frameSlide } from '../slides/templates/registry'
+import { buildSlides, frameSlide, templatesFor } from '../slides/templates/registry'
 
 export interface GalleryEntry {
   id: string
@@ -51,6 +51,17 @@ export function galleryEntries(): GalleryEntry[] {
       const [spec] = buildSlides({ typeId, templateId: 'clasica', values, logo, slideStyle }, ctx)
       out.push({ id: `estilo-${slideStyle}-${name}-${themeId}`, label: `${slideStyle} · ${name} · ${themeId}`, spec: spec!, ctx })
     }
+    // Visual: la Clásica con la foto del predicador (solo culto tiene campo de imagen).
+    for (const themeId of ['neutro', 'cielo', 'vino']) {
+      const ctx = makeCtx({ theme: PRESET_THEMES.find((t) => t.id === themeId)!, loadImage })
+      for (const [name, values] of [
+        ['visual', { ...NORMAL.culto, fotoPredicador: 'foto-predicador' }],
+        ['visual-lleno', { ...FULL.culto, fotoPredicador: 'foto-predicador' }],
+      ] as const) {
+        const [spec] = buildSlides({ typeId: 'culto', templateId: 'visual', values, logo: IGLESIA, slideStyle }, ctx)
+        out.push({ id: `estilo-${slideStyle}-${name}-${themeId}`, label: `${slideStyle} · ${name} · ${themeId}`, spec: spec!, ctx })
+      }
+    }
     for (const themeId of THEMES) {
       const base = makeCtx({ theme: PRESET_THEMES.find((t) => t.id === themeId)! })
       const ctx = makeCtx({ ...base, settings: { ...base.settings, slideStyle } })
@@ -63,8 +74,8 @@ export function galleryEntries(): GalleryEntry[] {
   }
   for (const themeId of THEMES) {
     const ctx = makeCtx({ theme: PRESET_THEMES.find((t) => t.id === themeId)! })
-    for (const templateId of ['clasica', 'visual'] as const) {
-      for (const typeId of TEXT_TYPE_IDS) {
+    for (const typeId of TEXT_TYPE_IDS) {
+      for (const { id: templateId } of templatesFor(typeId)) {
         const variants = { normal: NORMAL[typeId], lleno: FULL[typeId], minimo: MINIMAL[typeId], titulo_largo: longTitle(typeId) }
         for (const [variant, values] of Object.entries(variants)) {
           const [spec] = buildSlides({ typeId, templateId, values, logo: { kind: 'iglesia' } }, ctx)

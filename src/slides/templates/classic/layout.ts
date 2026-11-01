@@ -108,3 +108,7 @@ export const monthLabel = (when: { month: string; monthShort: string; year?: str
 export function lineSlot(id: string, fieldKey: string | undefined, box: Rect, maxFontSize: number, opts: { uppercase?: boolean; align?: 'left' | 'center' | 'right' } = {}): TextSlotDef {
   return { id, role: 'key', fieldKey, box, maxLines: 1, maxFontSize, uppercase: opts.uppercase, align: opts.align }
 }
+
+/** Foto de la plantilla Visual: solo con `templateId: 'visual'` y una imagen cargada en el anuncio. */
+export const visualPhoto = (spec: { templateId: 'clasica' | 'visual'; data: NormalizedData }): string | undefined =>
+  spec.templateId === 'visual' ? spec.data.imageId : undefined

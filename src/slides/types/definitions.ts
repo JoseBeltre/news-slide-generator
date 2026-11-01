@@ -47,6 +47,8 @@ const versiculo: FieldDef = {
 
 const optional = (field: FieldDef): FieldDef => ({ ...field, required: false })
 const DESIGNED = { templateIds: ['clasica', 'visual'], defaultTemplateId: 'clasica' }
+// La Visual es la Clásica con una foto: los tipos sin campo de imagen solo tienen la Clásica.
+const CLASSIC_ONLY = { templateIds: ['clasica'], defaultTemplateId: 'clasica' }
 
 export const ANNOUNCEMENT_TYPES: readonly AnnouncementTypeDef[] = Object.freeze([
   {
@@ -88,7 +90,7 @@ export const ANNOUNCEMENT_TYPES: readonly AnnouncementTypeDef[] = Object.freeze(
       },
       contacto,
     ],
-    ...DESIGNED,
+    ...CLASSIC_ONLY,
   },
   {
     id: 'obra_misionera',
@@ -103,7 +105,7 @@ export const ANNOUNCEMENT_TYPES: readonly AnnouncementTypeDef[] = Object.freeze(
       queLlevar,
       contacto,
     ],
-    ...DESIGNED,
+    ...CLASSIC_ONLY,
   },
   {
     id: 'cumpleanos',
@@ -149,7 +151,7 @@ export const ANNOUNCEMENT_TYPES: readonly AnnouncementTypeDef[] = Object.freeze(
       precio,
       contacto,
     ],
-    ...DESIGNED,
+    ...CLASSIC_ONLY,
   },
   {
     id: 'aviso',
@@ -161,7 +163,7 @@ export const ANNOUNCEMENT_TYPES: readonly AnnouncementTypeDef[] = Object.freeze(
       optional(fecha),
       contacto,
     ],
-    ...DESIGNED,
+    ...CLASSIC_ONLY,
   },
   {
     id: 'imagen',

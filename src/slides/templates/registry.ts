@@ -6,6 +6,8 @@ import type { AnnouncementTypeId } from '../types/fields'
 import { dateOptionsFor, referenceDate, type AnnouncementInput, type SlideContext, type SlideSpec, type TemplateDef } from './contract'
 
 const TEXT_TYPES: readonly AnnouncementTypeId[] = ['culto', 'salida', 'obra_misionera', 'actividad', 'aviso']
+/** La Visual dibuja la foto del anuncio: solo para tipos con un campo de imagen (hoy, culto). */
+const PHOTO_TYPES = TEXT_TYPES.filter((id) => getTypeDef(id).fields.some((f) => f.kind === 'image'))
 
 /** Paleta del anuncio: su color personalizado (RF-32) o el tema de la iglesia, con el acento del tipo. */
 export function paletteFor(a: Pick<AnnouncementInput, 'customPrimaryColor'>, typeId: AnnouncementTypeId | undefined, ctx: SlideContext): SlidePalette {
@@ -29,7 +31,7 @@ const announcementLayout =
 
 export const TEMPLATES: readonly TemplateDef[] = Object.freeze([
   { id: 'clasica', name: 'Clásica', typeIds: TEXT_TYPES, layout: announcementLayout('clasica') },
-  { id: 'visual', name: 'Visual', typeIds: TEXT_TYPES, layout: announcementLayout('visual') },
+  { id: 'visual', name: 'Visual', typeIds: PHOTO_TYPES, layout: announcementLayout('visual') },
   {
     id: 'imagen',
     name: 'Imagen completa',
