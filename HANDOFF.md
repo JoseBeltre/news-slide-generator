@@ -155,3 +155,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | P3 · T3: temas con contraste garantizado y color personalizado | `themes.test.ts` 13/13 | ver `git log` |
 | 2026-11-01 | P3 · T4: contrato, `SlideView`, logo automático, portada, galería | `SlideView.test.ts` 5/5; typecheck 0; build sin galería; `test:e2e` 2/2 | ver `git log` |
 | 2026-11-01 | P3 · T5: rediseño — mínimos v1.4, 3 estilos (Himnario, Almanaque, Cartel) con portada, interlineado por rol, grupos de logos e isotipo | typecheck 0; `pnpm test` 294/294; 30 slides de galería sin violaciones de `auditSlide` | ver `git log` |
+| 2026-11-01 | P3 · plan T6–T12 ajustado a los 3 estilos; T6: pruebas de la Clásica en los 3 estilos (helper `renderSlide`) | `classic` 60/60; typecheck 0 | ver `git log` |

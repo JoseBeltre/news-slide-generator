@@ -15,6 +15,7 @@ const icon = computed(() => iconFor(getTypeDef(props.typeId).icon))
   <div
     v-if="icon"
     aria-hidden="true"
+    data-emblem
     :style="{
       position: 'absolute',
       left: `${box.x}px`,
