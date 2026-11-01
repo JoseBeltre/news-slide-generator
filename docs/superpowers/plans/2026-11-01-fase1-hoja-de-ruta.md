@@ -19,7 +19,7 @@
 
 ## Diseño y UX (P3–P6)
 
-Base: skill `ui-ux-pro-max`; sistema de diseño desde un `DESIGN.md` de designmd.app; slides con `ui-ux-pro-max:slides` y `ecc:frontend-slides`. La UX es la prioridad; §5 manda sobre cualquier estilo.
+Base: skill `ui-ux-pro-max`; sistema de diseño **de la interfaz** (P4–P6) desde un `DESIGN.md` de designmd.app, elegido por el responsable entre 3 propuestas; las **slides** (P3) tienen estilo propio, independiente de la interfaz; slides con `ui-ux-pro-max:slides` y `ecc:frontend-slides`. La UX es la prioridad; §5 manda sobre cualquier estilo.
 
 ## Orden y dependencias
 
