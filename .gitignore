@@ -1,0 +1,9 @@
+node_modules
+dist
+dev-dist
+test-results
+playwright-report
+.vitest-attachments
+__screenshots__
+.env*
+.superpowers
