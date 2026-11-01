@@ -7,7 +7,7 @@ import { TEST_MINISTRIES } from '../../tests/fixtures/ministries'
 import { SLIDE_STYLES } from '../slides/styles'
 import { PRESET_THEMES } from '../slides/themes'
 import type { SlideContext, SlideSpec } from '../slides/templates/contract'
-import { buildSlides, paletteFor } from '../slides/templates/registry'
+import { buildSlides, frameSlide } from '../slides/templates/registry'
 
 export interface GalleryEntry {
   id: string
@@ -52,8 +52,10 @@ export function galleryEntries(): GalleryEntry[] {
       out.push({ id: `estilo-${slideStyle}-${name}-${themeId}`, label: `${slideStyle} · ${name} · ${themeId}`, spec: spec!, ctx })
     }
     for (const themeId of THEMES) {
-      const ctx = makeCtx({ theme: PRESET_THEMES.find((t) => t.id === themeId)! })
-      out.push({ id: `estilo-${slideStyle}-portada-${themeId}`, label: `${slideStyle} · portada · ${themeId}`, spec: { kind: 'cover', palette: paletteFor({}, undefined, ctx), slideStyle }, ctx })
+      const base = makeCtx({ theme: PRESET_THEMES.find((t) => t.id === themeId)! })
+      const ctx = makeCtx({ ...base, settings: { ...base.settings, slideStyle } })
+      out.push({ id: `estilo-${slideStyle}-portada-${themeId}`, label: `${slideStyle} · portada · ${themeId}`, spec: frameSlide('cover', ctx), ctx })
+      out.push({ id: `estilo-${slideStyle}-cierre-${themeId}`, label: `${slideStyle} · cierre · ${themeId}`, spec: frameSlide('closing', ctx), ctx })
     }
   }
   for (const imageId of ['flyer-vertical', 'flyer-horizontal']) {

@@ -15,6 +15,7 @@ const emit = defineEmits<{ status: [status: SlideStatus] }>()
 const ANNOUNCEMENT_COMPONENTS: Record<'clasica' | 'visual', Component | undefined> = { clasica: ClassicSlide, visual: undefined }
 const COMPONENTS: Partial<Record<SlideSpec['kind'], Component>> = {
   cover: CoverSlide,
+  closing: CoverSlide,
   image: ImageSlide,
 }
 

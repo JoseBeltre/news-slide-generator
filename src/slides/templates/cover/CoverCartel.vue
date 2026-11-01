@@ -9,7 +9,7 @@ import LogoGroup from '../parts/LogoGroup.vue'
 import SlideBackground from '../parts/SlideBackground.vue'
 import SlideText from '../parts/SlideText.vue'
 import { CARTEL } from '../parts/styleParts'
-import { coverDate } from './coverDate'
+import { coverDate, frameTitle } from './coverDate'
 
 const props = defineProps<{ spec: Extract<SlideSpec, { kind: 'cover' | 'closing' }>; ctx: SlideContext }>()
 
@@ -30,6 +30,7 @@ const LOGO = { x: 96, y: 96, width: 860, height: 300 }
 const TITLE: TextSlotDef = { id: 'portada-titulo', role: 'title', box: { x: 96, y: 470, width: 860, height: 520 }, maxLines: 2, maxFontSize: 240, valign: 'bottom' }
 
 const palette = computed(() => props.spec.palette)
+const title = computed(() => frameTitle(props.spec, props.ctx))
 const date = computed(() => coverDate(props.ctx))
 </script>
 
@@ -45,7 +46,7 @@ const date = computed(() => coverDate(props.ctx))
     <div :data-bg="palette.background.join(',')">
       <LogoGroup :selection="{ kind: 'iglesia' }" :ministries="ctx.ministries" :background="palette.background" :box="LOGO" cover align="start" :load-image="ctx.loadImage" />
       <div aria-hidden="true" :style="{ position: 'absolute', left: '96px', top: '440px', width: '200px', height: '10px', background: palette.accent }" />
-      <SlideText :slot="TITLE" :text="ctx.settings.coverTitle" :font-family="palette.fontFamily" />
+      <SlideText :slot="TITLE" :text="title" :font-family="palette.fontFamily" />
     </div>
   </SlideBackground>
 </template>

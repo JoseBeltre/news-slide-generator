@@ -38,6 +38,11 @@ export const TEMPLATES: readonly TemplateDef[] = Object.freeze([
   },
 ])
 
+/** Portada o cierre de la presentación: tema de la iglesia y estilo por defecto de Configuración. */
+export function frameSlide(kind: 'cover' | 'closing', ctx: SlideContext): SlideSpec {
+  return { kind, palette: paletteFor({}, undefined, ctx), slideStyle: ctx.settings.slideStyle }
+}
+
 export function getTemplate(id: string): TemplateDef | undefined {
   return TEMPLATES.find((t) => t.id === id)
 }
