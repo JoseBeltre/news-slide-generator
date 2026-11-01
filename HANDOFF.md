@@ -10,11 +10,11 @@
 - **Aprobación:** P1 aprobado el 2026-11-01; ejecución **nativa** (inline, una revisión final de toda la rama).
 - **Rama:** `fase1/p1-base-y-motor`.
 - **Ledger de ejecución:** `.superpowers/sdd/2026-11-01-fase1-p1-base-y-motor/progress.md` (ignorado por git).
-- **Hecho:** P1 · Tareas 1–3 (proyecto montado; PWA offline; lienzo escalado y área segura).
+- **Hecho:** P1 · Tareas 1–4 (proyecto montado; PWA offline; lienzo escalado; contraste WCAG con ajuste de fondo).
 
 ## Próxima tarea
 
-- P1 · Tarea 4: color y contraste WCAG (`src/slides/engine/color.ts`).
+- P1 · Tarea 5: reglas de legibilidad §5.2–§5.4 (`src/slides/engine/readability.ts`).
 
 ## Decisiones tomadas
 
@@ -56,4 +56,5 @@ Requisito de una sola vez: `npx playwright install chromium`.
 | 2026-11-01 | Lectura del SRS v1.3 y redacción de los planes | Planes escritos y aprobados | ver `git log` (docs) |
 | 2026-11-01 | P1 · T1: montar Vite + Vue + TS estricto + Vitest unit/browser | typecheck OK; `npm test` 2/2 | 812ae6d |
 | 2026-11-01 | P1 · T2: PWA offline, `.htaccess`, E2E sin red | `npm test` 5/5; `test:e2e` 2/2 | 4d86e46 |
-| 2026-11-01 | P1 · T3: lienzo, área segura, `SlideCanvas.vue` | `npm test` 22/22 | ver `git log` |
+| 2026-11-01 | P1 · T3: lienzo, área segura, `SlideCanvas.vue` | `npm test` 22/22 | e43e3b6 |
+| 2026-11-01 | P1 · T4: color y contraste WCAG, `ensureContrast` | `npm test` 51/51 | ver `git log` |
