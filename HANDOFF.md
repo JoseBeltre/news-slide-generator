@@ -38,7 +38,7 @@
 
 ## Próxima tarea
 
-- Plan P3 escrito: `docs/superpowers/plans/2026-11-01-fase1-p3-plantillas-y-temas.md` (12 tareas), **aprobado; ejecución nativa** en la rama `fase1/p3-plantillas-y-temas`. Ledger: `.superpowers/sdd/2026-11-01-fase1-p3-plantillas-y-temas/progress.md`. Hecho: T1 (`formatEventDate`, `DateStyle`; `Settings.dateStyle/relativeDates`, override en `Announcement`). La Tarea 5 es un punto de parada: 3 direcciones visuales de las slides para que el responsable elija.
+- Plan P3 escrito: `docs/superpowers/plans/2026-11-01-fase1-p3-plantillas-y-temas.md` (12 tareas), **aprobado; ejecución nativa** en la rama `fase1/p3-plantillas-y-temas`. Ledger: `.superpowers/sdd/2026-11-01-fase1-p3-plantillas-y-temas/progress.md`. Hecho: T1 (`formatEventDate`, `DateStyle`; `Settings.dateStyle/relativeDates`, override en `Announcement`); T2 (`src/slides/icons.ts` con `@lucide/vue`, `normalizeAnnouncement` → `NormalizedData`; `FieldDef.slidePrefix`). La Tarea 5 es un punto de parada: 3 direcciones visuales de las slides para que el responsable elija.
 
 ## Decisiones tomadas
 
@@ -61,6 +61,7 @@
 | 2026-11-01 | **Subir a GitHub en cada unión con `master`:** tras verificar las pruebas en `master`, `git push origin master` (solo `master`; otras ramas, force-push o PRs requieren pedido aparte). | Responsable |
 | 2026-11-01 | **Diseño (P3 en adelante):** base principal `ui-ux-pro-max` para la web; un `DESIGN.md` de designmd.app como sistema de diseño **solo de la interfaz** (formularios, listas, navegación; se elige en P4 y **lo elige el responsable** entre 3 opciones fundamentadas). **No aplica a las slides**: sus temas y plantillas tienen estilo propio y normalmente difieren de la interfaz; para slides consultar también `ui-ux-pro-max:slides` y `ecc:frontend-slides`. **La UX es la prioridad.** Las reglas de §5 (mínimos de tamaño, contraste 7:1) mandan sobre cualquier estilo que sugiera un skill o el DESIGN.md. | Responsable |
 | 2026-11-01 | **Formato de fecha configurable** (amplía §3.2): estilos `largo` ("Sábado 7 de noviembre"), `medio` ("SÁBADO 7 DE NOV"), `corto` ("SÁB 7"; con "NOV" si es otro mes) y `corto-mes-completo` ("SÁB 7"; con "NOVIEMBRE" si es otro mes); fechas relativas opcionales "HOY" / "ESTA NOCHE" (≥ 18:00) / "MAÑANA", calculadas contra la **fecha de la presentación**. Por defecto en Configuración; cada anuncio puede cambiarlo. Mayúsculas solo en una línea (§5.2). Plan P3, Tarea 1. | Responsable |
+| 2026-11-01 | Íconos: **`@lucide/vue`** (el plan decía `lucide-vue-next`, que está obsoleto). Fecha y primera hora del tipo van en **una fila** ("Sábado 7 de noviembre · 7:00 p. m."). `FieldDef.slidePrefix` para los datos que el ícono solo no explica: "Llevar:" (qué llevar) y "Hasta el" (fecha límite). | P3 · T2 |
 | 2026-11-01 | `FitText`: si la fuente no carga, no dibuja nada ni emite informe (y lo registra en consola); nunca mide con la fuente de respaldo. Si llega un texto nuevo mientras carga la fuente, se descarta la medición vieja. | Tarea 8 |
 
 ## Comandos
@@ -123,3 +124,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | P2 · revisión final: `photoId` vacío = sin foto (sin error en inglés); `formatMoney` redondea a centavos; `.vitest/` fuera del repo | typecheck 0; `pnpm test` 233/233; `test:e2e` 2/2; build OK | 35a579d |
 | 2026-11-01 | P2 unido a `master` (fast-forward) | verificado en `master`: 233/233, E2E 2/2 | 35a579d |
 | 2026-11-01 | P3 · T1: `formatEventDate` (4 estilos + relativas) | `format.test.ts` 42/42; typecheck 0 | ver `git log` |
+| 2026-11-01 | P3 · T2: íconos locales y `normalizeAnnouncement` | `tests/unit/slides` 10/10; typecheck 0 | ver `git log` |

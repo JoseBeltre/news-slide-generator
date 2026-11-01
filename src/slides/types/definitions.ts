@@ -32,6 +32,7 @@ const queLlevar: FieldDef = {
   required: false,
   role: 'secondary',
   icon: 'backpack',
+  slidePrefix: 'Llevar:',
   maxLength: 80,
 }
 const versiculo: FieldDef = {
@@ -83,6 +84,7 @@ export const ANNOUNCEMENT_TYPES: readonly AnnouncementTypeDef[] = Object.freeze(
         required: false,
         role: 'secondary',
         icon: 'calendar-clock',
+        slidePrefix: 'Hasta el',
       },
       contacto,
     ],

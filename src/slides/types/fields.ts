@@ -22,6 +22,8 @@ export interface FieldDef {
   icon?: string
   /** Orientativo: el formulario muestra un contador, pero quien decide si cabe es el motor (§5.6). */
   maxLength?: number
+  /** Texto que precede al valor en la slide cuando el ícono solo no basta ("Llevar:", "Hasta el"). */
+  slidePrefix?: string
   /** Solo para kind 'choice'. */
   options?: FieldOption[]
   defaultValue?: unknown

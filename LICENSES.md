@@ -23,6 +23,7 @@ Todas las dependencias, fuentes, logos y assets deben tener licencias compatible
 | `vue` | MIT |
 | `dexie` | Apache-2.0 |
 | `zod` | MIT |
+| `@lucide/vue` (íconos SVG, empaquetados) | ISC |
 | `@fontsource/atkinson-hyperlegible` | MIT (paquete) / OFL-1.1 (fuente) |
 | Workbox (incluido en `sw.js` por `vite-plugin-pwa`) | MIT |
 
