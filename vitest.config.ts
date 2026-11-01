@@ -13,6 +13,8 @@ export default mergeConfig(
             name: 'unit',
             include: ['tests/unit/**/*.test.ts'],
             environment: 'node',
+            // Zona horaria de la iglesia: detecta fechas 'YYYY-MM-DD' leídas como UTC (un día menos en RD).
+            env: { TZ: 'America/Santo_Domingo' },
           },
         },
         {
@@ -24,7 +26,7 @@ export default mergeConfig(
             browser: {
               enabled: true,
               headless: true,
-              provider: playwright(),
+              provider: playwright({ contextOptions: { timezoneId: 'America/Santo_Domingo', locale: 'es-DO' } }),
               instances: [{ browser: 'chromium' }],
             },
           },

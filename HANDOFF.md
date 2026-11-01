@@ -5,7 +5,8 @@
 ## Estado actual
 
 - **Fase:** 1 (MVP), pasos 1–7 en modo **solo local** (sin backend), según SRS §11.
-- **Plan vigente:** `docs/superpowers/plans/2026-11-01-fase1-p2-tipos-datos-logos.md` (paso 3) — **pendiente de aprobación**. P1 (`…-p1-base-y-motor.md`) está terminado y unido a `master`.
+- **Plan vigente:** `docs/superpowers/plans/2026-11-01-fase1-p2-tipos-datos-logos.md` (paso 3), aprobado; ejecución **nativa** en la rama `fase1/p2-tipos-datos-logos`. Ledger: `.superpowers/sdd/2026-11-01-fase1-p2-tipos-datos-logos/progress.md`. P1 está terminado y unido a `master`.
+- **P2 hecho:** Tarea 1 (formato es-DO).
 - **Hoja de ruta de la fase:** `docs/superpowers/plans/2026-11-01-fase1-hoja-de-ruta.md` (pasos 1–7).
 - **Aprobación:** P1 aprobado el 2026-11-01; ejecución **nativa** (inline, una revisión final de toda la rama).
 - **Rama:** `fase1/p1-base-y-motor`.
@@ -27,7 +28,7 @@
 
 ## Próxima tarea
 
-- Esperar la aprobación del plan de **P2**; luego ejecutarlo en una rama `fase1/p2-tipos-datos-logos`.
+- P2 · Tarea 2: definiciones declarativas de los 7 tipos (`src/slides/types/`).
 
 ## Decisiones tomadas
 
@@ -92,4 +93,6 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | P1 · T9: `selectLogoVariant` con placa, `clampLogoHeight` | `npm test` 112/112 | 2a45c46 |
 | 2026-11-01 | P1 · T10: `auditSlide`, `index.ts`, verificación completa | typecheck 0 errores; `npm test` 126/126; `test:e2e` 2/2; build OK | b4ca2ad |
 | 2026-11-01 | P1 · revisión final: `ensureGradientContrast`; `ensureFontLoaded` carga también Latin Extended | `npm test` 136/136; `test:e2e` 2/2 | 9509bfd |
-| 2026-11-01 | Migración de npm a pnpm | `pnpm typecheck` 0 errores; `pnpm test` 136/136; `pnpm test:e2e` 2/2; `pnpm build` OK | ver `git log` |
+| 2026-11-01 | Migración de npm a pnpm | `pnpm typecheck` 0 errores; `pnpm test` 136/136; `pnpm test:e2e` 2/2; `pnpm build` OK | 2dd0440 |
+| 2026-11-01 | P1 unido a `master` (fast-forward) | verificado en `master` | 2dd0440 |
+| 2026-11-01 | P2 · T1: formato es-DO (`src/lib/format.ts`); pruebas con TZ `America/Santo_Domingo` | `pnpm test` 158/158 | ver `git log` |
