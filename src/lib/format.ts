@@ -31,6 +31,58 @@ export function formatDate(iso: string, opts: { today?: Date } = {}): string {
   return sinComa.charAt(0).toLocaleUpperCase('es-DO') + sinComa.slice(1)
 }
 
+/** Estilo de la fecha en la slide; se elige en Configuración y cada anuncio puede cambiarlo. */
+export type DateStyle = 'largo' | 'medio' | 'corto' | 'corto-mes-completo'
+
+export interface DateFormatOptions {
+  style?: DateStyle
+  /** "HOY", "ESTA NOCHE" o "MAÑANA" cuando aplican. */
+  relative?: boolean
+  /** 'YYYY-MM-DD': la fecha de la presentación (o hoy si no hay presentación). */
+  reference: string
+  /** 'HH:mm' del evento, para "ESTA NOCHE". */
+  time?: string
+}
+
+// Abreviaturas fijas: las de Intl varían entre motores (p. ej. "sept").
+const WEEKDAYS = ['DOMINGO', 'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO']
+const WEEKDAYS_SHORT = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB']
+const MONTHS = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE']
+const MONTHS_SHORT = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC']
+const NIGHT_FROM = '18:00'
+const DAY_MS = 86_400_000
+
+function relativeWord(date: Date, reference: Date, time: string | undefined): string | null {
+  const days = Math.round((date.getTime() - reference.getTime()) / DAY_MS)
+  if (days === 0) return time !== undefined && time >= NIGHT_FROM ? 'ESTA NOCHE' : 'HOY'
+  if (days === 1) return 'MAÑANA'
+  return null
+}
+
+/**
+ * Fecha del evento según el estilo: "Sábado 7 de noviembre", "SÁBADO 7 DE NOV", "SÁB 7"
+ * (con mes si no es el de la referencia, y año si no es el suyo). Con `relative`, "HOY",
+ * "ESTA NOCHE" (desde las 18:00) o "MAÑANA" frente a la referencia.
+ */
+export function formatEventDate(iso: string, opts: DateFormatOptions): string {
+  const style = opts.style ?? 'largo'
+  const date = parseLocalDate(iso)
+  const reference = parseLocalDate(opts.reference)
+  if (opts.relative) {
+    const word = relativeWord(date, reference, opts.time)
+    if (word) return style === 'largo' ? word.charAt(0) + word.slice(1).toLocaleLowerCase('es-DO') : word
+  }
+  if (style === 'largo') return formatDate(iso, { today: reference })
+
+  const otherYear = date.getFullYear() !== reference.getFullYear()
+  const otherMonth = otherYear || date.getMonth() !== reference.getMonth()
+  const day = date.getDate()
+  const year = otherYear ? ` ${date.getFullYear()}` : ''
+  if (style === 'medio') return `${WEEKDAYS[date.getDay()]} ${day} DE ${MONTHS_SHORT[date.getMonth()]}${year}`
+  const month = !otherMonth ? '' : ` ${(style === 'corto' ? MONTHS_SHORT : MONTHS)[date.getMonth()]}`
+  return `${WEEKDAYS_SHORT[date.getDay()]} ${day}${month}${year}`
+}
+
 /** "7:00 p. m." (12 h, como lo da Intl) o "19:00" (24 h). */
 export function formatTime(hhmm: string, opts: { timeFormat?: '12h' | '24h' } = {}): string {
   const m = HH_MM.exec(hhmm)

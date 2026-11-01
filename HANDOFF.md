@@ -38,7 +38,7 @@
 
 ## Próxima tarea
 
-- Plan P3 escrito: `docs/superpowers/plans/2026-11-01-fase1-p3-plantillas-y-temas.md` (12 tareas). **Esperando aprobación del responsable y elección de modo de ejecución.** La Tarea 5 es un punto de parada: 3 direcciones visuales de las slides para que el responsable elija.
+- Plan P3 escrito: `docs/superpowers/plans/2026-11-01-fase1-p3-plantillas-y-temas.md` (12 tareas), **aprobado; ejecución nativa** en la rama `fase1/p3-plantillas-y-temas`. Ledger: `.superpowers/sdd/2026-11-01-fase1-p3-plantillas-y-temas/progress.md`. Hecho: T1 (`formatEventDate`, `DateStyle`; `Settings.dateStyle/relativeDates`, override en `Announcement`). La Tarea 5 es un punto de parada: 3 direcciones visuales de las slides para que el responsable elija.
 
 ## Decisiones tomadas
 
@@ -122,3 +122,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | P2 · T7: `src/data/ministries.ts` (iglesia precargada, candidatos de logo, `listMinistries`) | typecheck 0; `pnpm test` 231/231; `test:e2e` 2/2; build OK | 43eebcc |
 | 2026-11-01 | P2 · revisión final: `photoId` vacío = sin foto (sin error en inglés); `formatMoney` redondea a centavos; `.vitest/` fuera del repo | typecheck 0; `pnpm test` 233/233; `test:e2e` 2/2; build OK | 35a579d |
 | 2026-11-01 | P2 unido a `master` (fast-forward) | verificado en `master`: 233/233, E2E 2/2 | 35a579d |
+| 2026-11-01 | P3 · T1: `formatEventDate` (4 estilos + relativas) | `format.test.ts` 42/42; typecheck 0 | ver `git log` |

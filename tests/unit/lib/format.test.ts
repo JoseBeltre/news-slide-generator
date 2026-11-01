@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDate, formatMoney, formatTime, parseLocalDate } from '../../../src/lib/format'
+import { formatDate, formatEventDate, formatMoney, formatTime, parseLocalDate, type DateStyle } from '../../../src/lib/format'
 
 const HOY = new Date(2026, 10, 1) // 1 de noviembre de 2026
 
@@ -64,5 +64,66 @@ describe('formatMoney redondea a centavos (revisión final P2)', () => {
     expect(formatMoney(1500.999)).toBe('RD$1,501')
     expect(formatMoney(1500.004)).toBe('RD$1,500')
     expect(formatMoney(0.001)).toBe('Gratis')
+  })
+})
+
+describe('formatEventDate: estilos (P3 · T1)', () => {
+  const ref = '2026-11-01'
+  it.each<[DateStyle, string, string]>([
+    ['largo', '2026-11-07', 'Sábado 7 de noviembre'],
+    ['largo', '2026-12-05', 'Sábado 5 de diciembre'],
+    ['largo', '2027-01-02', 'Sábado 2 de enero de 2027'],
+    ['medio', '2026-11-07', 'SÁBADO 7 DE NOV'],
+    ['medio', '2026-12-05', 'SÁBADO 5 DE DIC'],
+    ['medio', '2027-01-02', 'SÁBADO 2 DE ENE 2027'],
+    ['corto', '2026-11-07', 'SÁB 7'],
+    ['corto', '2026-12-05', 'SÁB 5 DIC'],
+    ['corto', '2027-01-02', 'SÁB 2 ENE 2027'],
+    ['corto-mes-completo', '2026-11-07', 'SÁB 7'],
+    ['corto-mes-completo', '2026-12-05', 'SÁB 5 DICIEMBRE'],
+    ['corto-mes-completo', '2027-01-02', 'SÁB 2 ENERO 2027'],
+  ])('%s %s → %s', (style, iso, esperado) => {
+    expect(formatEventDate(iso, { style, reference: ref })).toBe(esperado)
+  })
+
+  it('por defecto es largo, igual que formatDate', () => {
+    expect(formatEventDate('2026-11-07', { reference: ref })).toBe('Sábado 7 de noviembre')
+  })
+
+  it('septiembre abrevia SEP, nunca SEPT; miércoles lleva tilde', () => {
+    expect(formatEventDate('2026-09-02', { style: 'corto', reference: ref })).toBe('MIÉ 2 SEP')
+  })
+})
+
+describe('formatEventDate: relativas (P3 · T1)', () => {
+  const sab = '2026-11-07'
+  const rel = (iso: string, time?: string, style: DateStyle = 'corto') =>
+    formatEventDate(iso, { style, relative: true, reference: sab, time })
+
+  it('mismo día: ESTA NOCHE desde las 18:00, si no HOY', () => {
+    expect(rel(sab, '19:00')).toBe('ESTA NOCHE')
+    expect(rel(sab, '18:00')).toBe('ESTA NOCHE')
+    expect(rel(sab, '17:59')).toBe('HOY')
+    expect(rel(sab)).toBe('HOY')
+  })
+
+  it('día siguiente: MAÑANA; ayer: nunca relativa', () => {
+    expect(rel('2026-11-08', '10:00')).toBe('MAÑANA')
+    expect(rel('2026-11-06')).toBe('VIE 6')
+  })
+
+  it('con largo, en tipo oración', () => {
+    expect(rel(sab, '19:00', 'largo')).toBe('Esta noche')
+    expect(rel(sab, '09:00', 'largo')).toBe('Hoy')
+    expect(rel('2026-11-08', undefined, 'largo')).toBe('Mañana')
+  })
+
+  it('cruce de año', () => {
+    expect(formatEventDate('2027-01-01', { style: 'corto', relative: true, reference: '2026-12-31' })).toBe('MAÑANA')
+    expect(formatEventDate('2027-01-01', { style: 'corto', reference: '2026-12-31' })).toBe('VIE 1 ENE 2027')
+  })
+
+  it('sin relative, el mismo día no cambia', () => {
+    expect(formatEventDate(sab, { style: 'corto', reference: sab, time: '19:00' })).toBe('SÁB 7')
   })
 })

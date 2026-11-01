@@ -1,4 +1,5 @@
 // Entidades persistidas (§7). Todas llevan SyncMeta para la sincronización del paso 8 (§8.4).
+import type { DateStyle } from '../lib/format'
 import type { LogoOrientation } from '../slides/engine'
 
 export interface SyncMeta {
@@ -20,6 +21,9 @@ export interface Announcement extends SyncMeta {
   /** Si falta, el tema por defecto de la iglesia. */
   themeId?: string
   customPrimaryColor?: string
+  /** Si faltan, los de Configuración. */
+  dateStyle?: DateStyle
+  relativeDates?: boolean
   /** Validado contra el tipo con `validateValues`. */
   values: Record<string, unknown>
   imageIds: string[]
@@ -94,4 +98,8 @@ export interface Settings extends SyncMeta {
   timeFormat: '12h' | '24h'
   birthdayDefaultMessage: string
   coverTitle: string
+  /** Estilo de fecha por defecto en las slides; por defecto 'largo'. */
+  dateStyle: DateStyle
+  /** "HOY" / "ESTA NOCHE" / "MAÑANA" frente a la fecha de la presentación; por defecto false. */
+  relativeDates: boolean
 }
