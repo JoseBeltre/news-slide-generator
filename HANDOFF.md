@@ -5,12 +5,12 @@
 ## Estado actual
 
 - **Fase:** 1 (MVP), pasos 1–7 en modo **solo local** (sin backend), según SRS §11.
-- **Plan vigente:** `docs/superpowers/plans/2026-11-01-fase1-p1-base-y-motor.md` (pasos 1–2).
+- **Plan vigente:** `docs/superpowers/plans/2026-11-01-fase1-p2-tipos-datos-logos.md` (paso 3) — **pendiente de aprobación**. P1 (`…-p1-base-y-motor.md`) está terminado y unido a `master`.
 - **Hoja de ruta de la fase:** `docs/superpowers/plans/2026-11-01-fase1-hoja-de-ruta.md` (pasos 1–7).
 - **Aprobación:** P1 aprobado el 2026-11-01; ejecución **nativa** (inline, una revisión final de toda la rama).
 - **Rama:** `fase1/p1-base-y-motor`.
 - **Ledger de ejecución:** `.superpowers/sdd/2026-11-01-fase1-p1-base-y-motor/progress.md` (ignorado por git).
-- **Hecho:** **P1 completo** (Tareas 1–10) y revisado: revisión final de toda la rama hecha y sus 2 hallazgos importantes corregidos. Pendiente: decidir el merge a `master`.
+- **Hecho:** **P1 completo**, revisado y unido a `master` (fast-forward; rama borrada). Verificado en `master`: typecheck 0 errores, `pnpm test` 136/136, `pnpm test:e2e` 2/2.
 
 ### API del motor (`src/slides/engine/index.ts`)
 
@@ -27,14 +27,14 @@
 
 ## Próxima tarea
 
-- Decidir el merge de `fase1/p1-base-y-motor` a `master`; luego escribir el plan detallado de **P2** (tipos, datos locales y logos).
+- Esperar la aprobación del plan de **P2**; luego ejecutarlo en una rama `fase1/p2-tipos-datos-logos`.
 
 ## Decisiones tomadas
 
 | Fecha | Decisión | Fuente |
 |---|---|---|
 | 2026-11-01 | §13.1 confirmado por el responsable (modo extendido, Windows + Chrome/Brave, logos, cumpleaños, cuentas, vista pública, Hostinger FTP, MIT). | SRS v1.3 §13.1 |
-| 2026-11-01 | §13.2-A (logos de la iglesia): **no bloquea**; se usa un **logo de prueba** en SVG (variantes color/blanco/negro) hasta recibir los archivos reales. | SRS §13.2 |
+| 2026-11-01 | §13.2-A (logos de la iglesia): **recibido el logo principal IASD** (4 SVG: lateral/centrado × negro `#12100b`/blanco), copiados a `src/assets/logos/iglesia/iasd-{horizontal,vertical}-{negro,blanco}.svg`. Monocromo, sin variante a color. Solo trazados: funciona sin red. **Falta el isotipo** (irá como variantes `cuadrado`). | Responsable |
 | 2026-11-01 | §13.2-B: mínimos de §5 tal cual (pensados para ~12–15 m). §13.2-C y D no afectan a los pasos 1–7. | SRS §13.2 |
 | 2026-11-01 | Pruebas que miden texto (ajuste, auditoría) corren en **Vitest browser mode con Chromium** (jsdom no calcula layout). La lógica pura corre en el proyecto `unit`. | Plan P1 |
 | 2026-11-01 | Identificadores de código en inglés; textos de interfaz y valores de enumeraciones del modelo (§7) en español. | Plan P1 |
@@ -64,6 +64,9 @@ Gestor de paquetes: **pnpm** (fijado en `package.json` → `packageManager: pnpm
 Requisito de una sola vez: `pnpm exec playwright install chromium`.
 
 ## Problemas abiertos / bloqueos
+
+- **Pendiente del responsable:** el **isotipo** de la iglesia (SVG o PNG transparente), en negro y blanco.
+- **Marca:** el logo IASD no queda cubierto por la licencia MIT del repo público; anotarlo en `LICENSES.md` (P2 · Tarea 7).
 
 Hallazgos menores de la revisión final de P1, pendientes de programar (sobre todo antes o durante P3):
 - `FitText`: si falla la fuente, la slide informa "ok" sin texto → añadir un estado `error` visible (P3/P4).
