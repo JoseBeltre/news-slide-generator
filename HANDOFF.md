@@ -6,7 +6,7 @@
 
 - **Fase:** 1 (MVP), pasos 1–7 en modo **solo local** (sin backend), según SRS §11.
 - **Plan vigente:** `docs/superpowers/plans/2026-11-01-fase1-p2-tipos-datos-logos.md` (paso 3), aprobado; ejecución **nativa** en la rama `fase1/p2-tipos-datos-logos`. Ledger: `.superpowers/sdd/2026-11-01-fase1-p2-tipos-datos-logos/progress.md`. P1 está terminado y unido a `master`.
-- **P2 hecho:** Tareas 1–6 (formato es-DO; 7 tipos declarativos; validación con Zod; Dexie y repositorio; imágenes comprimidas sin duplicados; color dominante).
+- **P2 hecho:** Tareas 1–7 (formato es-DO; 7 tipos declarativos; validación con Zod; Dexie y repositorio; imágenes comprimidas sin duplicados; color dominante; ministerios con logo IASD precargado). Pendiente: revisión final de la rama y decidir unión con `master`.
 - **Hoja de ruta de la fase:** `docs/superpowers/plans/2026-11-01-fase1-hoja-de-ruta.md` (pasos 1–7).
 - **Aprobación:** P1 aprobado el 2026-11-01; ejecución **nativa** (inline, una revisión final de toda la rama).
 - **Rama:** `fase1/p1-base-y-motor`.
@@ -26,9 +26,19 @@
 | `logo` | `selectLogoVariant` (placa si nada contrasta ≥ 3:1), `clampLogoHeight` |
 | `audit` | `auditSlide(canvasEl)`: verificación §5.7. **Contrato de marcado** para plantillas: `data-role`, `data-logo`/`data-cover`, `data-icon`, `data-bg="#hex,…"` en degradados |
 
+### API de datos y tipos (P2)
+
+| Módulo | Qué ofrece |
+|---|---|
+| `src/lib/format.ts` | `formatDate`, `formatTime`, `formatMoney` (es-DO) |
+| `src/slides/types/` | `ANNOUNCEMENT_TYPES`, `getTypeDef`, `validateValues` |
+| `src/data/local/` | `createDb`, `createRepository` (borrado lógico), `saveImage`, `getImageBlob` |
+| `src/lib/dominantColor.ts` | `dominantColor`, `dominantColorOfBlob` |
+| `src/data/ministries.ts` | `CHURCH_MINISTRY_ID`, `PRELOADED_MINISTRIES` (iglesia, no se guarda en Dexie), `listMinistries(db)`, `logoCandidatesFor(selección, ministerios)` → `LogoCandidate[]` para `selectLogoVariant`, `logoUrlFor(id, ministerios)` → `LogoSource` |
+
 ## Próxima tarea
 
-- P2 · Tarea 7: ministerios, logo IASD precargado y candidatos para el motor (`src/data/ministries.ts`).
+- Revisión final de la rama `fase1/p2-tipos-datos-logos`, arreglos, y decidir unión con `master`. Después: escribir el plan P3 (plantillas y temas).
 
 ## Decisiones tomadas
 
@@ -103,4 +113,5 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | P2 · T3: `validateValues` con Zod 4 y mensajes en español | `pnpm test` 197/197 | 9ff24c0 |
 | 2026-11-01 | P2 · T4: `models.ts` (§7), `AppDb` v1 (7 tablas), `createRepository` con borrado lógico | `pnpm test` 203/203 | 725f60c |
 | 2026-11-01 | P2 · T5: `saveImage` (WebP 0.82, ≤2560/1600 px, SVG intacto, SHA-256, sin duplicados) | `pnpm test` 215/215 | 6c8cff1 |
-| 2026-11-01 | P2 · T6: `dominantColor` / `dominantColorOfBlob` | `pnpm test` 223/223 | ver `git log` |
+| 2026-11-01 | P2 · T6: `dominantColor` / `dominantColorOfBlob` | `pnpm test` 223/223 | afb1eef |
+| 2026-11-01 | P2 · T7: `src/data/ministries.ts` (iglesia precargada, candidatos de logo, `listMinistries`) | typecheck 0; `pnpm test` 231/231; `test:e2e` 2/2; build OK | ver `git log` |
