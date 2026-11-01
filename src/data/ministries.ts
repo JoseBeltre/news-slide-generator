@@ -7,6 +7,9 @@ import type { LogoCandidate } from '../slides/engine'
 import type { AppDb } from './local/db'
 import type { Announcement, LogoSource, LogoVariant, Ministry } from './models'
 
+/** Máximo de logos por slide (v1.4): hasta dos ministerios y, en casos especiales, tres. */
+export const MAX_LOGOS = 3
+
 export const CHURCH_MINISTRY_ID = 'iglesia'
 
 /** Logo oficial IASD: solo monocromo (negro/blanco), sin variante a color (§13.2-A). */
@@ -40,12 +43,38 @@ function toCandidate({ source, ...variant }: LogoVariant): LogoCandidate {
   return { id: sourceId(source), ...variant }
 }
 
-/** Logos que el motor puede elegir para la selección del anuncio; `[]` si no hay o el ministerio ya no existe. */
+const selectedIds = (selection: Announcement['logo']): string[] => {
+  switch (selection.kind) {
+    case 'ninguno':
+      return []
+    case 'iglesia':
+      return [CHURCH_MINISTRY_ID]
+    case 'ministerio':
+      return [selection.ministryId]
+    case 'varios':
+      return [...new Set(selection.ministryIds)].slice(0, MAX_LOGOS)
+  }
+}
+
+/**
+ * Un grupo de candidatos por ministerio elegido (hasta 3), en el orden pedido. Los ministerios
+ * borrados o inexistentes no dejan hueco. Con `form: 'isotipo'` quedan solo las variantes
+ * `cuadrado` del ministerio que las tenga; con logotipo, las demás. Si no tiene esa forma, todas.
+ */
+export function logoGroupFor(selection: Announcement['logo'], ministries: readonly Ministry[]): LogoCandidate[][] {
+  const form = selection.kind === 'ninguno' ? undefined : selection.form
+  return selectedIds(selection).flatMap((id) => {
+    const ministry = ministries.find((m) => m.id === id && !m.deletedAt)
+    if (!ministry || ministry.logos.length === 0) return []
+    const all = ministry.logos.map(toCandidate)
+    const wanted = form === undefined ? all : all.filter((c) => (c.orientation === 'cuadrado') === (form === 'isotipo'))
+    return [wanted.length > 0 ? wanted : all]
+  })
+}
+
+/** Logos que el motor puede elegir para la selección del anuncio (todos los grupos juntos); `[]` si no hay. */
 export function logoCandidatesFor(selection: Announcement['logo'], ministries: readonly Ministry[]): LogoCandidate[] {
-  if (selection.kind === 'ninguno') return []
-  const id = selection.kind === 'iglesia' ? CHURCH_MINISTRY_ID : selection.ministryId
-  const ministry = ministries.find((m) => m.id === id && !m.deletedAt)
-  return ministry ? ministry.logos.map(toCandidate) : []
+  return logoGroupFor(selection, ministries).flat()
 }
 
 /** Fuente del logo que eligió el motor (por el id del candidato). */

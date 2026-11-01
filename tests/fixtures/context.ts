@@ -17,6 +17,7 @@ export function makeCtx(overrides: Partial<SlideContext> = {}): SlideContext {
       birthdayDefaultMessage: '¡Feliz cumpleaños!',
       dateStyle: 'largo',
       relativeDates: false,
+      slideStyle: 'almanaque',
     },
     loadImage: async () => undefined,
     ...overrides,

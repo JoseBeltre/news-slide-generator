@@ -32,20 +32,20 @@ it('texto que cabe → emite fits y se dibuja a ese tamaño', async () => {
   expect(reports()[0]).toEqual({
     slotId: 'titulo',
     fieldKey: 'titulo',
-    result: { status: 'fits', fontSize: 150, lines: 1, belowPreferred: false },
+    result: { status: 'fits', fontSize: 132, lines: 1, belowPreferred: false },
   })
   expect(el()!.dataset.fit).toBe('fits')
   expect(el()!.dataset.role).toBe('title')
-  expect(getComputedStyle(el()!).fontSize).toBe('150px')
+  expect(getComputedStyle(el()!).fontSize).toBe('132px')
   expect(el()!.textContent).toBe('Culto de Jóvenes')
 })
 
 it('texto largo → emite too_long y se dibuja exactamente al mínimo, nunca por debajo', async () => {
   const { reports, el } = montar({ slot: titulo, text: LARGO })
   await vi.waitFor(() => expect(reports()).toHaveLength(1))
-  expect(reports()[0]!.result).toEqual({ status: 'too_long', minFontSize: 96 })
+  expect(reports()[0]!.result).toEqual({ status: 'too_long', minFontSize: 84 })
   expect(el()!.dataset.fit).toBe('too_long')
-  expect(getComputedStyle(el()!).fontSize).toBe('96px')
+  expect(getComputedStyle(el()!).fontSize).toBe('84px')
   expect(getComputedStyle(el()!).overflow).toBe('hidden')
 })
 
@@ -71,7 +71,7 @@ it('peso según el rol: título 700, secundario 400', async () => {
   await vi.waitFor(() => expect(b.el()).not.toBeNull())
   expect(getComputedStyle(a.el()!).fontWeight).toBe('700')
   expect(getComputedStyle(b.el()!).fontWeight).toBe('400')
-  expect(getComputedStyle(a.el()!).lineHeight).toBe(`${150 * 1.2}px`)
+  expect(parseFloat(getComputedStyle(a.el()!).lineHeight)).toBeCloseTo(132 * 1.05, 1)
 })
 
 it('se posiciona en la caja del slot', async () => {

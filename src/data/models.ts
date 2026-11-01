@@ -1,5 +1,6 @@
 // Entidades persistidas (§7). Todas llevan SyncMeta para la sincronización del paso 8 (§8.4).
 import type { DateStyle } from '../lib/format'
+import type { SlideStyleId } from '../slides/styles'
 import type { LogoOrientation } from '../slides/engine'
 
 export interface SyncMeta {
@@ -11,8 +12,18 @@ export interface SyncMeta {
   deletedAt?: string | null
 }
 
-/** RF-09: logo de la iglesia (por defecto), ninguno o el de un ministerio. */
-export type LogoSelection = { kind: 'iglesia' } | { kind: 'ninguno' } | { kind: 'ministerio'; ministryId: string }
+/** Logotipo (el logo completo) o isotipo (el símbolo solo, circular o cuadrado: variante `cuadrado`). */
+export type LogoForm = 'logotipo' | 'isotipo'
+
+/**
+ * RF-09 / RF-37 (v1.4): ninguno, la iglesia (por defecto), un ministerio o varios (2–3, puede incluir
+ * la iglesia). `form` pide logotipo o isotipo; si un ministerio no tiene esa forma, se usa la que tenga.
+ */
+export type LogoSelection =
+  | { kind: 'ninguno' }
+  | { kind: 'iglesia'; form?: LogoForm }
+  | { kind: 'ministerio'; ministryId: string; form?: LogoForm }
+  | { kind: 'varios'; ministryIds: readonly string[]; form?: LogoForm }
 
 export interface Announcement extends SyncMeta {
   typeId: string
@@ -24,6 +35,8 @@ export interface Announcement extends SyncMeta {
   /** Si faltan, los de Configuración. */
   dateStyle?: DateStyle
   relativeDates?: boolean
+  /** Estilo de la slide (§9); si falta, el de Configuración. */
+  slideStyle?: SlideStyleId
   /** Validado contra el tipo con `validateValues`. */
   values: Record<string, unknown>
   imageIds: string[]
@@ -102,4 +115,6 @@ export interface Settings extends SyncMeta {
   dateStyle: DateStyle
   /** "HOY" / "ESTA NOCHE" / "MAÑANA" frente a la fecha de la presentación; por defecto false. */
   relativeDates: boolean
+  /** Estilo de slide por defecto (§9): Himnario, Almanaque o Cartel. */
+  slideStyle: SlideStyleId
 }

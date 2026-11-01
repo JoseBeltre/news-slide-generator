@@ -1,16 +1,16 @@
 <script setup lang="ts">
-// Slot de logo (RF-37…39): elige la variante según el fondo, la dibuja dentro de su caja con un alto
+// Un logo (RF-37…39): elige la variante según el fondo y la forma de su caja, la dibuja con un alto
 // de 90–160 px (portada ≤ 400) y, si ninguna variante contrasta, la pone sobre una placa.
-// Con "ninguno" o sin logos no dibuja nada: la plantilla no deja hueco.
+// Sin candidatos no dibuja nada. Las plantillas lo usan a través de LogoGroup.
 import { computed, ref, toRef } from 'vue'
-import type { LogoSelection, Ministry } from '../../../data/models'
-import { logoCandidatesFor, logoUrlFor } from '../../../data/ministries'
-import { LOGO_HEIGHT, clampLogoHeight, selectLogoVariant, type Rect } from '../../engine'
+import type { Ministry } from '../../../data/models'
+import { logoUrlFor } from '../../../data/ministries'
+import { LOGO_HEIGHT, clampLogoHeight, selectLogoVariant, type LogoCandidate, type LogoOrientation, type Rect } from '../../engine'
 import { useImageUrl } from '../../useImageUrl'
 
 const props = withDefaults(
   defineProps<{
-    selection: LogoSelection
+    candidates: readonly LogoCandidate[]
     ministries: readonly Ministry[]
     background: readonly string[]
     box: Rect
@@ -23,10 +23,12 @@ const props = withDefaults(
 
 const PLATE_PADDING = 16
 
-const choice = computed(() => {
-  const orientation = props.box.width / props.box.height >= 2 ? 'horizontal' : 'vertical'
-  return selectLogoVariant(logoCandidatesFor(props.selection, props.ministries), props.background, { orientation })
+// Caja ancha → logotipo horizontal; caja estrecha → isotipo (cuadrado) si lo hay, si no el vertical.
+const orientation = computed<LogoOrientation>(() => {
+  if (props.box.width / props.box.height >= 2) return 'horizontal'
+  return props.candidates.some((c) => c.orientation === 'cuadrado') ? 'cuadrado' : 'vertical'
 })
+const choice = computed(() => selectLogoVariant(props.candidates, props.background, { orientation: orientation.value }))
 const source = computed(() => (choice.value ? logoUrlFor(choice.value.candidate.id, props.ministries) : undefined))
 const uploadedUrl = useImageUrl(
   computed(() => (source.value?.kind === 'image' ? source.value.imageId : undefined)),

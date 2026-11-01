@@ -4,7 +4,7 @@
 import { computed, ref, watch } from 'vue'
 import { DEFAULT_FONT_FAMILY } from '../fonts-family'
 import { ensureFontLoaded, measureTextFit, normalizeSlotText } from './measure'
-import { LINE_HEIGHT, TEXT_ROLES } from './readability'
+import { TEXT_ROLES } from './readability'
 import type { FitReport, FitResult, TextSlotDef } from './types'
 
 const props = withDefaults(defineProps<{ slot: TextSlotDef; text: string; fontFamily?: string }>(), {
@@ -42,8 +42,10 @@ const fontSize = computed(() => {
   return null
 })
 
+const VALIGN = { top: 'flex-start', center: 'center', bottom: 'flex-end' } as const
+
 const style = computed(() => {
-  const { box, role, align, uppercase } = props.slot
+  const { box, role, align, uppercase, valign } = props.slot
   return {
     position: 'absolute' as const,
     left: `${box.x}px`,
@@ -59,9 +61,12 @@ const style = computed(() => {
     fontSize: `${fontSize.value}px`,
     fontWeight: TEXT_ROLES[role].weight,
     fontStyle: 'normal',
-    lineHeight: LINE_HEIGHT,
+    lineHeight: TEXT_ROLES[role].lineHeight,
     textAlign: align ?? 'left',
     textTransform: uppercase ? ('uppercase' as const) : ('none' as const),
+    display: 'flex',
+    flexDirection: 'column' as const,
+    justifyContent: VALIGN[valign ?? 'top'],
   }
 })
 </script>

@@ -1,68 +1,110 @@
-// Geometría de la plantilla Clásica (§9): título arriba, datos con ícono en columna, logo en la esquina.
-// Todo en px del lienzo y dentro del área segura; puro, para probarlo sin navegador.
-import { SAFE_AREA, type Rect, type TextSlotDef } from '../../engine'
+// Geometría compartida de la plantilla Clásica: filas de datos apiladas desde abajo y el título
+// en el espacio que queda arriba. Todo en px del lienzo y dentro del área segura; puro, se prueba sin navegador.
+import { SAFE_AREA, TEXT_ROLES, type Rect, type TextSlotDef } from '../../engine'
 import type { InfoRow, NormalizedData } from '../../normalize'
-import type { DecorationVariant } from '../parts/decoration'
 
-export interface ClassicRowLayout {
+export const SAFE_RIGHT = SAFE_AREA.x + SAFE_AREA.width
+export const SAFE_BOTTOM = SAFE_AREA.y + SAFE_AREA.height
+
+/** Tamaño máximo y líneas por rol: los datos van cerca del mínimo para que manden la fecha y el título. */
+const ROW = {
+  key: { maxFontSize: 70, maxLines: 1 },
+  secondary: { maxFontSize: 56, maxLines: 2 },
+} as const
+export const ROW_GAP = 14
+
+// Ancho medio de un carácter de Atkinson Hyperlegible en em, redondeado hacia arriba: estima de más
+// las líneas, así una caja nunca queda corta (lo que sobre es aire, nunca un "No cabe" falso).
+const AVG_ADVANCE = 0.56
+
+// Con una o dos filas, un texto secundario (el mensaje de un aviso) puede ocupar una línea más.
+const maxLinesFor = (role: InfoRow['role'], rowCount: number) => (role === 'secondary' && rowCount <= 2 ? 3 : ROW[role].maxLines)
+
+/**
+ * Líneas que reserva la fila: una si el texto entra en una línea al tamaño máximo; si no, las que
+ * pida al mínimo del rol, hasta su tope. Así una descripción corta no deja un hueco de dos líneas.
+ */
+export function rowLines(row: InfoRow, width: number, rowCount: number): number {
+  const max = maxLinesFor(row.role, rowCount)
+  const lines = row.text.split('\n')
+  if (lines.length === 1 && row.text.length * AVG_ADVANCE * ROW[row.role].maxFontSize <= width) return 1
+  const atMin = lines.reduce((n, l) => n + Math.max(1, Math.ceil((l.length * AVG_ADVANCE * TEXT_ROLES[row.role].min) / width)), 0)
+  return Math.min(max, Math.max(1, atMin))
+}
+
+// La caja admite sus líneas al mínimo del rol y una línea al máximo.
+const rowHeight = (role: InfoRow['role'], lines: number) =>
+  Math.ceil(Math.max(ROW[role].maxFontSize, TEXT_ROLES[role].min * lines) * TEXT_ROLES[role].lineHeight)
+
+export interface PlacedRow {
   row: InfoRow
   slot: TextSlotDef
-  /** Caja del chip; el ícono (64 px) va centrado dentro. */
-  chip: Rect
+  /** Marca o ícono a la izquierda, centrado en la primera línea. */
+  marker: Rect
 }
 
-export interface ClassicLayout {
-  title?: TextSlotDef
-  /** Banda de color detrás del título (variante "banda"). */
-  titleBand?: Rect
-  rows: ClassicRowLayout[]
-  logo?: Rect
+/** Filas que no van ya en el bloque de fecha. */
+export function detailRows(data: NormalizedData): InfoRow[] {
+  const when = data.when
+  return when ? data.rows.filter((r) => r.fieldKeys[0] !== when.fieldKeys[0]) : data.rows
 }
 
-const LOGO: Rect = { x: 1424, y: 64, width: 400, height: 160 }
-const ROW_GAP = 16
-const CHIP_MAX = 112
-// Con pocas filas no se estiran: se apilan desde arriba y el resto queda como espacio en blanco (§9).
-const ROW_MAX = 128
-const TEXT_GAP = 32
+export interface StackOptions {
+  x: number
+  width: number
+  bottom: number
+  /** Lado del cuadro de la marca o ícono; 0 = sin marca. */
+  marker: number
+  markerGap: number
+}
 
-export function classicLayout(data: NormalizedData, opts: { hasLogo: boolean; variant: DecorationVariant }): ClassicLayout {
-  const band = opts.variant === 'banda'
-  const titleTop = SAFE_AREA.y
-  const titleHeight = band ? 288 : 300
-  const titleWidth = opts.hasLogo ? LOGO.x - SAFE_AREA.x - 32 : SAFE_AREA.width
-  const rowsTop = band ? 448 : 412
-  const rowsBottom = SAFE_AREA.y + SAFE_AREA.height
-  const n = data.rows.length
-  const rowHeight = n > 0 ? Math.min(ROW_MAX, (rowsBottom - rowsTop - ROW_GAP * (n - 1)) / n) : 0
-  const chipHeight = Math.min(CHIP_MAX, rowHeight)
-  const chipWidth = opts.variant === 'calida' ? Math.round(chipHeight * 1.5) : chipHeight
-
-  return {
-    title: data.title && {
-      id: 'titulo',
-      role: 'title',
-      fieldKey: data.title.fieldKey,
-      box: { x: SAFE_AREA.x, y: titleTop, width: titleWidth, height: titleHeight },
-      maxLines: 2,
-    },
-    titleBand: band ? { x: 0, y: 0, width: 1920, height: titleTop + titleHeight + 32 } : undefined,
-    logo: opts.hasLogo ? LOGO : undefined,
-    rows: data.rows.map((row, i) => {
-      const y = rowsTop + i * (rowHeight + ROW_GAP)
-      // Una fila sin ícono no deja hueco: el texto empieza en el margen.
-      const textX = row.icon ? SAFE_AREA.x + chipWidth + TEXT_GAP : SAFE_AREA.x
-      return {
-        row,
-        chip: { x: SAFE_AREA.x, y: y + (rowHeight - chipHeight) / 2, width: chipWidth, height: chipHeight },
-        slot: {
-          id: `fila-${i}`,
-          role: row.role,
-          fieldKey: row.fieldKeys.at(-1),
-          box: { x: textX, y, width: SAFE_AREA.x + SAFE_AREA.width - textX, height: rowHeight },
-          maxLines: row.role === 'key' ? 1 : 2,
-        },
-      }
-    }),
+/** Apila las filas de abajo hacia arriba y devuelve dónde empieza la pila. */
+export function stackRows(rows: readonly InfoRow[], opts: StackOptions): { rows: PlacedRow[]; top: number } {
+  const textX = opts.marker > 0 ? opts.x + opts.marker + opts.markerGap : opts.x
+  const placed: PlacedRow[] = []
+  let y = opts.bottom
+  for (let i = rows.length - 1; i >= 0; i--) {
+    const row = rows[i]!
+    const lines = rowLines(row, opts.x + opts.width - textX, rows.length)
+    const height = rowHeight(row.role, lines)
+    y -= height
+    const firstLine = ROW[row.role].maxFontSize * TEXT_ROLES[row.role].lineHeight
+    placed.unshift({
+      row,
+      marker: { x: opts.x, y: y + Math.max(0, (firstLine - opts.marker) / 2), width: opts.marker, height: opts.marker },
+      slot: {
+        id: `fila-${i}`,
+        role: row.role,
+        fieldKey: row.fieldKeys.at(-1),
+        box: { x: textX, y, width: opts.x + opts.width - textX, height },
+        maxLines: lines,
+        maxFontSize: ROW[row.role].maxFontSize,
+      },
+    })
+    if (i > 0) y -= ROW_GAP
   }
+  return { rows: placed, top: y }
+}
+
+/** Título en la caja que quede: tantas líneas como quepan al mínimo, hasta 4. */
+export function titleSlot(fieldKey: string, box: Rect, opts: { maxFontSize?: number; align?: 'left' | 'center' | 'right' } = {}): TextSlotDef {
+  const lineAtMin = TEXT_ROLES.title.min * TEXT_ROLES.title.lineHeight
+  return {
+    id: 'titulo',
+    role: 'title',
+    fieldKey,
+    box,
+    maxLines: Math.min(4, Math.max(1, Math.floor(box.height / lineAtMin))),
+    ...(opts.maxFontSize ? { maxFontSize: opts.maxFontSize } : {}),
+    ...(opts.align ? { align: opts.align } : {}),
+  }
+}
+
+/** Mes para el bloque de fecha; con año se abrevia para no salirse del bloque ("SEP 2027"). */
+export const monthLabel = (when: { month: string; monthShort: string; year?: string }) =>
+  when.year ? `${when.monthShort} ${when.year}` : when.month
+
+/** Slot de una línea para una pieza de la fecha (día, mes, hora…). */
+export function lineSlot(id: string, fieldKey: string | undefined, box: Rect, maxFontSize: number, opts: { uppercase?: boolean; align?: 'left' | 'center' | 'right' } = {}): TextSlotDef {
+  return { id, role: 'key', fieldKey, box, maxLines: 1, maxFontSize, uppercase: opts.uppercase, align: opts.align }
 }

@@ -22,12 +22,12 @@ const slot = (p: Partial<TextSlotDef> = {}): TextSlotDef => ({
 
 describe('constantes de §5', () => {
   it('tabla de roles igual a §5.3', () => {
-    expect(TEXT_ROLES.title).toEqual({ min: 96, preferredMin: 120, preferredMax: 150, weight: 700 })
-    expect(TEXT_ROLES.key).toEqual({ min: 68, preferredMin: 80, preferredMax: 96, weight: 700 })
-    expect(TEXT_ROLES.secondary).toEqual({ min: 52, preferredMin: 60, preferredMax: 64, weight: 400 })
-    expect(TEXT_ROLES.birthdayNameSingle).toEqual({ min: 120, preferredMin: 160, preferredMax: 260, weight: 700 })
-    expect(TEXT_ROLES.birthdayNameGroup).toEqual({ min: 60, preferredMin: 72, preferredMax: 96, weight: 700 })
-    expect(TEXT_ROLES.meta).toEqual({ min: 36, preferredMin: 40, preferredMax: 40, weight: 400 })
+    expect(TEXT_ROLES.title).toEqual({ min: 84, preferredMin: 104, preferredMax: 132, weight: 700, lineHeight: 1.05 })
+    expect(TEXT_ROLES.key).toEqual({ min: 60, preferredMin: 70, preferredMax: 84, weight: 700, lineHeight: 1.2 })
+    expect(TEXT_ROLES.secondary).toEqual({ min: 44, preferredMin: 52, preferredMax: 56, weight: 400, lineHeight: 1.1 })
+    expect(TEXT_ROLES.birthdayNameSingle).toEqual({ min: 108, preferredMin: 140, preferredMax: 230, weight: 700, lineHeight: 1.05 })
+    expect(TEXT_ROLES.birthdayNameGroup).toEqual({ min: 54, preferredMin: 62, preferredMax: 84, weight: 700, lineHeight: 1.05 })
+    expect(TEXT_ROLES.meta).toEqual({ min: 32, preferredMin: 35, preferredMax: 35, weight: 400, lineHeight: 1.2 })
   })
 
   it('contraste, interlineado y logo', () => {
@@ -43,17 +43,17 @@ describe('constantes de §5', () => {
 
 describe('resolveFontRange', () => {
   it('nunca baja del mínimo del rol', () => {
-    expect(resolveFontRange(slot())).toEqual({ min: 96, max: 150 })
-    expect(resolveFontRange(slot({ minFontSize: 50 }))).toEqual({ min: 96, max: 150 })
+    expect(resolveFontRange(slot())).toEqual({ min: 84, max: 132 })
+    expect(resolveFontRange(slot({ minFontSize: 50 }))).toEqual({ min: 84, max: 132 })
     expect(resolveFontRange(slot({ minFontSize: 110, maxFontSize: 140 }))).toEqual({ min: 110, max: 140 })
-    expect(resolveFontRange(slot({ role: 'birthdayNameSingle' }))).toEqual({ min: 120, max: 260 })
+    expect(resolveFontRange(slot({ role: 'birthdayNameSingle' }))).toEqual({ min: 108, max: 230 })
   })
 })
 
 describe('validateTextSlot', () => {
   it.each([
     [{ minFontSize: 80 }, 'font_below_min'],
-    [{ maxFontSize: 90 }, 'invalid_range'],
+    [{ maxFontSize: 80 }, 'invalid_range'],
     [{ box: { x: 0, y: 64, width: 500, height: 200 } }, 'outside_safe_area'],
     [{ uppercase: true }, 'uppercase_multiline'],
     [{ uppercase: true, maxLines: 2 }, 'uppercase_multiline'],

@@ -83,6 +83,34 @@ export function formatEventDate(iso: string, opts: DateFormatOptions): string {
   return `${WEEKDAYS_SHORT[date.getDay()]} ${day}${month}${year}`
 }
 
+/** Fecha del evento en piezas, para que una plantilla la componga en bloque ("SÁB / 7 / NOV"). */
+export interface EventDateParts {
+  weekday: string
+  weekdayShort: string
+  day: string
+  month: string
+  monthShort: string
+  /** Solo si no es el año de la referencia. */
+  year?: string
+  /** "HOY", "ESTA NOCHE" o "MAÑANA", si se pidieron fechas relativas y aplican. */
+  relative?: string
+}
+
+export function eventDateParts(iso: string, opts: Omit<DateFormatOptions, 'style'>): EventDateParts {
+  const date = parseLocalDate(iso)
+  const reference = parseLocalDate(opts.reference)
+  const relative = opts.relative ? relativeWord(date, reference, opts.time) : null
+  return {
+    weekday: WEEKDAYS[date.getDay()]!,
+    weekdayShort: WEEKDAYS_SHORT[date.getDay()]!,
+    day: String(date.getDate()),
+    month: MONTHS[date.getMonth()]!,
+    monthShort: MONTHS_SHORT[date.getMonth()]!,
+    ...(date.getFullYear() !== reference.getFullYear() ? { year: String(date.getFullYear()) } : {}),
+    ...(relative ? { relative } : {}),
+  }
+}
+
 /** "7:00 p. m." (12 h, como lo da Intl) o "19:00" (24 h). */
 export function formatTime(hhmm: string, opts: { timeFormat?: '12h' | '24h' } = {}): string {
   const m = HH_MM.exec(hhmm)

@@ -23,7 +23,8 @@ const announcementLayout =
       currency: ctx.settings.currency,
       ...dateOptionsFor(a, ctx),
     })
-    return [{ kind: 'announcement', templateId, data, logo: a.logo, palette: paletteFor(a, typeId, ctx) }]
+    const slideStyle = a.slideStyle ?? ctx.settings.slideStyle
+    return [{ kind: 'announcement', templateId, data, logo: a.logo, palette: paletteFor(a, typeId, ctx), slideStyle }]
   }
 
 export const TEMPLATES: readonly TemplateDef[] = Object.freeze([

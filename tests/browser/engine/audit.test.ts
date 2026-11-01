@@ -45,14 +45,14 @@ describe('auditSlide (§5.7)', () => {
     expect(codes()).toEqual([])
   })
 
-  it('título a 90px → font_below_min', async () => {
-    const { codes } = await auditar(() => fondo([texto('title', TITULO, 90)]))
+  it('título a 80px → font_below_min', async () => {
+    const { codes } = await auditar(() => fondo([texto('title', TITULO, 80)]))
     expect(codes()).toEqual(['font_below_min'])
   })
 
   it('cada rol usa su propio mínimo', async () => {
     const { codes } = await auditar(() =>
-      fondo([texto('secondary', DATO, 52), texto('meta', { ...DATO, y: 600 }, 35)]),
+      fondo([texto('secondary', DATO, 44), texto('meta', { ...DATO, y: 600 }, 31)]),
     )
     expect(codes()).toEqual(['font_below_min'])
   })
@@ -112,10 +112,10 @@ describe('auditSlide (§5.7)', () => {
   })
 
   it('cada violación trae el elemento y un detalle legible', async () => {
-    const { canvas } = await auditar(() => fondo([texto('title', TITULO, 90)]))
+    const { canvas } = await auditar(() => fondo([texto('title', TITULO, 80)]))
     const [v] = auditSlide(canvas)
     expect(v!.element.getAttribute('data-role')).toBe('title')
-    expect(v!.detail).toMatch(/90/)
+    expect(v!.detail).toMatch(/80/)
   })
 
   it('con FitText real y texto imposible → text_overflow pero nunca font_below_min', async () => {

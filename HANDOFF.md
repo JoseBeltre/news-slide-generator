@@ -5,6 +5,7 @@
 ## Estado actual
 
 - **Fase:** 1 (MVP), pasos 1–7 en modo **solo local** (sin backend), según SRS §11.
+- **P3 en curso** (rama `fase1/p3-plantillas-y-temas`, sin subir): Tareas 1–5 hechas. T5 cerró con **3 estilos de slide aprobados** (Himnario, Almanaque, Cartel), todos elegibles por anuncio, más la portada en cada estilo. Capturas: `docs/slides-direcciones/` (`hoja-<estilo>.png` resume cada uno; rondas rechazadas en `ronda-1/` y `ronda-2/`).
 - **Plan vigente:** `docs/superpowers/plans/2026-11-01-fase1-p2-tipos-datos-logos.md` (paso 3), aprobado; ejecución **nativa** en la rama `fase1/p2-tipos-datos-logos`. Ledger: `.superpowers/sdd/2026-11-01-fase1-p2-tipos-datos-logos/progress.md`. P1 está terminado y unido a `master`.
 - **P2 hecho:** Tareas 1–7 (formato es-DO; 7 tipos declarativos; validación con Zod; Dexie y repositorio; imágenes comprimidas sin duplicados; color dominante; ministerios con logo IASD precargado). Revisión final hecha (sin Critical/Important del revisor; 3 menores re-graduados y arreglados). **Unido a `master`** (fast-forward, rama borrada); verificado en `master`: typecheck 0, `pnpm test` 233/233, `test:e2e` 2/2.
 - **Hoja de ruta de la fase:** `docs/superpowers/plans/2026-11-01-fase1-hoja-de-ruta.md` (pasos 1–7).
@@ -34,11 +35,23 @@
 | `src/slides/types/` | `ANNOUNCEMENT_TYPES`, `getTypeDef`, `validateValues` |
 | `src/data/local/` | `createDb`, `createRepository` (borrado lógico), `saveImage`, `getImageBlob` |
 | `src/lib/dominantColor.ts` | `dominantColor`, `dominantColorOfBlob` |
-| `src/data/ministries.ts` | `CHURCH_MINISTRY_ID`, `PRELOADED_MINISTRIES` (iglesia, no se guarda en Dexie), `listMinistries(db)`, `logoCandidatesFor(selección, ministerios)` → `LogoCandidate[]` para `selectLogoVariant`, `logoUrlFor(id, ministerios)` → `LogoSource` |
+| `src/data/ministries.ts` | `CHURCH_MINISTRY_ID`, `PRELOADED_MINISTRIES` (iglesia, no se guarda en Dexie), `listMinistries(db)`, `logoGroupFor(selección, ministerios)` → un `LogoCandidate[]` por ministerio (1–3, con forma logotipo/isotipo), `logoCandidatesFor` (todos juntos), `logoUrlFor(id, ministerios)` → `LogoSource`, `MAX_LOGOS` |
+
+### Plantillas (P3)
+
+| Módulo | Qué ofrece |
+|---|---|
+| `src/slides/styles.ts` | `SlideStyleId` (`himnario` / `almanaque` / `cartel`), `SLIDE_STYLES`, `DEFAULT_SLIDE_STYLE` (`almanaque`, provisional) |
+| `templates/classic/` | `ClassicSlide` elige `HimnarioSlide` / `AlmanaqueSlide` / `CartelSlide` por `spec.slideStyle`; `layout.ts`: `stackRows` (filas desde abajo), `rowLines`, `titleSlot` (hasta 4 líneas), `lineSlot`, `detailRows`, `monthLabel` |
+| `templates/cover/` | `CoverSlide` → `CoverHimnario` / `CoverAlmanaque` / `CoverCartel` |
+| `templates/parts/` | `LogoGroup` (1–3 logos en partes iguales), `LogoSlot` (un logo por candidatos), `HimnarioCover`, `AlmanaqueSheet`, `CartelField`, `Texture` (tela / renglones / trama, con `texturedStops` para el data-bg), `Fleuron`, `TypeEmblem` |
+| `normalize.ts` | `NormalizedData.when`: la fecha principal en piezas (`weekday`, `day`, `month`, `relative`, `year`, `time`) para dibujarla como protagonista |
+| `themes.ts` | `SlidePalette.field`/`onField` (color puro del tipo para hojas y campos), `accentInk`, `mixColors` |
+| `scripts/capturar-galeria.mjs` | `node scripts/capturar-galeria.mjs <prefijo> <carpeta>` con `pnpm dev --port 5174` abierto: captura 1920×1080 y lista violaciones de `auditSlide` |
 
 ## Próxima tarea
 
-- **Rediseño visual de las slides** (P3 · Tarea 5, rama `fase1/p3-plantillas-y-temas`): leer `docs/slides-rediseno-brief.md`; usar los skills `impeccable`, `ui-ux-pro-max` (`slides`) y `ecc:frontend-slides`; proponer **3 direcciones nuevas** con fundamento y que el responsable elija; confirmar con él cuánto bajar los mínimos de §5.3 antes de tocar el SRS. Después seguir con la Tarea 6.
+- **P3 · Tarea 6** en adelante (solo cuando el responsable lo pida). Ojo: la plantilla "Clásica" ya existe con los 3 estilos; ajustar el plan de T6/T7 (la "Visual" del plan aún no tiene componente) y cumpleaños (T8/T9) en el mismo lenguaje visual.
 
 ## Decisiones tomadas
 
@@ -65,6 +78,11 @@
 | 2026-11-01 | Temas: `Theme.background`→`secondary` es el degradado del fondo y `primary` el acento de portada/cierre; en los anuncios el acento es el del **tipo** (§9). El acento nunca es color de texto informativo: solo decoración y chip del ícono (≥ 3:1 contra el fondo, su ícono ≥ 7:1). `deriveTheme(primario)` usa el color como fondo. Un amarillo claro (`#fff59d`) **no** necesita ajuste (texto negro 18.8:1); se ajustan los tonos medios (`#777777`). | P3 · T3 |
 | 2026-11-01 | Cada `SlideSpec` lleva su **paleta ya resuelta** (vista previa, miniaturas y ventana pública dibujan igual sin recalcular). `SlideContext.loadImage(id)` en vez de pasar la base de datos. Los textos de plantilla usan `SlideText`, que informa su ajuste a la `SlideView` por provide/inject. Playwright: proyecto `chromium` (build, 4173) y `galeria` (`pnpm dev`, 5174). | P3 · T4 |
 | 2026-11-01 | **Diseño de slides:** cumplir §5 no basta; deben tener composición, jerarquía y riqueza visual ("corazón"), no una lista de datos con íconos. El responsable acepta bajar **un poco** los tamaños de §5.3 por un mejor diseño (números por confirmar). Las 3 primeras direcciones se rechazaron. | Responsable |
+| 2026-11-01 | **Mínimos de §5.3 bajados ~12 % (SRS v1.4, opción "moderada"):** título 84, datos clave 60, secundario 44, cumpleaños uno 108, varios 54, metadatos 32. Íconos de §5.4 **opcionales**, ≥ 56 px si se dibujan. | Responsable |
+| 2026-11-01 | **Tres estilos de slide aprobados** ("ahora sí"): **Himnario** (tapa de tela, filetes dorados, la fecha como número del himno), **Almanaque** (hoja de almanaque del color del tipo, logos en la cabecera, hora en el talón) y **Cartel** (afiche caribeño, campo de color en diagonal, trama de imprenta). Los tres sirven para todos los tipos menos cumpleaños; cada anuncio elige (`Announcement.slideStyle`) y Configuración tiene uno por defecto (`Settings.slideStyle`, provisional `almanaque`). Más adelante habrá más estilos y fuentes. | Responsable |
+| 2026-11-01 | **Interlineado por rol (§5.2 v1.4):** títulos y nombres 1.05, secundario 1.1, datos de una línea y metadatos 1.2. Las descripciones cortas reservan una sola línea. | Responsable |
+| 2026-11-01 | **Logos:** existe el **isotipo** (logo circular, variante `cuadrado`) y un anuncio puede llevar **hasta 2 ministerios y, en casos especiales, 3**. `LogoSelection` gana `form` (`logotipo`/`isotipo`) y `kind: 'varios'`. | Responsable |
+| 2026-11-01 | `PRODUCT.md` (resumen de producto para el skill `impeccable`; manda el SRS). Las slides **no** usan el `DESIGN.md` de la interfaz. | Tarea 5 |
 | 2026-11-01 | `FitText`: si la fuente no carga, no dibuja nada ni emite informe (y lo registra en consola); nunca mide con la fuente de respaldo. Si llega un texto nuevo mientras carga la fuente, se descarta la medición vieja. | Tarea 8 |
 
 ## Comandos
@@ -88,7 +106,7 @@ Requisito de una sola vez: `pnpm exec playwright install chromium`.
 
 - Menores diferidos de la revisión P2 (para P4): mensaje de precio inválido igual al de negativo ("500" texto o NaN → "no puede ser negativo"); `settings` sin índice `updatedAt` → `repository.list()` fallaría (indexarlo antes de tener datos); `put` copia superficial → al guardar objetos `reactive()` usar `toRaw`/`structuredClone`. / bloqueos
 
-- **Pendiente del responsable:** el **isotipo** de la iglesia (SVG o PNG transparente), en negro y blanco.
+- **Pendiente del responsable:** el **isotipo** de la iglesia (SVG o PNG transparente), en negro y blanco. Las plantillas ya lo soportan: al agregarlo como variantes `cuadrado` de la iglesia en `PRELOADED_MINISTRIES`, `form: 'isotipo'` lo usará solo. Mientras tanto la galería usa ministerios **sintéticos** (`tests/fixtures/ministries.ts`).
 - **Marca:** el logo IASD no queda cubierto por la licencia MIT del repo público; anotarlo en `LICENSES.md` (P2 · Tarea 7).
 
 Hallazgos menores de la revisión final de P1, pendientes de programar (sobre todo antes o durante P3):
@@ -130,3 +148,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | P3 · T2: íconos locales y `normalizeAnnouncement` | `tests/unit/slides` 10/10; typecheck 0 | ver `git log` |
 | 2026-11-01 | P3 · T3: temas con contraste garantizado y color personalizado | `themes.test.ts` 13/13 | ver `git log` |
 | 2026-11-01 | P3 · T4: contrato, `SlideView`, logo automático, portada, galería | `SlideView.test.ts` 5/5; typecheck 0; build sin galería; `test:e2e` 2/2 | ver `git log` |
+| 2026-11-01 | P3 · T5: rediseño — mínimos v1.4, 3 estilos (Himnario, Almanaque, Cartel) con portada, interlineado por rol, grupos de logos e isotipo | typecheck 0; `pnpm test` 294/294; 30 slides de galería sin violaciones de `auditSlide` | ver `git log` |

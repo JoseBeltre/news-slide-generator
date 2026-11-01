@@ -5,7 +5,7 @@ import type { DateStyle } from '../../lib/format'
 import type { Announcement, LogoSelection, Ministry, Settings, Theme } from '../../data/models'
 import type { NormalizedData } from '../normalize'
 import type { SlidePalette } from '../themes'
-import type { DecorationVariant } from './parts/decoration'
+import type { SlideStyleId } from '../styles'
 import type { Person } from '../types/validation'
 import type { AnnouncementTypeId } from '../types/fields'
 
@@ -19,7 +19,7 @@ export interface SlideContext {
   theme: Theme
   settings: Pick<
     Settings,
-    'churchName' | 'coverTitle' | 'timeFormat' | 'currency' | 'birthdayDefaultMessage' | 'dateStyle' | 'relativeDates'
+    'churchName' | 'coverTitle' | 'timeFormat' | 'currency' | 'birthdayDefaultMessage' | 'dateStyle' | 'relativeDates' | 'slideStyle'
   >
   /** Blob de una imagen guardada (fotos, flyers, logos subidos). */
   loadImage: (imageId: string) => Promise<Blob | undefined>
@@ -32,8 +32,7 @@ export type SlideSpec =
       data: NormalizedData
       logo: LogoSelection
       palette: SlidePalette
-      /** Solo para comparar direcciones visuales en la galería; si falta, la elegida. */
-      decoration?: DecorationVariant
+      slideStyle: SlideStyleId
     }
   | {
       kind: 'birthday-single'
@@ -53,10 +52,10 @@ export type SlideSpec =
       page?: [number, number]
     }
   | { kind: 'image'; imageId: string }
-  | { kind: 'cover' | 'closing'; palette: SlidePalette }
+  | { kind: 'cover' | 'closing'; palette: SlidePalette; slideStyle: SlideStyleId }
 
 export type AnnouncementInput = Pick<Announcement, 'typeId' | 'templateId' | 'values' | 'logo'> &
-  Partial<Pick<Announcement, 'customPrimaryColor' | 'dateStyle' | 'relativeDates'>>
+  Partial<Pick<Announcement, 'customPrimaryColor' | 'dateStyle' | 'relativeDates' | 'slideStyle'>>
 
 export interface SlideStatus {
   status: 'ok' | 'no_cabe'

@@ -1,7 +1,7 @@
 // Medición del texto en el DOM (§5.6, pasos 1–3). Solo mide con la fuente real ya cargada:
 // medir con la fuente de respaldo daría tamaños que luego no caben.
 import { findLargestFittingSize } from './fit'
-import { LINE_HEIGHT, TEXT_ROLES, resolveFontRange } from './readability'
+import { TEXT_ROLES, resolveFontRange } from './readability'
 import type { FitResult, TextSlotDef } from './types'
 
 export class FontNotLoadedError extends Error {
@@ -72,7 +72,7 @@ export function measureTextFit(text: string, slot: TextSlotDef, opts: { fontFami
     'overflow-wrap:normal',
     'word-break:normal',
     'hyphens:manual',
-    `line-height:${LINE_HEIGHT}`,
+    `line-height:${rule.lineHeight}`,
     `font-family:"${opts.fontFamily}"`,
     `font-weight:${rule.weight}`,
     'font-style:normal',
@@ -83,7 +83,7 @@ export function measureTextFit(text: string, slot: TextSlotDef, opts: { fontFami
   const measure = (size: number) => {
     el.style.fontSize = `${size}px`
     const height = el.getBoundingClientRect().height
-    return { height, lines: Math.round(height / (size * LINE_HEIGHT)), overflowX: el.scrollWidth > slot.box.width }
+    return { height, lines: Math.round(height / (size * rule.lineHeight)), overflowX: el.scrollWidth > slot.box.width }
   }
   const fits = (size: number) => {
     const m = measure(size)

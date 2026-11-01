@@ -4,10 +4,12 @@ import type { TextRole, TextSlotDef } from './types'
 
 export const MIN_CONTRAST = 7
 export const LOGO_MIN_CONTRAST = 3
+/** Interlineado por defecto; cada rol puede tener el suyo (§5.2). */
 export const LINE_HEIGHT = 1.2
 export const MAX_INFO_LINES = 6
 export const MAX_RUNNING_WORDS = 40
-export const ICON_MIN_PX = 64
+// §5.4: los íconos son opcionales; si una plantilla los dibuja, miden al menos esto.
+export const ICON_MIN_PX = 56
 export const LOGO_HEIGHT = { min: 90, max: 160, coverMax: 400 } as const
 
 export interface TextRoleRule {
@@ -15,16 +17,18 @@ export interface TextRoleRule {
   preferredMin: number
   preferredMax: number
   weight: 400 | 700
+  /** §5.2 (v1.4): títulos y nombres compactos; texto secundario apretado; datos de una línea a 1.2. */
+  lineHeight: number
 }
 
-// §5.3 (px sobre el lienzo de 1080 de alto) y pesos de §5.2.
+// §5.3 (px sobre el lienzo de 1080 de alto) y pesos de §5.2. Bajados ~12 % (SRS v1.4) por el rediseño.
 export const TEXT_ROLES: Readonly<Record<TextRole, TextRoleRule>> = Object.freeze({
-  title: { min: 96, preferredMin: 120, preferredMax: 150, weight: 700 },
-  key: { min: 68, preferredMin: 80, preferredMax: 96, weight: 700 },
-  secondary: { min: 52, preferredMin: 60, preferredMax: 64, weight: 400 },
-  birthdayNameSingle: { min: 120, preferredMin: 160, preferredMax: 260, weight: 700 },
-  birthdayNameGroup: { min: 60, preferredMin: 72, preferredMax: 96, weight: 700 },
-  meta: { min: 36, preferredMin: 40, preferredMax: 40, weight: 400 },
+  title: { min: 84, preferredMin: 104, preferredMax: 132, weight: 700, lineHeight: 1.05 },
+  key: { min: 60, preferredMin: 70, preferredMax: 84, weight: 700, lineHeight: LINE_HEIGHT },
+  secondary: { min: 44, preferredMin: 52, preferredMax: 56, weight: 400, lineHeight: 1.1 },
+  birthdayNameSingle: { min: 108, preferredMin: 140, preferredMax: 230, weight: 700, lineHeight: 1.05 },
+  birthdayNameGroup: { min: 54, preferredMin: 62, preferredMax: 84, weight: 700, lineHeight: 1.05 },
+  meta: { min: 32, preferredMin: 35, preferredMax: 35, weight: 400, lineHeight: LINE_HEIGHT },
 })
 
 export type ReadabilityViolationCode = 'font_below_min' | 'invalid_range' | 'outside_safe_area' | 'uppercase_multiline'

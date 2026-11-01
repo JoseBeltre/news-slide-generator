@@ -25,6 +25,8 @@ export interface TextSlotDef {
   /** Solo permitido con `maxLines: 1` (§5.2). */
   uppercase?: boolean
   align?: 'left' | 'center' | 'right'
+  /** Posición vertical del texto en su caja; no cambia el ajuste. Por defecto, arriba. */
+  valign?: 'top' | 'center' | 'bottom'
 }
 
 /** Resultado del ajuste de un texto a su slot (§5.6). */

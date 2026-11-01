@@ -1,7 +1,7 @@
 # SRS — Generador de Slides de Anuncios para la Iglesia
 
 > **Nombre provisional:** Anuncios del Sábado
-> **Versión del documento:** 1.3 — 31 de octubre de 2026
+> **Versión del documento:** 1.4 — 1 de noviembre de 2026
 > **Destinatario principal:** agente de desarrollo (Claude Code) y el responsable del proyecto.
 > **Estado:** lista para empezar la Fase 1. Las preguntas bloqueantes de §13 ya están respondidas.
 
@@ -13,6 +13,7 @@
 | 1.1 | Se elimina el concepto de anuncio "destacado" y la división de un anuncio en 2 slides (fuera del MVP). Cumpleaños: modo "varios por slide" o "uno por slide", y sin avatares cuando no hay foto. Biblioteca de logos de la iglesia y de los ministerios. La vista del presentador pasa al MVP. La hoja impresa se reemplaza por una vista de lectura para el celular. Persistencia en la nube desde el MVP (local-first + Supabase). Hosting en Hostinger. Múltiples fuentes en F2. Stack definido: Vue 3 + Vite + TypeScript. |
 | 1.2 | Respuestas del responsable incorporadas: modo extendido confirmado; Windows + Chrome o Brave; logo por anuncio = iglesia local (por defecto) o ninguno; cumpleaños con modo **híbrido** y "uno por slide" por defecto; cuentas por persona y una cuenta compartida de equipo; vista de lectura pública; subdominio propio con despliegue por FTP; proyecto de código abierto. |
 | 1.3 | Quitar fondo (F2): la opción principal pasa a ser **RMBG-1.4 + transformers.js** en lugar de `@imgly/background-removal`, para evitar la AGPL y mantener el proyecto con licencia MIT. |
+| 1.4 | Rediseño de las slides: el responsable acepta bajar ~12 % los tamaños de §5.3 (opción "moderada") para ganar composición y contraste de escala; los íconos de §5.4 pasan a ser opcionales (≥ 56 px si se dibujan). Interlineado por rol (§5.2). Tres estilos de slide elegibles por anuncio (§9) y logos de hasta 3 ministerios, en logotipo o isotipo (RF-37). |
 
 ---
 
@@ -346,26 +347,28 @@ Los tipos se definen **de forma declarativa** (esquema de datos), no con código
 - **MVP:** una sola fuente, **Atkinson Hyperlegible** (o Atkinson Hyperlegible Next), diseñada por el Braille Institute para personas con baja visión. Es de licencia libre (SIL OFL) y se **empaqueta localmente** (por ejemplo, con `@fontsource`); **nunca** se carga desde Google Fonts en tiempo de ejecución.
 - **F2:** catálogo de fuentes por plantilla (RF-95 a RF-97). La arquitectura del MVP debe dejar la fuente como una **propiedad del tema o de la plantilla** (token), no fija en el CSS, para que el cambio sea trivial.
 - Pesos: Bold (700) para títulos y datos clave, Regular (400) para el texto secundario.
-- No se usan cursivas para información. Interlineado: 1.15–1.25. Nunca texto en MAYÚSCULAS sostenidas en más de una línea.
+- No se usan cursivas para información. Interlineado (v1.4, pedido del responsable): **1.05 en títulos y nombres**, **1.1 en texto secundario** y 1.2 en datos de una línea y metadatos. Nunca texto en MAYÚSCULAS sostenidas en más de una línea.
 
 ### 5.3 Tamaños mínimos (en px sobre el lienzo de 1080 de alto)
 
 | Rol del texto | Tamaño preferido | **Mínimo absoluto** |
 |---|---|---|
-| Título del anuncio | 120–150 | **96** |
-| Datos clave (fecha, hora, lugar, precio) | 80–96 | **68** |
-| Texto secundario (descripción, qué llevar, contacto) | 60–64 | **52** |
-| Nombre en cumpleaños, uno por slide | 160–260 | **120** |
-| Nombres en cumpleaños, varios por slide | 72–96 | **60** |
-| Metadatos no esenciales (por ejemplo "1/2") | 40 | **36** |
+| Título del anuncio | 104–132 | **84** |
+| Datos clave (fecha, hora, lugar, precio) | 70–84 | **60** |
+| Texto secundario (descripción, qué llevar, contacto) | 52–56 | **44** |
+| Nombre en cumpleaños, uno por slide | 140–230 | **108** |
+| Nombres en cumpleaños, varios por slide | 62–84 | **54** |
+| Metadatos no esenciales (por ejemplo "1/2") | 35 | **32** |
 
 > El motor **nunca** renderiza texto informativo por debajo del mínimo. Si no cabe, aplica §5.6.
+>
+> v1.4: valores bajados ~12 % respecto de v1.3 (96 / 68 / 52 / 120 / 60 / 36) por decisión del responsable, para que las plantillas tengan contraste de escala (la fecha y el título protagonistas, el resto cerca del mínimo). Equivale a leer el texto más pequeño un ~12 % más cerca.
 
 ### 5.4 Densidad de contenido
 
 - Máximo **6 líneas de contenido informativo** por slide, sin contar el título.
 - Máximo **~40 palabras** de texto corrido. Lo demás va a las notas del presentador.
-- Cada dato clave se muestra con un **ícono** de ≥ 64 px a su izquierda (fecha, hora, lugar, precio, contacto). Los íconos son SVG locales (Lucide, empaquetado), no emojis del sistema.
+- Los **íconos** de los datos clave son **opcionales** (v1.4): cada plantilla decide si los usa. Si se dibujan, miden ≥ 56 px y van integrados en la composición (no como chips de interfaz). Son SVG locales (Lucide, empaquetado), no emojis del sistema. Un dato cuyo sentido no es obvio por su forma lleva una etiqueta corta ("Lugar", "Llevar:").
 
 ### 5.5 Contraste y color
 

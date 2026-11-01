@@ -1,6 +1,6 @@
 // Anuncio → datos listos para dibujar (§3.2, §5.4): texto ya formateado en es-DO, una fila por dato
 // con su ícono y la comprobación de densidad. Genérico sobre los FieldDef: nada de código por tipo (RNF-08).
-import { formatEventDate, formatMoney, formatTime, type DateStyle } from '../lib/format'
+import { eventDateParts, formatEventDate, formatMoney, formatTime, type DateStyle, type EventDateParts } from '../lib/format'
 import { checkDensity, countWords } from './engine'
 import { getTypeDef } from './types/definitions'
 import type { AnnouncementTypeId, FieldDef } from './types/fields'
@@ -16,10 +16,18 @@ export type DensityStatus =
   | { status: 'ok' }
   | { status: 'no_cabe'; code: 'too_many_lines' | 'too_many_words'; fieldKey: string }
 
+/** Fecha principal en piezas (y su hora), para plantillas que la dibujan como elemento protagonista. */
+export interface EventWhen extends EventDateParts {
+  /** Los mismos campos que su fila en `rows`; la plantilla que dibuja el bloque omite esa fila. */
+  fieldKeys: string[]
+  time?: string
+}
+
 export interface NormalizedData {
   typeId: AnnouncementTypeId
   title?: { fieldKey: string; text: string }
   rows: InfoRow[]
+  when?: EventWhen
   imageFieldKey?: string
   imageId?: string
   density: DensityStatus
@@ -93,7 +101,13 @@ export function normalizeAnnouncement(
             time: timeValue,
           })
           const text = timeValue ? date + SEPARATOR + time(timeValue) : date
-          return { fieldKeys: mainTime ? [field.key, mainTime.key] : [field.key], icon: field.icon, text }
+          const fieldKeys = mainTime ? [field.key, mainTime.key] : [field.key]
+          out.when = {
+            fieldKeys,
+            ...eventDateParts(String(value), { relative: ctx.relativeDates, reference: ctx.reference, time: timeValue }),
+            ...(timeValue ? { time: formatTime(timeValue, { timeFormat: ctx.timeFormat }) } : {}),
+          }
+          return { fieldKeys, icon: field.icon, text }
         }
         const date = formatEventDate(String(value), { style, reference: ctx.reference })
         return { fieldKeys: [field.key], icon: field.icon, text: withPrefix(field, uppercase ? date : lowerFirst(date)) }

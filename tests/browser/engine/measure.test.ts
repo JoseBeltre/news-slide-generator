@@ -29,7 +29,7 @@ describe('measureTextFit', () => {
   it('un título corto cabe al tamaño máximo en una línea', () => {
     expect(measureTextFit('Culto de Jóvenes', titulo, { fontFamily: F })).toEqual({
       status: 'fits',
-      fontSize: 150,
+      fontSize: 132,
       lines: 1,
       belowPreferred: false,
     })
@@ -37,14 +37,14 @@ describe('measureTextFit', () => {
 
   it('un título de 60 palabras no cabe y reporta el mínimo', () => {
     const largo = Array.from({ length: 60 }, (_, i) => `palabra${i}`).join(' ')
-    expect(measureTextFit(largo, titulo, { fontFamily: F })).toEqual({ status: 'too_long', minFontSize: 96 })
+    expect(measureTextFit(largo, titulo, { fontFamily: F })).toEqual({ status: 'too_long', minFontSize: 84 })
   })
 
   it('cuando cabe, nunca está por debajo del mínimo del rol', () => {
     const textos = ['Ayuno', 'Semana de oración por la familia', 'Campamento de Conquistadores en Jarabacoa 2026']
     for (const t of textos) {
       const r = measureTextFit(t, titulo, { fontFamily: F })
-      if (r.status === 'fits') expect(r.fontSize).toBeGreaterThanOrEqual(96)
+      if (r.status === 'fits') expect(r.fontSize).toBeGreaterThanOrEqual(84)
     }
   })
 
@@ -53,9 +53,9 @@ describe('measureTextFit', () => {
     const r = measureTextFit(txt, estrecho, { fontFamily: F })
     if (r.status === 'fits') {
       expect(r.lines).toBe(1)
-      expect(r.fontSize).toBeGreaterThanOrEqual(52)
+      expect(r.fontSize).toBeGreaterThanOrEqual(44)
     } else {
-      expect(r).toEqual({ status: 'too_long', minFontSize: 52 })
+      expect(r).toEqual({ status: 'too_long', minFontSize: 44 })
     }
   })
 
@@ -63,18 +63,18 @@ describe('measureTextFit', () => {
     const muyEstrecho: TextSlotDef = { id: 's', role: 'secondary', box: { x: 96, y: 64, width: 200, height: 400 } }
     expect(measureTextFit('Otorrinolaringología', muyEstrecho, { fontFamily: F })).toEqual({
       status: 'too_long',
-      minFontSize: 52,
+      minFontSize: 44,
     })
   })
 
   it('maxLines: 1 reduce el tamaño en lugar de partir en dos líneas', () => {
-    // a 150 px no entra en 1728 de ancho en una línea; a 96 px sí
+    // a 132 px no entra en 1728 de ancho en una línea; a 84 px sí
     const unaLinea: TextSlotDef = { ...titulo, maxLines: 1 }
     const r = measureTextFit('Campamento de Conquistadores', unaLinea, { fontFamily: F })
     expect(r.status).toBe('fits')
     if (r.status === 'fits') {
       expect(r.lines).toBe(1)
-      expect(r.fontSize).toBeLessThan(150)
+      expect(r.fontSize).toBeLessThan(132)
     }
   })
 
@@ -94,7 +94,7 @@ describe('measureTextFit', () => {
 
   it('belowPreferred cuando el tamaño queda entre el mínimo y el preferido', () => {
     const r = measureTextFit('Campamento de Conquistadores', { ...titulo, maxLines: 1 }, { fontFamily: F })
-    expect(r.status === 'fits' && r.belowPreferred === r.fontSize < 120).toBe(true)
+    expect(r.status === 'fits' && r.belowPreferred === r.fontSize < 104).toBe(true)
   })
 
   it.each(['', '   ', '\n\t '])('texto vacío %j → empty', (t) => {

@@ -7,6 +7,7 @@ import {
   TEXT_DARK,
   TEXT_LIGHT,
   contrastRatio,
+  ensureContrast,
   ensureGradientContrast,
   minContrastAgainst,
   parseColor,
@@ -22,6 +23,12 @@ export interface SlidePalette {
   accent: string
   /** Texto o ícono sobre el acento: ≥ 7:1. */
   onAccent: string
+  /**
+   * Campo de color grande (hoja, franja): el color del tipo tal cual, sin acercarlo al fondo, para que
+   * no se vuelva color barro en los temas claros. Solo se ajusta si su texto no llega a 7:1.
+   */
+  field: string
+  onField: string
   fontFamily: string
 }
 
@@ -91,10 +98,33 @@ function fitAccent(accent: string, background: readonly string[], text: string):
   return { accent: target, onAccent }
 }
 
+/**
+ * Tinta con el tono del acento para texto informativo (p. ej. la fecha protagonista): el acento acercado
+ * al color de texto del fondo hasta llegar a 7:1 contra todas las paradas. Determinista.
+ */
+export function accentInk(accent: string, background: readonly string[], text: string): string {
+  for (let step = 0; step <= 50; step++) {
+    const candidate = mix(accent, text, step / 50)
+    if (minContrastAgainst(candidate, background) >= MIN_CONTRAST) return candidate
+  }
+  return text
+}
+
+/** Mezcla `color` con `target` en proporción `t` (0–1). Para capas y texturas de las plantillas. */
+export const mixColors = (color: string, target: string, t: number) => mix(color, target, t)
+
 function build(stops: readonly string[], accent: string, fontFamily: string): ResolvedTheme {
   const fixed = ensureGradientContrast(stops)
+  const field = ensureContrast(accent)
   return {
-    palette: { background: fixed.stops, text: fixed.text, ...fitAccent(accent, fixed.stops, fixed.text), fontFamily },
+    palette: {
+      background: fixed.stops,
+      text: fixed.text,
+      ...fitAccent(accent, fixed.stops, fixed.text),
+      field: field.background,
+      onField: field.text,
+      fontFamily,
+    },
     adjusted: fixed.adjusted,
     ...(fixed.adjusted ? { warning: ADJUSTED_WARNING } : {}),
   }
