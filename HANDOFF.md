@@ -38,7 +38,7 @@
 
 ## Próxima tarea
 
-- Plan P3 escrito: `docs/superpowers/plans/2026-11-01-fase1-p3-plantillas-y-temas.md` (11 tareas). **Esperando aprobación del responsable y elección de modo de ejecución.** La Tarea 4 es un punto de parada: 3 direcciones visuales de las slides para que el responsable elija.
+- Plan P3 escrito: `docs/superpowers/plans/2026-11-01-fase1-p3-plantillas-y-temas.md` (12 tareas). **Esperando aprobación del responsable y elección de modo de ejecución.** La Tarea 5 es un punto de parada: 3 direcciones visuales de las slides para que el responsable elija.
 
 ## Decisiones tomadas
 
@@ -60,6 +60,7 @@
 | 2026-11-01 | Gestor de paquetes: **pnpm** en lugar de npm (pedido por el responsable). Migrado con `pnpm import`, conservando las versiones exactas; `engines.node >= 24`. | Responsable |
 | 2026-11-01 | **Subir a GitHub en cada unión con `master`:** tras verificar las pruebas en `master`, `git push origin master` (solo `master`; otras ramas, force-push o PRs requieren pedido aparte). | Responsable |
 | 2026-11-01 | **Diseño (P3 en adelante):** base principal `ui-ux-pro-max` para la web; un `DESIGN.md` de designmd.app como sistema de diseño **solo de la interfaz** (formularios, listas, navegación; se elige en P4 y **lo elige el responsable** entre 3 opciones fundamentadas). **No aplica a las slides**: sus temas y plantillas tienen estilo propio y normalmente difieren de la interfaz; para slides consultar también `ui-ux-pro-max:slides` y `ecc:frontend-slides`. **La UX es la prioridad.** Las reglas de §5 (mínimos de tamaño, contraste 7:1) mandan sobre cualquier estilo que sugiera un skill o el DESIGN.md. | Responsable |
+| 2026-11-01 | **Formato de fecha configurable** (amplía §3.2): estilos `largo` ("Sábado 7 de noviembre"), `medio` ("SÁBADO 7 DE NOV"), `corto` ("SÁB 7"; con "NOV" si es otro mes) y `corto-mes-completo` ("SÁB 7"; con "NOVIEMBRE" si es otro mes); fechas relativas opcionales "HOY" / "ESTA NOCHE" (≥ 18:00) / "MAÑANA", calculadas contra la **fecha de la presentación**. Por defecto en Configuración; cada anuncio puede cambiarlo. Mayúsculas solo en una línea (§5.2). Plan P3, Tarea 1. | Responsable |
 | 2026-11-01 | `FitText`: si la fuente no carga, no dibuja nada ni emite informe (y lo registra en consola); nunca mide con la fuente de respaldo. Si llega un texto nuevo mientras carga la fuente, se descarta la medición vieja. | Tarea 8 |
 
 ## Comandos

@@ -26,11 +26,12 @@
 
 ## Review Focus
 
-- **Cumpleaños que cruzan de mes o de año** (30 de diciembre y 2 de enero en la semana del 1 de enero) → orden por cercanía a la fecha de la presentación, no por mes/día: primero el 30 de diciembre. Prueba en Tarea 7.
-- **Color personalizado de bajo contraste** (amarillo claro `#fff59d`) → el texto llega a ≥ 7:1 y `deriveTheme` avisa que ajustó el color (criterio §10.9). Prueba en Tarea 2.
-- **Todos los opcionales llenos** (salida con 7 filas) → "No cabe" por densidad señalando el último campo opcional lleno, nunca letra más pequeña; **todos vacíos** → slide sin huecos. Pruebas en Tareas 1 y 5.
-- **Logo "ninguno"** → el título ocupa el ancho completo; no queda hueco en la esquina (criterio §10.7). Prueba en Tarea 5.
-- **Flyer vertical (1080×1920)** → imagen completa, relleno con la misma imagen difuminada, sin barras negras (criterio §10.8). Prueba en Tarea 9.
+- **Fecha relativa preparada otro día** (anuncio editado el martes para el sábado 19:00) → al proyectarse ese sábado dice "ESTA NOCHE"; nunca "HOY" calculado con el día de edición. Prueba en Tarea 1.
+- **Cumpleaños que cruzan de mes o de año** (30 de diciembre y 2 de enero en la semana del 1 de enero) → orden por cercanía a la fecha de la presentación, no por mes/día: primero el 30 de diciembre. Prueba en Tarea 8.
+- **Color personalizado de bajo contraste** (amarillo claro `#fff59d`) → el texto llega a ≥ 7:1 y `deriveTheme` avisa que ajustó el color (criterio §10.9). Prueba en Tarea 3.
+- **Todos los opcionales llenos** (salida con 7 filas) → "No cabe" por densidad señalando el último campo opcional lleno, nunca letra más pequeña; **todos vacíos** → slide sin huecos. Pruebas en Tareas 2 y 6.
+- **Logo "ninguno"** → el título ocupa el ancho completo; no queda hueco en la esquina (criterio §10.7). Prueba en Tarea 6.
+- **Flyer vertical (1080×1920)** → imagen completa, relleno con la misma imagen difuminada, sin barras negras (criterio §10.8). Prueba en Tarea 10.
 
 ---
 
@@ -57,12 +58,56 @@ tests/unit/slides/…  tests/browser/slides/…  tests/e2e/galeria.spec.ts
 
 ---
 
-### Task 1: Íconos y normalización del anuncio
+### Task 1: Formatos de fecha configurables y fechas relativas
+
+**Files:** Modify `src/lib/format.ts`, `src/data/models.ts`, `tests/unit/lib/format.test.ts`.
+
+Pedido del responsable (cambia §3.2, que solo pedía el formato largo): el formato de la fecha se elige; hay un valor por defecto en Configuración y cada anuncio puede cambiarlo.
+
+**Interfaces:**
+- Consumes: `parseLocalDate`, `formatTime` (P2).
+- Produces:
+  ```ts
+  export type DateStyle = 'largo' | 'medio' | 'corto' | 'corto-mes-completo'
+  export interface DateFormatOptions {
+    style?: DateStyle            // por defecto 'largo'
+    relative?: boolean           // por defecto false
+    reference: string            // 'YYYY-MM-DD': fecha de la presentación (o hoy si no hay presentación)
+    time?: string                // 'HH:mm' del evento, para "ESTA NOCHE"
+  }
+  export function formatEventDate(iso: string, opts: DateFormatOptions): string
+  // models.ts
+  Settings += { dateStyle: DateStyle; relativeDates: boolean }      // por defecto 'largo' y false
+  Announcement += { dateStyle?: DateStyle; relativeDates?: boolean } // si faltan, se usan los de Settings
+  ```
+- `formatDate` (P2) queda como está y equivale a `style: 'largo'` sin relativas.
+
+Formatos (evento el sábado 7 de noviembre de 2026; referencia en noviembre de 2026):
+
+| Estilo | Mismo mes que la referencia | Otro mes | Otro año |
+|---|---|---|---|
+| `largo` | Sábado 7 de noviembre | Sábado 5 de diciembre | Sábado 2 de enero de 2027 |
+| `medio` | SÁBADO 7 DE NOV | SÁBADO 5 DE DIC | SÁBADO 2 DE ENE 2027 |
+| `corto` | SÁB 7 | SÁB 5 DIC | SÁB 2 ENE 2027 |
+| `corto-mes-completo` | SÁB 7 | SÁB 5 DICIEMBRE | SÁB 2 ENERO 2027 |
+
+- Abreviaturas **fijas** (no las de `Intl`, que da "sept" y varía entre motores): días DOM LUN MAR MIÉ JUE VIE SÁB; meses ENE FEB MAR ABR MAY JUN JUL AGO SEP OCT NOV DIC. Las mayúsculas llevan tilde (SÁB, MIÉ).
+- **Relativas** (`relative: true`), comparando con `reference`: mismo día con `time` ≥ 18:00 → "ESTA NOCHE"; mismo día → "HOY"; día siguiente → "MAÑANA". En cualquier otro caso, el estilo elegido. Con `largo` van en tipo oración: "Esta noche", "Hoy", "Mañana".
+- La referencia es la **fecha de la presentación**, no el día en que se edita: un anuncio preparado el martes para el sábado dice "ESTA NOCHE" cuando se proyecta ese sábado.
+- **§5.2:** los estilos en mayúsculas solo se usan en filas de una línea; la fila de fecha (con la hora unida) es `maxLines: 1`. Si no cabe en una línea, la slide queda "No cabe" señalando `fecha`; nunca se parte en dos líneas en mayúsculas. Con estilos en mayúsculas, la hora también va en mayúsculas ("7:00 P. M.").
+
+- [ ] **Step 1: pruebas que fallan** (`format.test.ts`): la tabla completa de arriba (12 casos); relativas con referencia `'2026-11-07'`: `time '19:00'` → "ESTA NOCHE", `'18:00'` → "ESTA NOCHE", `'17:59'` → "HOY", sin `time` → "HOY", evento `'2026-11-08'` → "MAÑANA", evento `'2026-11-06'` (ayer) → el estilo normal, nunca relativa; con `largo` → "Esta noche"; cruce de año: referencia `'2026-12-31'`, evento `'2027-01-01'` → "MAÑANA" y sin relativas `corto` → "VIE 1 ENE 2027"; septiembre `corto` otro mes → "… SEP" (nunca "SEPT").
+- [ ] **Step 2:** `pnpm vitest run format` → FAIL.
+- [ ] **Step 3:** implementar `formatEventDate` y añadir los campos al modelo (sin cambio de esquema Dexie: no son índices).
+- [ ] **Step 4:** `pnpm vitest run format` → PASS; `pnpm typecheck` → 0 errores.
+- [ ] **Step 5:** commit `feat(formato): estilos de fecha y fechas relativas [§3.2, pedido del responsable]`.
+
+### Task 2: Íconos y normalización del anuncio
 
 **Files:** Create `src/slides/icons.ts`, `src/slides/normalize.ts`, `tests/fixtures/announcements.ts`, `tests/unit/slides/icons.test.ts`, `tests/unit/slides/normalize.test.ts`. Modify `package.json`, `LICENSES.md`.
 
 **Interfaces:**
-- Consumes: `ANNOUNCEMENT_TYPES`, `getTypeDef`, `FieldDef` (P2); `formatDate`, `formatTime`, `formatMoney` (P2); `checkDensity`, `countWords` (P1).
+- Consumes: `formatEventDate`, `DateStyle` (Task 1); `ANNOUNCEMENT_TYPES`, `getTypeDef`, `FieldDef` (P2); `formatTime`, `formatMoney` (P2); `checkDensity`, `countWords` (P1).
 - Produces:
   ```ts
   // icons.ts
@@ -78,7 +123,7 @@ tests/unit/slides/…  tests/browser/slides/…  tests/e2e/galeria.spec.ts
     density: { status: 'ok' } | { status: 'no_cabe'; code: 'too_many_lines' | 'too_many_words'; fieldKey: string }
   }
   export function normalizeAnnouncement(typeId: AnnouncementTypeId, values: Record<string, unknown>,
-    ctx: { today: string; timeFormat?: '12h' | '24h'; currency?: string }): NormalizedData
+    ctx: { today: string; reference: string; dateStyle?: DateStyle; relativeDates?: boolean; timeFormat?: '12h' | '24h'; currency?: string }): NormalizedData
   ```
 
 - [ ] **Step 1:** `pnpm add lucide-vue-next` (si npm lo marca como obsoleto, usar el paquete Vue oficial que indique, `@lucide/vue`, y anotar la decisión); anotarlo en `LICENSES.md` (ISC).
@@ -90,13 +135,14 @@ tests/unit/slides/…  tests/browser/slides/…  tests/e2e/galeria.spec.ts
   - campos vacíos u opcionales ausentes no generan filas.
   - salida con todos los opcionales llenos (7 filas) → `density = {status:'no_cabe', code:'too_many_lines', fieldKey:'contacto'}` (el **último** campo con fila).
   - aviso con `mensaje` de 41 palabras → `too_many_words` con `fieldKey:'mensaje'`.
+  - con `dateStyle: 'corto'` y `relativeDates: true`, referencia `'2026-11-07'` y hora `'19:00'` → fila `'ESTA NOCHE · 7:00 P. M.'`.
   - tipos `cumpleanos` e `imagen` lanzan `Error` (tienen su propio layout).
 - [ ] **Step 4:** correr `pnpm vitest run normalize icons` → FAIL por módulos inexistentes.
 - [ ] **Step 5:** implementar. `ICONS` importa por nombre desde `lucide-vue-next` solo los íconos usados (tree-shaking; nada de `import *`). Texto corrido para §5.4 = filas `secondary` de campos `longtext`.
 - [ ] **Step 6:** `pnpm vitest run normalize icons` → PASS; `pnpm typecheck` → 0 errores.
 - [ ] **Step 7:** commit `feat(slides): normalización de anuncios e íconos locales [§5.4, RNF-08]`.
 
-### Task 2: Temas, tema neutro y color personalizado
+### Task 3: Temas, tema neutro y color personalizado
 
 **Files:** Create `src/slides/themes.ts`, `tests/unit/slides/themes.test.ts`.
 
@@ -126,15 +172,15 @@ tests/unit/slides/…  tests/browser/slides/…  tests/e2e/galeria.spec.ts
 - [ ] **Step 4:** `pnpm vitest run themes` → PASS.
 - [ ] **Step 5:** commit `feat(temas): temas con contraste garantizado y color personalizado [RF-31, RF-32, RF-33, §5.5]`.
 
-### Task 3: Contrato de plantilla, `SlideView`, logo y galería
+### Task 4: Contrato de plantilla, `SlideView`, logo y galería
 
 **Files:** Create `src/slides/templates/contract.ts`, `registry.ts`, `SlideView.vue`, `parts/LogoSlot.vue`, `parts/TypeIcon.vue`, `src/slides/useImageUrl.ts`, `galeria.html`, `src/dev/Gallery.vue`, `tests/browser/slides/SlideView.test.ts`. Modify `playwright.config.ts`.
 
 **Interfaces:**
-- Consumes: `SlideCanvas`, `FitText`, `summarizeFit`, `selectLogoVariant`, `clampLogoHeight` (P1); `logoCandidatesFor`, `logoUrlFor`, `getImageBlob` (P2); Tasks 1–2.
+- Consumes: `SlideCanvas`, `FitText`, `summarizeFit`, `selectLogoVariant`, `clampLogoHeight` (P1); `logoCandidatesFor`, `logoUrlFor`, `getImageBlob` (P2); Tasks 2–3.
 - Produces:
   ```ts
-  export interface SlideContext { today: string; presentationDate?: string; ministries: readonly Ministry[]; theme: ResolvedTheme; settings: Pick<Settings,'churchName'|'coverTitle'|'timeFormat'|'currency'|'birthdayDefaultMessage'> }
+  export interface SlideContext { today: string; presentationDate?: string; ministries: readonly Ministry[]; theme: ResolvedTheme; settings: Pick<Settings,'churchName'|'coverTitle'|'timeFormat'|'currency'|'birthdayDefaultMessage'|'dateStyle'|'relativeDates'> }   // el anuncio puede sobrescribir dateStyle/relativeDates
   export type SlideSpec =
     | { kind: 'announcement'; templateId: 'clasica' | 'visual'; data: NormalizedData; logo: LogoSelection }
     | { kind: 'birthday-single'; person: Person; message?: string; verse?: string; logo: LogoSelection; page?: [number, number] }
@@ -157,7 +203,7 @@ tests/unit/slides/…  tests/browser/slides/…  tests/e2e/galeria.spec.ts
 - [ ] **Step 5:** `pnpm vitest run SlideView` → PASS; `pnpm build` no incluye `galeria.html` en `dist/`.
 - [ ] **Step 6:** commit `feat(plantillas): contrato de plantilla, SlideView y logo automático [§7, §8.2, RF-37, RF-38, RF-39]`.
 
-### Task 4: Dirección visual de las slides (elige el responsable) — **PUNTO DE PARADA**
+### Task 5: Dirección visual de las slides (elige el responsable) — **PUNTO DE PARADA**
 
 **Files:** Create `src/slides/templates/parts/Decoration.vue`, `docs/slides-direccion-visual.md`, 3 capturas en `docs/slides-direcciones/`.
 
@@ -173,7 +219,7 @@ Las slides tienen estilo propio, distinto de la interfaz. Siguiendo "mostrar, no
 - [ ] **Step 4:** registrar la elegida en `docs/slides-direccion-visual.md` y en HANDOFF (decisión); dejar solo esa variante como predeterminada (las otras se borran: YAGNI).
 - [ ] **Step 5:** commit `feat(slides): dirección visual elegida por el responsable [§9]`.
 
-### Task 5: Plantilla Clásica
+### Task 6: Plantilla Clásica
 
 **Files:** Create `src/slides/templates/classic/layout.ts`, `ClassicSlide.vue`, `parts/InfoRows.vue`, `tests/browser/slides/classic.test.ts`.
 
@@ -184,21 +230,21 @@ Geometría (px del lienzo, todo dentro de `SAFE_AREA`):
 - Título: `{x:96, y:64, width: hasLogo ? 1296 : 1728, height:300}`, rol `title`, `maxLines: 2`.
 - Filas: región `{x:96, y:412, width:1728, height:604}` repartida en N filas iguales con 16 px de separación; ícono 64×64 a la izquierda, texto en `x+96`; rol según la fila (`key` → `maxLines:1`, `secondary` → `maxLines:2`).
 
-- [ ] **Step 1: pruebas que fallan** (browser, con fixtures de Task 1) para los 6 tipos de texto: datos normales → `status:'ok'` y `auditSlide(canvas)` → `[]`; título de 120 caracteres → `no_cabe` con `offendingFields:['titulo']`; salida llena → `no_cabe`, `reason:'density'`, `['contacto']`; todos los opcionales vacíos → `ok`, sin filas vacías en el DOM; logo `ninguno` → el título mide 1728 de ancho y no existe `[data-logo]`; mismo anuncio con tema neutro y con `deriveTheme('#fff59d')` → `auditSlide` vacío en ambos.
+- [ ] **Step 1: pruebas que fallan** (browser, con fixtures de Task 2) para los 6 tipos de texto: datos normales → `status:'ok'` y `auditSlide(canvas)` → `[]`; título de 120 caracteres → `no_cabe` con `offendingFields:['titulo']`; salida llena → `no_cabe`, `reason:'density'`, `['contacto']`; todos los opcionales vacíos → `ok`, sin filas vacías en el DOM; logo `ninguno` → el título mide 1728 de ancho y no existe `[data-logo]`; mismo anuncio con tema neutro y con `deriveTheme('#fff59d')` → `auditSlide` vacío en ambos.
 - [ ] **Step 2:** FAIL. **Step 3:** implementar (`layout.ts` puro, probado también en `tests/unit`: cajas dentro del área segura con `validateTextSlot`). **Step 4:** PASS.
 - [ ] **Step 5:** commit `feat(plantillas): Clásica para los 6 tipos [RF-30, §5, §9]`.
 
-### Task 6: Plantilla Visual
+### Task 7: Plantilla Visual
 
 **Files:** Create `src/slides/templates/visual/layout.ts`, `VisualSlide.vue`, `tests/browser/slides/visual.test.ts`.
 
 Geometría: panel lateral izquierdo a sangre `{x:0, y:0, width:768, height:1080}` de color de acento con la foto (`object-fit: cover`, apoyada en el borde inferior, §9) o, sin foto, el ícono del tipo grande (≥ 320 px) en `onAccent`. Zona de texto `{x:864, y:64, width:960, height:952}` sobre el fondo del tema: título (`maxLines:3`), filas debajo, logo abajo a la derecha `{x:1424, y:856, width:400, height:160}`.
 
-- [ ] **Step 1: pruebas que fallan:** los mismos casos de Task 5; además culto con `fotoPredicador` → `<img>` dentro del panel y **ningún** `[data-role]` cuyo rectángulo se cruce con el panel (nunca texto sobre foto); sin foto → `[data-icon]` grande en el panel.
+- [ ] **Step 1: pruebas que fallan:** los mismos casos de Task 6; además culto con `fotoPredicador` → `<img>` dentro del panel y **ningún** `[data-role]` cuyo rectángulo se cruce con el panel (nunca texto sobre foto); sin foto → `[data-icon]` grande en el panel.
 - [ ] **Step 2:** FAIL. **Step 3:** implementar. **Step 4:** PASS.
 - [ ] **Step 5:** commit `feat(plantillas): Visual con foto o ícono del tipo [RF-30, §5.5, §9]`.
 
-### Task 7: Cumpleaños: reparto en slides
+### Task 8: Cumpleaños: reparto en slides
 
 **Files:** Create `src/slides/templates/birthday/layout.ts`, `tests/unit/slides/birthdayLayout.test.ts`.
 
@@ -213,7 +259,7 @@ Geometría: panel lateral izquierdo a sangre `{x:0, y:0, width:768, height:1080}
 - [ ] **Step 2:** FAIL. **Step 3:** implementar. **Step 4:** PASS.
 - [ ] **Step 5:** commit `feat(cumpleaños): reparto por modo, orden por cercanía y "(1/2)" [RF-21, RF-25, RF-26]`.
 
-### Task 8: Cumpleaños: plantillas individual y grupo
+### Task 9: Cumpleaños: plantillas individual y grupo
 
 **Files:** Create `BirthdaySingle.vue`, `BirthdayGroup.vue`, `tests/browser/slides/birthday.test.ts`.
 
@@ -226,7 +272,7 @@ Geometría: panel lateral izquierdo a sangre `{x:0, y:0, width:768, height:1080}
 - [ ] **Step 2:** FAIL. **Step 3:** implementar. **Step 4:** PASS.
 - [ ] **Step 5:** commit `feat(cumpleaños): plantillas individual y grupo [RF-22, RF-23, RF-24, §9]`.
 
-### Task 9: Slide de imagen
+### Task 10: Slide de imagen
 
 **Files:** Create `src/slides/templates/image/ImageSlide.vue`, `tests/browser/slides/image.test.ts`.
 
@@ -236,7 +282,7 @@ Geometría: panel lateral izquierdo a sangre `{x:0, y:0, width:768, height:1080}
 - [ ] **Step 2:** FAIL. **Step 3:** implementar. **Step 4:** PASS.
 - [ ] **Step 5:** commit `feat(plantillas): slide de imagen con relleno difuminado [RF-40, RF-41]`.
 
-### Task 10: Portada y cierre
+### Task 11: Portada y cierre
 
 **Files:** Create `CoverSlide.vue`, `ClosingSlide.vue`, `tests/browser/slides/cover.test.ts`.
 
@@ -247,11 +293,11 @@ Geometría: panel lateral izquierdo a sangre `{x:0, y:0, width:768, height:1080}
 - [ ] **Step 2:** FAIL. **Step 3:** implementar. **Step 4:** PASS.
 - [ ] **Step 5:** commit `feat(plantillas): portada y cierre con el logo de la iglesia [RF-39, §9]`.
 
-### Task 11: Pruebas de legibilidad §5.7 completas y capturas
+### Task 12: Pruebas de legibilidad §5.7 completas y capturas
 
 **Files:** Create `tests/browser/slides/matrix.test.ts`, `tests/e2e/galeria.spec.ts`, capturas base en `tests/e2e/galeria.spec.ts-snapshots/`.
 
-- [ ] **Step 1:** `matrix.test.ts` recorre **cada tipo × cada plantilla × {tema neutro, tema claro, `deriveTheme('#fff59d')`} × {normal, todos los opcionales llenos, todos vacíos, título larguísimo, sin logo}** (más cumpleaños en los 3 modos e imagen horizontal y vertical) y comprueba: (a) ningún texto bajo el mínimo, (b) nada fuera del área segura, (c) contraste ≥ 7:1, (d) los que no caben salen `no_cabe` con su campo. Esto es `auditSlide(canvas) → []` cuando el estado es `ok`.
+- [ ] **Step 1:** `matrix.test.ts` recorre **cada tipo × cada plantilla × {tema neutro, tema claro, `deriveTheme('#fff59d')`} × {normal, todos los opcionales llenos, todos vacíos, título larguísimo, sin logo, fecha en estilo `medio` con hora}** (más cumpleaños en los 3 modos e imagen horizontal y vertical) y comprueba: (a) ningún texto bajo el mínimo, (b) nada fuera del área segura, (c) contraste ≥ 7:1, (d) los que no caben salen `no_cabe` con su campo. Esto es `auditSlide(canvas) → []` cuando el estado es `ok`.
 - [ ] **Step 2:** `galeria.spec.ts`: `toHaveScreenshot` de una slide por plantilla y modo (≈ 14 capturas) a 1920×1080 con la galería en `?only=`; crear las capturas base con `--update-snapshots` y revisarlas a ojo antes de guardarlas.
 - [ ] **Step 3:** verificación completa: `pnpm typecheck && pnpm test && pnpm test:e2e && pnpm build` → todo verde; la E2E offline sigue sin orígenes externos.
 - [ ] **Step 4:** actualizar HANDOFF (API de plantillas, P3 hecho, próximo = plan P4 con la elección del DESIGN.md de la interfaz) y la hoja de ruta.
