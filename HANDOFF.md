@@ -10,7 +10,7 @@
 - **Aprobación:** P1 aprobado el 2026-11-01; ejecución **nativa** (inline, una revisión final de toda la rama).
 - **Rama:** `fase1/p1-base-y-motor`.
 - **Ledger de ejecución:** `.superpowers/sdd/2026-11-01-fase1-p1-base-y-motor/progress.md` (ignorado por git).
-- **Hecho:** **P1 completo** (Tareas 1–10): proyecto montado, PWA offline y motor de legibilidad con auditoría. Pendiente: revisión final de toda la rama y decidir el merge a `master`.
+- **Hecho:** **P1 completo** (Tareas 1–10) y revisado: revisión final de toda la rama hecha y sus 2 hallazgos importantes corregidos. Pendiente: decidir el merge a `master`.
 
 ### API del motor (`src/slides/engine/index.ts`)
 
@@ -18,7 +18,7 @@
 |---|---|
 | `canvas` | `CANVAS` (1920×1080), `SAFE_AREA`, `computeScale`, `isInsideSafeArea` |
 | `SlideCanvas.vue` | Lienzo escalado; prop `fontFamily` (token), variable `--slide-font-family` |
-| `color` | `parseColor`, `toHex`, `contrastRatio`, `minContrastAgainst`, `pickTextColor`, `ensureContrast` (≥ 7:1 ajustando el fondo) |
+| `color` | `parseColor`, `toHex`, `contrastRatio`, `minContrastAgainst`, `pickTextColor`, `ensureContrast` (≥ 7:1 ajustando el fondo), `ensureGradientContrast` (un texto ≥ 7:1 contra todas las paradas; **usarlo en P3 para todo degradado**) |
 | `readability` | `TEXT_ROLES` (§5.3), constantes de §5, `resolveFontRange`, `validateTextSlot`, `checkDensity`, `countWords` |
 | `fit` / `measure` | `findLargestFittingSize`; `ensureFontLoaded`, `measureTextFit`, `normalizeSlotText` |
 | `FitText.vue` / `fitReport` | Texto ajustado que emite `FitReport`; `summarizeFit` → `ok` / `no_cabe` con campos culpables |
@@ -27,7 +27,7 @@
 
 ## Próxima tarea
 
-- Revisión final de la rama `fase1/p1-base-y-motor`; luego escribir el plan detallado de **P2** (tipos, datos locales y logos).
+- Decidir el merge de `fase1/p1-base-y-motor` a `master`; luego escribir el plan detallado de **P2** (tipos, datos locales y logos).
 
 ## Decisiones tomadas
 
@@ -61,6 +61,12 @@ Requisito de una sola vez: `npx playwright install chromium`.
 
 ## Problemas abiertos / bloqueos
 
+Hallazgos menores de la revisión final de P1, pendientes de programar (sobre todo antes o durante P3):
+- `FitText`: si falla la fuente, la slide informa "ok" sin texto → añadir un estado `error` visible (P3/P4).
+- `FitText`: al cambiar el texto se dibuja un instante al tamaño anterior; un slot inválido lanza un error asíncrono sin informe. Llamar a `validateTextSlot` en el registro de plantillas (P3).
+- `measure` y `FitText` no fijan `letter-spacing`, `word-spacing`, `font-kerning` ni `font-feature-settings`: si un tema los cambia, lo medido y lo dibujado divergen.
+- `auditSlide` devuelve `[]` con un lienzo de tamaño 0 (debería fallar) y se rompe con colores `oklch()`/`color()`; ignora la transparencia.
+- Un campo con solo un espacio de ancho cero (U+200B) cuenta como contenido.
 - `npm audit`: 5 avisos *moderate* en dependencias de desarrollo (cadena de `editorconfig`, vía herramientas de Vue). No llegan al navegador; revisar al actualizar dependencias.
 
 ## Registro de tareas
@@ -77,4 +83,5 @@ Requisito de una sola vez: `npx playwright install chromium`.
 | 2026-11-01 | P1 · T7: `measureTextFit`, `ensureFontLoaded` (sin cortes a mitad de palabra; verificado con mutación) | `npm test` 92/92 | ca52344 |
 | 2026-11-01 | P1 · T8: `FitText.vue`, `summarizeFit`; helper de pruebas `tests/browser/helpers/mount.ts` | `npm test` 101/101 | 8d6d591 |
 | 2026-11-01 | P1 · T9: `selectLogoVariant` con placa, `clampLogoHeight` | `npm test` 112/112 | 2a45c46 |
-| 2026-11-01 | P1 · T10: `auditSlide`, `index.ts`, verificación completa | typecheck 0 errores; `npm test` 126/126; `test:e2e` 2/2; build OK | ver `git log` |
+| 2026-11-01 | P1 · T10: `auditSlide`, `index.ts`, verificación completa | typecheck 0 errores; `npm test` 126/126; `test:e2e` 2/2; build OK | b4ca2ad |
+| 2026-11-01 | P1 · revisión final: `ensureGradientContrast`; `ensureFontLoaded` carga también Latin Extended | `npm test` 136/136; `test:e2e` 2/2 | ver `git log` |

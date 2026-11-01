@@ -14,11 +14,15 @@ export class FontNotLoadedError extends Error {
 const loadedFaces = new Set<string>()
 const faceKey = (family: string, weight: number) => `${family}|${weight}`
 
-/** Carga los pesos de la familia; lanza `FontNotLoadedError` si alguno no existe. */
+// Un carácter de cada subconjunto (latin y latin-ext): sin texto, load() solo baja el subconjunto
+// que contiene el espacio, y un nombre como "Łukasz" se mediría con la fuente de respaldo.
+const SUBSET_SAMPLE = 'AĀ'
+
+/** Carga los pesos de la familia (todos sus subconjuntos); lanza `FontNotLoadedError` si alguno no existe. */
 export async function ensureFontLoaded(family: string, weights: readonly (400 | 700)[] = [400, 700]): Promise<void> {
   for (const weight of weights) {
     if (loadedFaces.has(faceKey(family, weight))) continue
-    const faces = await document.fonts.load(`${weight} 100px "${family}"`)
+    const faces = await document.fonts.load(`${weight} 100px "${family}"`, SUBSET_SAMPLE)
     if (faces.length === 0) throw new FontNotLoadedError(family, weight)
     loadedFaces.add(faceKey(family, weight))
   }

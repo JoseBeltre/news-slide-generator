@@ -144,3 +144,44 @@ export function ensureContrast(background: string, min = MIN_CONTRAST): Contrast
   const chosen = useDarker ? { bg: darker.hex, text: TEXT_LIGHT } : { bg: lighter.hex, text: TEXT_DARK }
   return { background: chosen.bg, text: chosen.text, ratio: contrastRatio(chosen.text, chosen.bg), adjusted: true }
 }
+
+export interface GradientContrastResult {
+  stops: string[]
+  text: string
+  ratio: number
+  adjusted: boolean
+}
+
+/**
+ * Como `ensureContrast`, pero para un degradado: un solo color de texto que alcance `min` contra
+ * todas las paradas. Solo se mueven las paradas que fallan; se elige el texto (claro u oscuro)
+ * que exige menos cambio total de luminosidad. Empate → claro.
+ */
+export function ensureGradientContrast(stops: readonly string[], min = MIN_CONTRAST): GradientContrastResult {
+  if (stops.length === 0) throw new RangeError('Un degradado necesita al menos una parada')
+  if (!(min >= 1 && min <= 21)) throw new RangeError(`Contraste mínimo fuera de rango (1–21): ${min}`)
+  const hexes = stops.map((s) => toHex(parseColor(s)))
+  const best = pickTextColor(hexes)
+  if (best.ratio >= min) return { stops: hexes, text: best.color, ratio: best.ratio, adjusted: false }
+
+  const adjustFor = (text: string, direction: -1 | 1) => {
+    let cost = 0
+    const adjusted = hexes.map((hex) => {
+      if (contrastRatio(text, hex) >= min) return hex
+      const base = rgbToHsl(parseColor(hex))
+      const found = searchLightness(base, text, min, direction)
+      cost += Math.abs(found.l - base.l)
+      return found.hex
+    })
+    return { text, stops: adjusted, cost }
+  }
+  const light = adjustFor(TEXT_LIGHT, -1)
+  const dark = adjustFor(TEXT_DARK, 1)
+  const chosen = light.cost <= dark.cost ? light : dark
+  return {
+    stops: chosen.stops,
+    text: chosen.text,
+    ratio: minContrastAgainst(chosen.text, chosen.stops),
+    adjusted: true,
+  }
+}

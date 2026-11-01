@@ -3,6 +3,7 @@ import {
   InvalidColorError,
   contrastRatio,
   ensureContrast,
+  ensureGradientContrast,
   minContrastAgainst,
   parseColor,
   pickTextColor,
@@ -91,6 +92,54 @@ describe('ensureContrast (≥ 7:1)', () => {
     expect(() => ensureContrast('#777777', 22)).toThrow(RangeError)
   })
 
+  it('respeta un mínimo distinto', () => {
+    expect(ensureContrast('#777777', 4.5).ratio).toBeGreaterThanOrEqual(4.5)
+  })
+})
+
+describe('ensureGradientContrast (degradados, §5.5)', () => {
+  it.each([
+    [['#0b1f3a', '#777777']],
+    [['#ffffff', '#777777']],
+    [['#ff9800', '#3f51b5', '#808080']],
+    [['#0b1f3a', '#1e3a8a']],
+  ])('un solo color de texto ≥ 7:1 contra todas las paradas de %j', (stops) => {
+    const r = ensureGradientContrast(stops)
+    expect(r.stops).toHaveLength(stops.length)
+    expect(minContrastAgainst(r.text, r.stops)).toBeGreaterThanOrEqual(7)
+    expect(r.ratio).toBeCloseTo(minContrastAgainst(r.text, r.stops), 6)
+    expect(ensureGradientContrast(stops)).toEqual(r)
+  })
+
+  it('solo mueve las paradas que fallan', () => {
+    const r = ensureGradientContrast(['#0b1f3a', '#777777'])
+    expect(r.text).toBe('#ffffff')
+    expect(r.stops[0]).toBe('#0b1f3a')
+    expect(r.stops[1]).not.toBe('#777777')
+    expect(r.adjusted).toBe(true)
+  })
+
+  it('un degradado que ya cumple no cambia', () => {
+    expect(ensureGradientContrast(['#0b1f3a', '#1e3a8a'])).toEqual({
+      stops: ['#0b1f3a', '#1e3a8a'],
+      text: '#ffffff',
+      ratio: minContrastAgainst('#ffffff', ['#0b1f3a', '#1e3a8a']),
+      adjusted: false,
+    })
+  })
+
+  it('una sola parada equivale a ensureContrast', () => {
+    const g = ensureGradientContrast(['#777777'])
+    const s = ensureContrast('#777777')
+    expect({ stops: g.stops, text: g.text }).toEqual({ stops: [s.background], text: s.text })
+  })
+
+  it('sin paradas lanza RangeError', () => {
+    expect(() => ensureGradientContrast([])).toThrow(RangeError)
+  })
+})
+
+describe('ensureContrast con mínimo distinto', () => {
   it('respeta un mínimo distinto', () => {
     const r = ensureContrast('#777777', 4.5)
     expect(r.ratio).toBeGreaterThanOrEqual(4.5)
