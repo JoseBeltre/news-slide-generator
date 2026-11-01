@@ -17,6 +17,10 @@
 | **P5 · Presentaciones** | 6 | Crear presentación (próximo sábado), sugerir anuncios futuros, agregar/ordenar (arrastrar + botones), bloquear "No cabe", portada/cierre, miniaturas con conteo, "Preparar sin internet" con verificación local de datos, imágenes, logos, fuente y Service Worker. | RF-50…RF-55 | por escribir |
 | **P6 · Presentar** | 7 | Vista del presentador + ventana pública (`/publica`) con `BroadcastChannel('presentacion')`; teclado/clicker; pantalla negra y de logo; reabrir la pública en la misma slide; modo de una sola ventana; fundido ≤ 300 ms; Window Management API como mejora opcional. E2E con dos páginas en Chromium, sin red. | RF-60…RF-68, RNF-04 (< 100 ms), criterios §10.1–3 | por escribir |
 
+## Diseño y UX (P3–P6)
+
+Base: skill `ui-ux-pro-max`; sistema de diseño desde un `DESIGN.md` de designmd.app; slides con `ui-ux-pro-max:slides` y `ecc:frontend-slides`. La UX es la prioridad; §5 manda sobre cualquier estilo.
+
 ## Orden y dependencias
 
 P1 → P2 → P3 → P4 → P5 → P6, en serie: cada bloque consume las interfaces del anterior (P3 usa el motor y los tipos; P4 usa las plantillas; P5 y P6 usan el render de slides y Dexie).

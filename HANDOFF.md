@@ -38,7 +38,7 @@
 
 ## Próxima tarea
 
-- Escribir el plan P3 (plantillas y temas) y esperar aprobación del responsable.
+- Escribir el plan P3 (plantillas y temas) usando `ui-ux-pro-max` (+ `ui-ux-pro-max:slides`, `ecc:frontend-slides`) y elegir/adaptar un `DESIGN.md` de designmd.app; esperar aprobación del responsable.
 
 ## Decisiones tomadas
 
@@ -58,6 +58,8 @@
 | 2026-11-01 | Zod 4: un campo con `defaultValue` nunca es opcional en el esquema (si lo fuera, Zod no aplica el preprocess a la clave ausente y el valor por defecto se pierde). Los `refine` de objeto corren aunque haya errores previos: protegerlos. | P2 · T3 |
 | 2026-11-01 | Imágenes: volver a subir una imagen borrada **la revive** (mismo id, `deletedAt: null`), porque el índice `hash` es único. Medidas de un SVG: `width`/`height` numéricos o, si no, el `viewBox`; un SVG sin medidas se rechaza. | P2 · T5 |
 | 2026-11-01 | Gestor de paquetes: **pnpm** en lugar de npm (pedido por el responsable). Migrado con `pnpm import`, conservando las versiones exactas; `engines.node >= 24`. | Responsable |
+| 2026-11-01 | **Subir a GitHub en cada unión con `master`:** tras verificar las pruebas en `master`, `git push origin master` (solo `master`; otras ramas, force-push o PRs requieren pedido aparte). | Responsable |
+| 2026-11-01 | **Diseño (P3 en adelante):** base principal `ui-ux-pro-max` para la web; un `DESIGN.md` de designmd.app como sistema de diseño; para slides consultar también `ui-ux-pro-max:slides` y `ecc:frontend-slides`. **La UX es la prioridad.** Las reglas de §5 (mínimos de tamaño, contraste 7:1) mandan sobre cualquier estilo que sugiera un skill o el DESIGN.md. | Responsable |
 | 2026-11-01 | `FitText`: si la fuente no carga, no dibuja nada ni emite informe (y lo registra en consola); nunca mide con la fuente de respaldo. Si llega un texto nuevo mientras carga la fuente, se descarta la medición vieja. | Tarea 8 |
 
 ## Comandos
