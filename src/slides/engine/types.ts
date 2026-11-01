@@ -26,3 +26,9 @@ export interface TextSlotDef {
   uppercase?: boolean
   align?: 'left' | 'center' | 'right'
 }
+
+/** Resultado del ajuste de un texto a su slot (§5.6). */
+export type FitResult =
+  | { status: 'fits'; fontSize: number; lines: number; belowPreferred: boolean }
+  | { status: 'too_long'; minFontSize: number }
+  | { status: 'empty' }

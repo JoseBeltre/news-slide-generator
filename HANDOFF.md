@@ -10,11 +10,11 @@
 - **Aprobación:** P1 aprobado el 2026-11-01; ejecución **nativa** (inline, una revisión final de toda la rama).
 - **Rama:** `fase1/p1-base-y-motor`.
 - **Ledger de ejecución:** `.superpowers/sdd/2026-11-01-fase1-p1-base-y-motor/progress.md` (ignorado por git).
-- **Hecho:** P1 · Tareas 1–6 (proyecto montado; PWA offline; lienzo escalado; contraste WCAG; reglas de legibilidad; búsqueda binaria del tamaño).
+- **Hecho:** P1 · Tareas 1–7 (proyecto montado; PWA offline; lienzo escalado; contraste WCAG; reglas de legibilidad; búsqueda binaria; medición del texto en el DOM).
 
 ## Próxima tarea
 
-- P1 · Tarea 7: medición en el DOM, `measureTextFit` (`src/slides/engine/measure.ts`).
+- P1 · Tarea 8: `FitText.vue` y estado "No cabe" (`fitReport.ts`).
 
 ## Decisiones tomadas
 
@@ -59,4 +59,5 @@ Requisito de una sola vez: `npx playwright install chromium`.
 | 2026-11-01 | P1 · T3: lienzo, área segura, `SlideCanvas.vue` | `npm test` 22/22 | e43e3b6 |
 | 2026-11-01 | P1 · T4: color y contraste WCAG, `ensureContrast` | `npm test` 51/51 | b13d680 |
 | 2026-11-01 | P1 · T5: reglas de legibilidad, `TextSlotDef`, `validateTextSlot` | `npm test` 63/63 | dc47cb1 |
-| 2026-11-01 | P1 · T6: `findLargestFittingSize` | `npm test` 74/74 | ver `git log` |
+| 2026-11-01 | P1 · T6: `findLargestFittingSize` | `npm test` 74/74 | 73eb5b2 |
+| 2026-11-01 | P1 · T7: `measureTextFit`, `ensureFontLoaded` (sin cortes a mitad de palabra; verificado con mutación) | `npm test` 92/92 | ver `git log` |
