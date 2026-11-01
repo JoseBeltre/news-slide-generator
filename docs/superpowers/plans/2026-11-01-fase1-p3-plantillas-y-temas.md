@@ -219,30 +219,53 @@ Las slides tienen estilo propio, distinto de la interfaz. Siguiendo "mostrar, no
 - [ ] **Step 4:** registrar la elegida en `docs/slides-direccion-visual.md` y en HANDOFF (decisión); dejar solo esa variante como predeterminada (las otras se borran: YAGNI).
 - [ ] **Step 5:** commit `feat(slides): dirección visual elegida por el responsable [§9]`.
 
-### Task 6: Plantilla Clásica
+### Ajuste del plan tras el rediseño (2026-11-01, después de T5)
 
-**Files:** Create `src/slides/templates/classic/layout.ts`, `ClassicSlide.vue`, `parts/InfoRows.vue`, `tests/browser/slides/classic.test.ts`.
+T5 cambió la base de las tareas que siguen: ya no hay una sola Clásica con filas e íconos, sino **3 estilos** (Himnario, Almanaque, Cartel) elegidos por `spec.slideStyle`, con la fecha como protagonista, grupos de 1–3 logos y los mínimos de SRS v1.4 (título 84, clave 60, secundario 44, cumpleaños 108/54, meta 32; íconos opcionales ≥ 56 px; interlineado por rol). Las tareas 6–12 quedan así:
 
-**Interfaces:** `classicLayout(data: NormalizedData, opts: { hasLogo: boolean }) => { title: TextSlotDef; rows: Array<{ row: InfoRow; slot: TextSlotDef; icon: Rect }>; logo?: Rect }`.
+- **Reparto entre sesiones** (los dos trabajan en la misma carpeta, sin worktree): T8 y T9 (cumpleaños) las hace la sesión del rediseño, en `src/slides/templates/birthday/` y en el mismo lenguaje visual. Esta sesión hace T6, T7, T10, T11 y T12. Los archivos compartidos (`SlideView.vue`, `registry.ts`, `gallery-entries.ts`) solo se tocan en cambios pequeños y con commit enseguida; cumpleaños añade sus entradas al registrar sus componentes.
+- **Global Constraints, valores que cambian:** íconos `@lucide/vue` (no `lucide-vue-next`); íconos de datos **opcionales**, ≥ 56 px si se dibujan; interlineado por rol (1.05 títulos y nombres, 1.1 secundario, 1.2 el resto); spec `SRS.md` **v1.4**.
+- **Review Focus, línea que cambia:** "Logo ninguno" → en los 3 estilos el hueco del logo lo ocupa el emblema del tipo (`TypeEmblem`); nunca queda la cabecera vacía.
 
-Geometría (px del lienzo, todo dentro de `SAFE_AREA`):
-- Logo arriba a la derecha: caja `{x:1424, y:64, width:400, height:160}`.
-- Título: `{x:96, y:64, width: hasLogo ? 1296 : 1728, height:300}`, rol `title`, `maxLines: 2`.
-- Filas: región `{x:96, y:412, width:1728, height:604}` repartida en N filas iguales con 16 px de separación; ícono 64×64 a la izquierda, texto en `x+96`; rol según la fila (`key` → `maxLines:1`, `secondary` → `maxLines:2`).
+### Task 6: Clásica en los 3 estilos (pruebas)
 
-- [ ] **Step 1: pruebas que fallan** (browser, con fixtures de Task 2) para los 6 tipos de texto: datos normales → `status:'ok'` y `auditSlide(canvas)` → `[]`; título de 120 caracteres → `no_cabe` con `offendingFields:['titulo']`; salida llena → `no_cabe`, `reason:'density'`, `['contacto']`; todos los opcionales vacíos → `ok`, sin filas vacías en el DOM; logo `ninguno` → el título mide 1728 de ancho y no existe `[data-logo]`; mismo anuncio con tema neutro y con `deriveTheme('#fff59d')` → `auditSlide` vacío en ambos.
-- [ ] **Step 2:** FAIL. **Step 3:** implementar (`layout.ts` puro, probado también en `tests/unit`: cajas dentro del área segura con `validateTextSlot`). **Step 4:** PASS.
-- [ ] **Step 5:** commit `feat(plantillas): Clásica para los 6 tipos [RF-30, §5, §9]`.
+El código ya existe (T5: `classic/layout.ts`, `HimnarioSlide`, `AlmanaqueSlide`, `CartelSlide`). Esta tarea lo cubre con pruebas y corrige lo que encuentren.
 
-### Task 7: Plantilla Visual
+**Files:** Create `tests/unit/slides/classicLayout.test.ts`, `tests/browser/slides/classic.test.ts`, `tests/browser/helpers/slides.ts` (montar una `SlideSpec` en `SlideView`, esperar fuentes y logos, devolver el último `SlideStatus` y el lienzo; lo reusan T7, T10–T12). Modify lo que las pruebas obliguen.
 
-**Files:** Create `src/slides/templates/visual/layout.ts`, `VisualSlide.vue`, `tests/browser/slides/visual.test.ts`.
+**Interfaces:**
+- Produces (helper): `renderSlide(spec: SlideSpec, ctx: SlideContext): Promise<{ status: SlideStatus; canvas: HTMLElement; host: HTMLElement }>` — espera a que todos los `SlideText` hayan informado y todas las `<img>` estén `complete`.
 
-Geometría: panel lateral izquierdo a sangre `{x:0, y:0, width:768, height:1080}` de color de acento con la foto (`object-fit: cover`, apoyada en el borde inferior, §9) o, sin foto, el ícono del tipo grande (≥ 320 px) en `onAccent`. Zona de texto `{x:864, y:64, width:960, height:952}` sobre el fondo del tema: título (`maxLines:3`), filas debajo, logo abajo a la derecha `{x:1424, y:856, width:400, height:160}`.
+- [ ] **Step 1: pruebas unitarias que fallan o fijan** (`classicLayout.test.ts`): `stackRows` con 1–6 filas de los fixtures → todas las cajas dentro de `SAFE_AREA` y `validateTextSlot` sin error; la pila no se solapa (cada fila empieza ≥ `ROW_GAP` después de la anterior); `rowLines` de una descripción corta → 1; `titleSlot` con caja de 300 px → `maxLines` 3; `detailRows` quita la fila de la fecha.
+- [ ] **Step 2: pruebas de navegador** (`classic.test.ts`), para **cada estilo**:
+  - los 5 tipos de texto con `NORMAL` → `ok` y `auditSlide` `[]`;
+  - `MINIMAL` → `ok`, sin `SlideText` vacíos;
+  - título de 95 caracteres (`longTitle`) → `no_cabe` con `['titulo']`, `reason: 'fit'`;
+  - salida `FULL` (7 filas) → `no_cabe`, `reason: 'density'`, `['contacto']`;
+  - logo `ninguno` → ningún `[data-logo]` y existe el emblema del tipo (`[data-emblem]`, añadir el atributo a `TypeEmblem`);
+  - culto `NORMAL` con tema `cielo` y con `deriveTheme('#fff59d')` (vía `customPrimaryColor`) → `auditSlide` `[]`.
+- [ ] **Step 3:** `pnpm vitest run classic` → leer resultados; arreglar las fallas reales en el código (no en la prueba), cada una con su `Ruling:` si cambia geometría.
+- [ ] **Step 4:** `pnpm vitest run classic` → PASS; `pnpm typecheck` → 0.
+- [ ] **Step 5:** commit `test(plantillas): Clásica en los 3 estilos [RF-30, §5, §9]`.
 
-- [ ] **Step 1: pruebas que fallan:** los mismos casos de Task 6; además culto con `fotoPredicador` → `<img>` dentro del panel y **ningún** `[data-role]` cuyo rectángulo se cruce con el panel (nunca texto sobre foto); sin foto → `[data-icon]` grande en el panel.
-- [ ] **Step 2:** FAIL. **Step 3:** implementar. **Step 4:** PASS.
-- [ ] **Step 5:** commit `feat(plantillas): Visual con foto o ícono del tipo [RF-30, §5.5, §9]`.
+### Task 7: Visual = Clásica con la foto
+
+Solo **culto** tiene un campo de imagen (`fotoPredicador`, PNG sin fondo). La Visual no es un cuarto diseño: es el **mismo estilo** con la foto recortada de pie sobre el borde inferior y la columna de texto más estrecha. Sin foto, la Visual se dibuja igual que la Clásica.
+
+**Files:** Create `src/slides/templates/parts/PhotoCutout.vue`, `tests/browser/slides/visual.test.ts`. Modify `SlideView.vue` (`visual: ClassicSlide`), `classic/*Slide.vue` (columna estrecha + foto cuando `spec.templateId === 'visual' && spec.data.imageId`), `registry.ts` y `types/definitions.ts` (Visual solo para tipos con un campo `image`), `tests/unit/types/definitions.test.ts`, `src/dev/gallery-entries.ts`, `tests/fixtures/` (una foto recortada de prueba generada en código, sin archivos binarios).
+
+**Interfaces:**
+- Produces: `PhotoCutout.vue` props `{ imageId: string; box: Rect; loadImage }` → `<img data-photo>` con `object-fit: contain; object-position: bottom`, apoyada abajo; nada si la imagen no carga.
+- `templatesFor(typeId)` y `getTypeDef(typeId).templateIds` coinciden; `visual` solo en tipos con un `FieldDef` `kind: 'image'` (hoy: culto).
+
+- [ ] **Step 1: pruebas que fallan** (`visual.test.ts`), para cada estilo: culto con foto → existe `[data-photo]`, `ok`, `auditSlide` `[]`, y **ningún** `[data-role]` se cruza con el rectángulo de la foto (§5.5); culto Visual sin foto → mismo DOM de texto que la Clásica (mismos `data-role` y textos); `templatesFor('aviso')` no incluye `visual`; `templatesFor('culto')` sí.
+- [ ] **Step 2:** FAIL. **Step 3:** implementar. Geometría por estilo (px del lienzo): la foto ocupa una franja fija que llega al borde inferior; el texto se reacomoda en lo que queda. Las cifras exactas se eligen viendo las capturas; cada una queda en el componente como constante.
+- [ ] **Step 4:** PASS; capturas de los 3 estilos con foto (`scripts/capturar-galeria.mjs`) en `docs/slides-direcciones/visual/`; **enviarlas al responsable** para su visto bueno (no bloquea T10–T11; si pide cambios, se hacen antes de T12).
+- [ ] **Step 5:** commit `feat(plantillas): Visual con la foto del predicador en los 3 estilos [RF-30, §5.5, §9]`.
+
+### Task 8 y Task 9: Cumpleaños → **sesión del rediseño**
+
+Sin cambios de contenido respecto a lo escrito arriba, salvo los mínimos v1.4 (nombre individual 108, grupo 54) y que van en el lenguaje de los 3 estilos. Esta sesión no toca `src/slides/templates/birthday/`.
 
 ### Task 8: Cumpleaños: reparto en slides
 
@@ -274,31 +297,30 @@ Geometría: panel lateral izquierdo a sangre `{x:0, y:0, width:768, height:1080}
 
 ### Task 10: Slide de imagen
 
-**Files:** Create `src/slides/templates/image/ImageSlide.vue`, `tests/browser/slides/image.test.ts`.
+**Files:** Create `src/slides/templates/image/ImageSlide.vue`, `tests/browser/slides/image.test.ts`. Modify `SlideView.vue` (`image: ImageSlide`), `gallery-entries.ts`.
 
-- Imagen con `object-fit: contain` a lienzo completo; detrás, la **misma imagen** con `object-fit: cover`, `filter: blur(48px) brightness(0.55)` y escalada 1.1 para que el difuminado no deje bordes; sin logo ni texto (RF-40/41).
+- Imagen con `object-fit: contain` a lienzo completo; detrás, la **misma imagen** con `object-fit: cover`, `filter: blur(48px) brightness(0.55)` y escala 1.1; sin logo ni texto (RF-40/41). Mientras carga o si no hay blob: fondo `#000` y estado `ok` (no hay texto que medir).
 
-- [ ] **Step 1: pruebas que fallan:** con un PNG 1080×1920 generado en la prueba → la imagen nítida mide 607.5×1080 centrada y el fondo cubre todo el lienzo (ningún píxel negro puro en las esquinas: muestrear con canvas de la captura del elemento o comprobar estilos computados); con 1920×1080 → sin relleno visible; ningún `[data-logo]`.
-- [ ] **Step 2:** FAIL. **Step 3:** implementar. **Step 4:** PASS.
+- [ ] **Step 1: pruebas que fallan:** PNG 1080×1920 generado con `OffscreenCanvas` → la imagen nítida mide 607.5×1080 centrada (x = 656.25) y la de fondo cubre el lienzo (`getBoundingClientRect` ≥ 1920×1080); PNG 1920×1080 → la nítida mide 1920×1080; ningún `[data-logo]` ni `[data-role]`; `status` `ok`.
+- [ ] **Step 2:** FAIL. **Step 3:** implementar con `useImageUrl`. **Step 4:** PASS.
 - [ ] **Step 5:** commit `feat(plantillas): slide de imagen con relleno difuminado [RF-40, RF-41]`.
 
-### Task 11: Portada y cierre
+### Task 11: Cierre
 
-**Files:** Create `CoverSlide.vue`, `ClosingSlide.vue`, `tests/browser/slides/cover.test.ts`.
+La portada ya existe en los 3 estilos (T4/T5). El cierre usa **la misma composición** que la portada de su estilo, con `"¡Feliz sábado!"` en lugar de `settings.coverTitle` (la fecha y el nombre de la iglesia se quedan: abre y cierra igual).
 
-- Portada: logo de la iglesia grande (`data-cover`, alto ≤ 400, variante según fondo), `settings.coverTitle` en rol `title` y la fecha de la presentación en `key`. Cierre: logo grande y `settings.churchName` en `title` con "¡Feliz sábado!" en `key`.
-- Valores por defecto mientras no existan en Configuración (P4): `coverTitle: 'Anuncios'`, `churchName: 'Mansedumbre II'`.
+**Files:** Modify `cover/Cover*.vue` (texto del título según `spec.kind`), `SlideView.vue` (`closing: CoverSlide`), `registry.ts` (`frameSlide(kind: 'cover' | 'closing', ctx): SlideSpec` con la paleta del tema y `ctx.settings.slideStyle`), `gallery-entries.ts`. Create `tests/browser/slides/cover.test.ts`.
 
-- [ ] **Step 1: pruebas que fallan:** portada sobre tema neutro → logo blanco con alto 400; `auditSlide` vacío (la regla de logo admite 400 con `data-cover`); cierre igual; título largo de iglesia → `ok` en 2 líneas.
+- [ ] **Step 1: pruebas que fallan**, para cada estilo: portada y cierre sobre `neutro` y `cielo` → `ok`, `auditSlide` `[]`, `[data-cover]` presente con alto ≤ 400; cierre contiene "¡Feliz sábado!" y no `coverTitle`; `churchName` de 40 caracteres → `ok`.
 - [ ] **Step 2:** FAIL. **Step 3:** implementar. **Step 4:** PASS.
-- [ ] **Step 5:** commit `feat(plantillas): portada y cierre con el logo de la iglesia [RF-39, §9]`.
+- [ ] **Step 5:** commit `feat(plantillas): cierre en los 3 estilos [RF-39, §9]`.
 
-### Task 12: Pruebas de legibilidad §5.7 completas y capturas
+### Task 12: Matriz §5.7 y capturas de regresión
 
-**Files:** Create `tests/browser/slides/matrix.test.ts`, `tests/e2e/galeria.spec.ts`, capturas base en `tests/e2e/galeria.spec.ts-snapshots/`.
+**Files:** Create `tests/browser/slides/matrix.test.ts`, `tests/e2e/galeria.spec.ts`. Modify `playwright.config.ts`, `.gitignore`, `HANDOFF.md`, hoja de ruta.
 
-- [ ] **Step 1:** `matrix.test.ts` recorre **cada tipo × cada plantilla × {tema neutro, tema claro, `deriveTheme('#fff59d')`} × {normal, todos los opcionales llenos, todos vacíos, título larguísimo, sin logo, fecha en estilo `medio` con hora}** (más cumpleaños en los 3 modos e imagen horizontal y vertical) y comprueba: (a) ningún texto bajo el mínimo, (b) nada fuera del área segura, (c) contraste ≥ 7:1, (d) los que no caben salen `no_cabe` con su campo. Esto es `auditSlide(canvas) → []` cuando el estado es `ok`.
-- [ ] **Step 2:** `galeria.spec.ts`: `toHaveScreenshot` de una slide por plantilla y modo (≈ 14 capturas) a 1920×1080 con la galería en `?only=`; crear las capturas base con `--update-snapshots` y revisarlas a ojo antes de guardarlas.
-- [ ] **Step 3:** verificación completa: `pnpm typecheck && pnpm test && pnpm test:e2e && pnpm build` → todo verde; la E2E offline sigue sin orígenes externos.
-- [ ] **Step 4:** actualizar HANDOFF (API de plantillas, P3 hecho, próximo = plan P4 con la elección del DESIGN.md de la interfaz) y la hoja de ruta.
+- [ ] **Step 1:** `matrix.test.ts` (usa `renderSlide`): (a) cada estilo × cada tipo de texto × {normal, lleno, mínimo, título largo, sin logo, fecha `medio` con relativas} en `neutro`; (b) cada estilo × cada tipo `NORMAL` en `cielo` y `deriveTheme('#fff59d')`; (c) Visual con foto × estilo × 3 temas; (d) portada y cierre × estilo × 3 temas; (e) imagen horizontal y vertical. Cada caso: si `ok` → `auditSlide` `[]`; si `no_cabe` → su `offendingFields` no está vacío y el caso es uno de los esperados (título largo, salida llena). Los cumpleaños los añade su sesión a esta matriz.
+- [ ] **Step 2:** `galeria.spec.ts`: `toHaveScreenshot` con `?only=` de: por estilo, culto normal, salida llena, aviso, Visual con foto, portada y cierre; más imagen vertical (≈ 19). Las capturas base **no se suben** (decisión del responsable: capturas solo en local): `tests/e2e/galeria.spec.ts-snapshots/` en `.gitignore` y `updateSnapshots: 'missing'` en el proyecto `galeria`, así la primera corrida las crea y las siguientes comparan.
+- [ ] **Step 3:** verificación completa: `pnpm typecheck && pnpm test && pnpm test:e2e && pnpm build` → todo verde.
+- [ ] **Step 4:** HANDOFF (API de plantillas, P3 hecho salvo cumpleaños si aún falta, próximo = revisión final y P4) y hoja de ruta.
 - [ ] **Step 5:** commit `test(plantillas): matriz de legibilidad §5.7 y capturas de regresión [§5.7, §10.13]`.
