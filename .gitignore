@@ -3,7 +3,7 @@ dist
 dev-dist
 test-results
 playwright-report
-.vitest-attachments
+.vitest/
 __screenshots__
 .env*
 .superpowers

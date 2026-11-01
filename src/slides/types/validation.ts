@@ -47,7 +47,8 @@ const person = z
     name: z.string(err(MESSAGES.personName, MESSAGES.personName)).trim().min(1, MESSAGES.personName),
     day: z.number(err(MESSAGES.personDayMonth, MESSAGES.personDayMonth)).int(MESSAGES.personDayMonth).min(1, MESSAGES.personDayMonth).max(31, MESSAGES.personDayMonth),
     month: z.number(err(MESSAGES.personDayMonth, MESSAGES.personDayMonth)).int(MESSAGES.personDayMonth).min(1, MESSAGES.personDayMonth).max(12, MESSAGES.personDayMonth),
-    photoId: z.string().min(1).optional(),
+    // Quitar la foto deja '' o null: equivale a no tener foto.
+    photoId: z.preprocess((v) => (typeof v === 'string' && v.trim() ? v.trim() : undefined), z.string().optional()),
   })
   // Zod 4 corre este refine aunque día o mes ya fallaran: solo se comprueba con ambos en rango.
   .refine((p) => {

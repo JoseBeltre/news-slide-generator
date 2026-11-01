@@ -42,6 +42,8 @@ export function formatTime(hhmm: string, opts: { timeFormat?: '12h' | '24h' } = 
 
 /** "RD$500", "RD$1,500.50"; sin decimales si son ,00. Un precio de 0 es "Gratis". */
 export function formatMoney(amount: number, opts: { currency?: string } = {}): string {
+  // Redondear a centavos antes de decidir: 1500.999 se ve como "RD$1,501", nunca "RD$1,501.00".
+  amount = Math.round(amount * 100) / 100
   if (amount === 0) return 'Gratis'
   const whole = Number.isInteger(amount)
   return new Intl.NumberFormat('es-DO', {

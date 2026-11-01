@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { getTypeDef } from '../../../src/slides/types/definitions'
-import { MESSAGES, validateValues } from '../../../src/slides/types/validation'
+import { MESSAGES, validateValues, type Person } from '../../../src/slides/types/validation'
 
 const culto = getTypeDef('culto')
 const cumple = getTypeDef('cumpleanos')
@@ -146,5 +146,16 @@ describe('cumpleaños', () => {
         mensaje: '¡Feliz cumpleaños!',
       },
     })
+  })
+})
+
+describe('foto de cumpleañero quitada (revisión final P2)', () => {
+  it('photoId vacío o null equivale a sin foto, sin errores en inglés', () => {
+    const cumple = getTypeDef('cumpleanos')
+    for (const photoId of ['', null, '  ']) {
+      const r = validateValues(cumple, { personas: [{ name: 'Ana', day: 3, month: 11, photoId }] })
+      expect(r, String(photoId)).toMatchObject({ ok: true })
+      if (r.ok) expect((r.values.personas as Person[])[0]!.photoId).toBeUndefined()
+    }
   })
 })

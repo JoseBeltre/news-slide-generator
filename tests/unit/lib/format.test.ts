@@ -58,3 +58,11 @@ describe('formatMoney', () => {
     expect(formatMoney(n)).toBe(esperado)
   })
 })
+
+describe('formatMoney redondea a centavos (revisión final P2)', () => {
+  it('1500.999 → "RD$1,501" y 1500.004 → "RD$1,500", sin ",00"', () => {
+    expect(formatMoney(1500.999)).toBe('RD$1,501')
+    expect(formatMoney(1500.004)).toBe('RD$1,500')
+    expect(formatMoney(0.001)).toBe('Gratis')
+  })
+})
