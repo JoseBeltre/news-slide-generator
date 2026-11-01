@@ -1,4 +1,5 @@
 // Color y contraste según WCAG 2.x (§5.5). Todo es determinista: mismo color, mismo resultado.
+import { MIN_CONTRAST } from './readability'
 
 export type Rgb = { r: number; g: number; b: number }
 
@@ -130,7 +131,7 @@ export interface ContrastResult {
 }
 
 /** Garantiza texto ≥ `min` sobre el fondo; si ni blanco ni negro alcanzan, ajusta la luminosidad del fondo. */
-export function ensureContrast(background: string, min = 7): ContrastResult {
+export function ensureContrast(background: string, min = MIN_CONTRAST): ContrastResult {
   if (!(min >= 1 && min <= 21)) throw new RangeError(`Contraste mínimo fuera de rango (1–21): ${min}`)
   const bg = toHex(parseColor(background))
   const best = pickTextColor(bg)
