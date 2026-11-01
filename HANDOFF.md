@@ -6,7 +6,7 @@
 
 - **Fase:** 1 (MVP), pasos 1–7 en modo **solo local** (sin backend), según SRS §11.
 - **Plan vigente:** `docs/superpowers/plans/2026-11-01-fase1-p2-tipos-datos-logos.md` (paso 3), aprobado; ejecución **nativa** en la rama `fase1/p2-tipos-datos-logos`. Ledger: `.superpowers/sdd/2026-11-01-fase1-p2-tipos-datos-logos/progress.md`. P1 está terminado y unido a `master`.
-- **P2 hecho:** Tareas 1–7 (formato es-DO; 7 tipos declarativos; validación con Zod; Dexie y repositorio; imágenes comprimidas sin duplicados; color dominante; ministerios con logo IASD precargado). Revisión final hecha (sin Critical/Important del revisor; 3 menores re-graduados y arreglados). Pendiente: decidir unión con `master`.
+- **P2 hecho:** Tareas 1–7 (formato es-DO; 7 tipos declarativos; validación con Zod; Dexie y repositorio; imágenes comprimidas sin duplicados; color dominante; ministerios con logo IASD precargado). Revisión final hecha (sin Critical/Important del revisor; 3 menores re-graduados y arreglados). **Unido a `master`** (fast-forward, rama borrada); verificado en `master`: typecheck 0, `pnpm test` 233/233, `test:e2e` 2/2.
 - **Hoja de ruta de la fase:** `docs/superpowers/plans/2026-11-01-fase1-hoja-de-ruta.md` (pasos 1–7).
 - **Aprobación:** P1 aprobado el 2026-11-01; ejecución **nativa** (inline, una revisión final de toda la rama).
 - **Rama:** `fase1/p1-base-y-motor`.
@@ -38,7 +38,7 @@
 
 ## Próxima tarea
 
-- Decidir unión de `fase1/p2-tipos-datos-logos` con `master` (responsable). Después: escribir el plan P3 (plantillas y temas).
+- Escribir el plan P3 (plantillas y temas) y esperar aprobación del responsable.
 
 ## Decisiones tomadas
 
@@ -117,4 +117,5 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | P2 · T5: `saveImage` (WebP 0.82, ≤2560/1600 px, SVG intacto, SHA-256, sin duplicados) | `pnpm test` 215/215 | 6c8cff1 |
 | 2026-11-01 | P2 · T6: `dominantColor` / `dominantColorOfBlob` | `pnpm test` 223/223 | afb1eef |
 | 2026-11-01 | P2 · T7: `src/data/ministries.ts` (iglesia precargada, candidatos de logo, `listMinistries`) | typecheck 0; `pnpm test` 231/231; `test:e2e` 2/2; build OK | 43eebcc |
-| 2026-11-01 | P2 · revisión final: `photoId` vacío = sin foto (sin error en inglés); `formatMoney` redondea a centavos; `.vitest/` fuera del repo | typecheck 0; `pnpm test` 233/233; `test:e2e` 2/2; build OK | ver `git log` |
+| 2026-11-01 | P2 · revisión final: `photoId` vacío = sin foto (sin error en inglés); `formatMoney` redondea a centavos; `.vitest/` fuera del repo | typecheck 0; `pnpm test` 233/233; `test:e2e` 2/2; build OK | 35a579d |
+| 2026-11-01 | P2 unido a `master` (fast-forward) | verificado en `master`: 233/233, E2E 2/2 | 35a579d |
