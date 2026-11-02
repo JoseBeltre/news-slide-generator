@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDate, formatEventDate, formatMoney, formatTime, parseLocalDate, toIsoDate, type DateStyle } from '../../../src/lib/format'
+import { formatDate, formatEventDate, formatMoney, formatTime, parseLocalDate, parseMoneyInput, toIsoDate, type DateStyle } from '../../../src/lib/format'
 
 const HOY = new Date(2026, 10, 1) // 1 de noviembre de 2026
 
@@ -132,5 +132,20 @@ describe('toIsoDate', () => {
   it('fecha local → YYYY-MM-DD, sin correrse por UTC', () => {
     expect(toIsoDate(new Date(2026, 10, 7, 23, 30))).toBe('2026-11-07')
     expect(toIsoDate(new Date(2026, 0, 1, 0, 5))).toBe('2026-01-01')
+  })
+})
+
+describe('parseMoneyInput (campo de precio)', () => {
+  it('acepta separador de miles y decimales con punto', () => {
+    expect(parseMoneyInput('1,500')).toBe(1500)
+    expect(parseMoneyInput('1500')).toBe(1500)
+    expect(parseMoneyInput(' 2,350.50 ')).toBe(2350.5)
+    expect(parseMoneyInput('RD$ 500')).toBe(500)
+  })
+
+  it('vacío → undefined; texto que no es número → el texto (la validación lo explica)', () => {
+    expect(parseMoneyInput('')).toBeUndefined()
+    expect(parseMoneyInput('   ')).toBeUndefined()
+    expect(parseMoneyInput('gratis')).toBe('gratis')
   })
 })

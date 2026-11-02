@@ -22,6 +22,17 @@ export function toIsoDate(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
+/**
+ * Lo escrito en el campo de precio → número ("1,500" → 1500; "RD$ 500" → 500). Vacío → undefined.
+ * Si no es un número, devuelve el texto tal cual para que la validación diga qué escribir.
+ */
+export function parseMoneyInput(text: string): number | string | undefined {
+  const trimmed = text.trim()
+  if (trimmed === '') return undefined
+  const digits = trimmed.replace(/^(RD)?\$\s*/i, '').replace(/,/g, '')
+  return /^\d+(\.\d+)?$/.test(digits) ? Number(digits) : trimmed
+}
+
 /** "Sábado 7 de noviembre"; con año solo si no es el de `today`. */
 export function formatDate(iso: string, opts: { today?: Date } = {}): string {
   const date = parseLocalDate(iso)
