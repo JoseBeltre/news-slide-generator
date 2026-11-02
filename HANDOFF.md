@@ -5,7 +5,7 @@
 ## Estado actual
 
 - **Fase:** 1 (MVP), pasos 1–7 en modo **solo local** (sin backend), según SRS §11.
-- **P3 en curso** (rama `fase1/p3-plantillas-y-temas`, sin subir): **todo hecho**: también cumpleaños (T8/T9) y la Visual rediseñada, aprobados por el responsable. T1–T5 (fechas, normalización, temas, `SlideView`, 3 estilos Himnario/Almanaque/Cartel), T6 (pruebas de la Clásica), T7 (Visual con foto), T10 (imagen), T11 (cierre), T12 (matriz §5.7 de 149 casos y 19 capturas de regresión). Capturas de revisión: `docs/slides-direcciones/` (local).
+- **P3 hecho y unido a `master`** (fast-forward, en GitHub; ramas `fase1/p3-plantillas-y-temas` y `backup/p3-antes-de-limpiar` borradas). Incluye los 3 estilos de slide (Himnario, Almanaque, Cartel) con la Clásica, la Visual con foto, los cumpleaños (individual, grupo, híbrido), la slide de imagen, la portada y el cierre; la matriz §5.7 y las capturas de regresión locales. Revisión final con revisor nuevo: 0 Critical, 2 Important arreglados. Verificado en `master`: typecheck 0, `pnpm test` 611/611, `test:e2e` 30/30, build sin galería.
 - **Plan vigente:** `docs/superpowers/plans/2026-11-01-fase1-p2-tipos-datos-logos.md` (paso 3), aprobado; ejecución **nativa** en la rama `fase1/p2-tipos-datos-logos`. Ledger: `.superpowers/sdd/2026-11-01-fase1-p2-tipos-datos-logos/progress.md`. P1 está terminado y unido a `master`.
 - **P2 hecho:** Tareas 1–7 (formato es-DO; 7 tipos declarativos; validación con Zod; Dexie y repositorio; imágenes comprimidas sin duplicados; color dominante; ministerios con logo IASD precargado). Revisión final hecha (sin Critical/Important del revisor; 3 menores re-graduados y arreglados). **Unido a `master`** (fast-forward, rama borrada); verificado en `master`: typecheck 0, `pnpm test` 233/233, `test:e2e` 2/2.
 - **Hoja de ruta de la fase:** `docs/superpowers/plans/2026-11-01-fase1-hoja-de-ruta.md` (pasos 1–7).
@@ -60,13 +60,10 @@
 
 ## Próxima tarea
 
-P3 en la rama `fase1/p3-plantillas-y-temas` (sin subir): todo hecho **salvo cumpleaños**.
-
-- **Cumpleaños (T8/T9): hechos** en la sesión del rediseño (`src/slides/templates/birthday/`), registrados en `SlideView`, `registry` (plantilla `cumpleanos`), galería, matriz y capturas de regresión.
-- **Visual con foto: aprobada** por el responsable, con dos ajustes ya hechos (sin ornamento en Himnario, hojita más pequeña en Almanaque).
-- **Cumpleaños rehechos** según sus observaciones (sin logo, día discreto y ocultable, adornos festivos, sin grandes superficies rosadas, grupos sin fotos). **Aprobados por el responsable** (capturas locales en `docs/slides-direcciones/cumpleanos/`).
-- Cuando estén los cumpleaños: revisión final de toda la rama, unir a `master`, `git push origin master` y borrar la rama local `backup/p3-antes-de-limpiar`.
-- Después, **P4** (formularios y vista previa): presentar 3 `DESIGN.md` de designmd.app para la interfaz y que el responsable elija.
+**P4 (formularios y vista previa)**, paso 5 de la hoja de ruta:
+1. Escribir el plan `docs/superpowers/plans/2026-11-01-fase1-p4-*.md` a partir del SRS y de la hoja de ruta.
+2. **Antes de diseñar la interfaz:** presentar al responsable **3 `DESIGN.md` de designmd.app**, cada uno con su fundamento (UX primero, base `ui-ux-pro-max`). Elige él. Aplica **solo a la interfaz**, nunca a las slides.
+3. Lo que P4 consume de P3: `buildSlides`, `templatesFor`, `frameSlide`, `SlideView` (estado `midiendo` = aún no listo), `deriveTheme(...).warning` para el aviso de color ajustado, `Settings.slideStyle` / `dateStyle` / `relativeDates` y los menores diferidos listados en "Problemas abiertos".
 
 ## Decisiones tomadas
 
@@ -188,3 +185,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | Cumpleaños 2.ª ronda: colores de fiesta variados, confeti de esquina, pastel, globos y gorrito más grandes, gorrito sobre el marco; listas en fondo claro sin recuadros ni diagonal | typecheck 0; `pnpm test` 609/609; `test:e2e` 30/30 | ver `git log` |
 | 2026-11-01 | Cumpleaños y Visual aprobados por el responsable; pasa a la sesión principal para la revisión final de la rama, la unión a `master` y el push | — | ver `git log` |
 | 2026-11-01 | P3 · revisión final (revisor nuevo): 0 Critical; 2 Important arreglados (estado `midiendo`; "No cabe" que se perdía con un spec nuevo); 6 menores diferidos | `pnpm test` 611/611; `test:e2e` 30/30 | ver `git log` |
+| 2026-11-01 | P3 unido a `master` (fast-forward) y subido a GitHub | verificado en `master`: 611/611, E2E 30/30, build OK | dfb6389 |
