@@ -2,6 +2,10 @@ import { createMemoryHistory } from 'vue-router'
 import { describe, expect, it } from 'vitest'
 import { createAppRouter } from '../../../src/app/router'
 
+/** Solo resuelve la ruta (sin cargar la pantalla, que trae el motor de slides). */
+const resolve = (path: string) => createAppRouter(createMemoryHistory()).resolve(path)
+
+/** Navega: corre las guardas y redirecciones. */
 async function go(path: string) {
   const router = createAppRouter(createMemoryHistory())
   await router.push(path)
@@ -10,7 +14,7 @@ async function go(path: string) {
 
 describe('rutas de la app', () => {
   it('/anuncios/nuevo/culto → paso 2 del tipo culto', async () => {
-    const r = await go('/anuncios/nuevo/culto')
+    const r = resolve('/anuncios/nuevo/culto')
     expect(r.name).toBe('nuevo-tipo')
     expect(r.params.typeId).toBe('culto')
   })
@@ -20,7 +24,7 @@ describe('rutas de la app', () => {
   })
 
   it('/anuncios/abc → editor del anuncio abc', async () => {
-    const r = await go('/anuncios/abc')
+    const r = resolve('/anuncios/abc')
     expect(r.name).toBe('editar')
     expect(r.params.id).toBe('abc')
   })

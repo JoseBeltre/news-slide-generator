@@ -1,7 +1,7 @@
 // Registro de plantillas y `buildSlides`: el único punto de entrada de anuncio → slides.
 import { normalizeAnnouncement } from '../normalize'
 import { contrastRatio } from '../engine'
-import { deriveTheme, mixColors, resolveTheme, type SlidePalette } from '../themes'
+import { PRESET_THEMES, deriveTheme, mixColors, resolveTheme, type SlidePalette } from '../themes'
 import { getTypeDef } from '../types/definitions'
 import type { AnnouncementTypeId } from '../types/fields'
 import { birthdayLayout, type BirthdayValues } from './birthday/layout'
@@ -11,9 +11,18 @@ const TEXT_TYPES: readonly AnnouncementTypeId[] = ['culto', 'salida', 'obra_misi
 /** La Visual dibuja la foto del anuncio: solo para tipos con un campo de imagen (hoy, culto). */
 const PHOTO_TYPES = TEXT_TYPES.filter((id) => getTypeDef(id).fields.some((f) => f.kind === 'image'))
 
-/** Paleta del anuncio: su color personalizado (RF-32) o el tema de la iglesia, con el acento del tipo. */
-export function paletteFor(a: Pick<AnnouncementInput, 'customPrimaryColor'>, typeId: AnnouncementTypeId | undefined, ctx: SlideContext): SlidePalette {
-  return (a.customPrimaryColor ? deriveTheme(a.customPrimaryColor, typeId) : resolveTheme(ctx.theme, typeId)).palette
+/**
+ * Paleta del anuncio, con el acento del tipo: su color personalizado (RF-32), si no el tema que eligió
+ * (RF-31) y si no el tema de la iglesia.
+ */
+export function paletteFor(
+  a: Pick<AnnouncementInput, 'customPrimaryColor' | 'themeId'>,
+  typeId: AnnouncementTypeId | undefined,
+  ctx: SlideContext,
+): SlidePalette {
+  if (a.customPrimaryColor) return deriveTheme(a.customPrimaryColor, typeId).palette
+  const theme = PRESET_THEMES.find((t) => t.id === a.themeId) ?? ctx.theme
+  return resolveTheme(theme, typeId).palette
 }
 
 /**
@@ -57,7 +66,8 @@ export const TEMPLATES: readonly TemplateDef[] = Object.freeze([
     id: 'imagen',
     name: 'Imagen completa',
     typeIds: ['imagen'],
-    layout: (a) => [{ kind: 'image', imageId: String(a.values.imagen) }],
+    // Sin imagen todavía (borrador): no hay slide que dibujar.
+    layout: (a) => (typeof a.values.imagen === 'string' && a.values.imagen ? [{ kind: 'image', imageId: a.values.imagen }] : []),
   },
 ])
 

@@ -7,6 +7,8 @@ export interface ChoiceOption {
   value: string
   label: string
   hint?: string
+  /** Muestra de color junto a la etiqueta (temas). */
+  swatch?: string
 }
 
 const props = withDefaults(
@@ -26,7 +28,7 @@ function move(step: number) {
 
 const GROUP = {
   segmented: 'inline-flex w-fit flex-wrap gap-1 rounded-md border border-field-border bg-surface p-1',
-  cards: 'grid gap-2 sm:grid-cols-3',
+  cards: 'grid grid-cols-2 gap-2 sm:grid-cols-[repeat(auto-fit,minmax(8.5rem,1fr))]',
 }
 const OPTION = {
   segmented: 'h-9 rounded-sm px-3 text-sm font-medium aria-checked:bg-primary aria-checked:text-on-primary',
@@ -59,7 +61,14 @@ const OPTION = {
       ]"
       @click="emit('update:modelValue', option.value)"
     >
-      <span>{{ option.label }}</span>
+      <span class="inline-flex items-center gap-2">
+        <span
+          v-if="option.swatch"
+          aria-hidden="true"
+          :style="{ '--swatch': option.swatch }"
+          class="size-4 shrink-0 rounded-full border border-hairline bg-(--swatch)"
+        />{{ option.label }}
+      </span>
       <span v-if="option.hint" class="text-sm text-ink-muted">{{ option.hint }}</span>
     </button>
   </div>

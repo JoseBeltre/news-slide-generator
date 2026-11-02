@@ -62,7 +62,7 @@ export type SlideSpec =
   | { kind: 'cover' | 'closing'; palette: SlidePalette; slideStyle: SlideStyleId }
 
 export type AnnouncementInput = Pick<Announcement, 'typeId' | 'templateId' | 'values' | 'logo'> &
-  Partial<Pick<Announcement, 'customPrimaryColor' | 'dateStyle' | 'relativeDates' | 'slideStyle'>>
+  Partial<Pick<Announcement, 'themeId' | 'customPrimaryColor' | 'dateStyle' | 'relativeDates' | 'slideStyle'>>
 
 export interface SlideStatus {
   /** 'midiendo' mientras algún texto montado aún no se ajustó (p. ej. cargando la fuente): nunca es 'ok'. */
