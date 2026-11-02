@@ -5,7 +5,7 @@
 ## Estado actual
 
 - **Fase:** 1 (MVP), pasos 1–7 en modo **solo local** (sin backend), según SRS §11.
-- **P3 en curso** (rama `fase1/p3-plantillas-y-temas`, sin subir): **todo hecho salvo cumpleaños** (T8/T9, en la sesión del rediseño). T1–T5 (fechas, normalización, temas, `SlideView`, 3 estilos Himnario/Almanaque/Cartel), T6 (pruebas de la Clásica), T7 (Visual con foto), T10 (imagen), T11 (cierre), T12 (matriz §5.7 de 149 casos y 19 capturas de regresión). Capturas de revisión: `docs/slides-direcciones/` (local).
+- **P3 en curso** (rama `fase1/p3-plantillas-y-temas`, sin subir): **todo hecho**: también cumpleaños (T8/T9) y la Visual rediseñada, aprobados por el responsable. T1–T5 (fechas, normalización, temas, `SlideView`, 3 estilos Himnario/Almanaque/Cartel), T6 (pruebas de la Clásica), T7 (Visual con foto), T10 (imagen), T11 (cierre), T12 (matriz §5.7 de 149 casos y 19 capturas de regresión). Capturas de revisión: `docs/slides-direcciones/` (local).
 - **Plan vigente:** `docs/superpowers/plans/2026-11-01-fase1-p2-tipos-datos-logos.md` (paso 3), aprobado; ejecución **nativa** en la rama `fase1/p2-tipos-datos-logos`. Ledger: `.superpowers/sdd/2026-11-01-fase1-p2-tipos-datos-logos/progress.md`. P1 está terminado y unido a `master`.
 - **P2 hecho:** Tareas 1–7 (formato es-DO; 7 tipos declarativos; validación con Zod; Dexie y repositorio; imágenes comprimidas sin duplicados; color dominante; ministerios con logo IASD precargado). Revisión final hecha (sin Critical/Important del revisor; 3 menores re-graduados y arreglados). **Unido a `master`** (fast-forward, rama borrada); verificado en `master`: typecheck 0, `pnpm test` 233/233, `test:e2e` 2/2.
 - **Hoja de ruta de la fase:** `docs/superpowers/plans/2026-11-01-fase1-hoja-de-ruta.md` (pasos 1–7).
@@ -64,7 +64,7 @@ P3 en la rama `fase1/p3-plantillas-y-temas` (sin subir): todo hecho **salvo cump
 
 - **Cumpleaños (T8/T9): hechos** en la sesión del rediseño (`src/slides/templates/birthday/`), registrados en `SlideView`, `registry` (plantilla `cumpleanos`), galería, matriz y capturas de regresión.
 - **Visual con foto: aprobada** por el responsable, con dos ajustes ya hechos (sin ornamento en Himnario, hojita más pequeña en Almanaque).
-- **Cumpleaños rehechos** según sus observaciones (sin logo, día discreto y ocultable, adornos festivos, sin grandes superficies rosadas, grupos sin fotos). **Falta su visto bueno** a las capturas `docs/slides-direcciones/cumpleanos/` (locales).
+- **Cumpleaños rehechos** según sus observaciones (sin logo, día discreto y ocultable, adornos festivos, sin grandes superficies rosadas, grupos sin fotos). **Aprobados por el responsable** (capturas locales en `docs/slides-direcciones/cumpleanos/`).
 - Cuando estén los cumpleaños: revisión final de toda la rama, unir a `master`, `git push origin master` y borrar la rama local `backup/p3-antes-de-limpiar`.
 - Después, **P4** (formularios y vista previa): presentar 3 `DESIGN.md` de designmd.app para la interfaz y que el responsable elija.
 
@@ -183,3 +183,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | P3 · Visual rediseñada en los 3 estilos (`templates/visual/`); el campo de la persona dice "Predicador/a o invitado/a especial" y la foto lo nombra (`captionField`); la Clásica ya no dibuja fotos | typecheck 0; `pnpm test` 596/596; `test:e2e` 30/30; build sin galería | ver `git log` |
 | 2026-11-01 | Ajustes del responsable: cumpleaños sin logo, con día discreto u oculto, adornos festivos y colores suaves, grupos sin fotos (tarjetas/lista); Visual sin ornamento (Himnario) y con hojita más pequeña (Almanaque) | typecheck 0; `pnpm test` 609/609; `test:e2e` 30/30 | ver `git log` |
 | 2026-11-01 | Cumpleaños 2.ª ronda: colores de fiesta variados, confeti de esquina, pastel, globos y gorrito más grandes, gorrito sobre el marco; listas en fondo claro sin recuadros ni diagonal | typecheck 0; `pnpm test` 609/609; `test:e2e` 30/30 | ver `git log` |
+| 2026-11-01 | Cumpleaños y Visual aprobados por el responsable; pasa a la sesión principal para la revisión final de la rama, la unión a `master` y el push | — | ver `git log` |
