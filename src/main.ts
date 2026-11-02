@@ -4,5 +4,7 @@ import './ui/fonts'
 import './slides/fonts'
 import App from './app/App.vue'
 import { createAppRouter } from './app/router'
+import { createDb } from './data/local/db'
+import { dbPlugin } from './data/useDb'
 
-createApp(App).use(createAppRouter()).mount('#app')
+createApp(App).use(dbPlugin(createDb())).use(createAppRouter()).mount('#app')

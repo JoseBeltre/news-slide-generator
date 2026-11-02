@@ -16,6 +16,7 @@ describe('mensajes (RF-04)', () => {
       date: 'La fecha no es válida.',
       time: 'La hora no es válida.',
       money: 'El precio no puede ser negativo.',
+      moneyNotNumber: 'Escribe el precio en números (por ejemplo, 500).',
       list: 'Agrega al menos un elemento.',
       choice: 'Elige una opción.',
       peopleEmpty: 'Agrega al menos una persona.',
@@ -62,7 +63,8 @@ describe('validateValues', () => {
     expect(validateValues(salida, { ...base, precio: -1 })).toEqual({ ok: false, errors: { precio: MESSAGES.money } })
     expect(validateValues(salida, { ...base, precio: 0 })).toEqual({ ok: true, values: { ...base, precio: 0 } })
     expect(validateValues(salida, { ...base, precio: 1500.5 })).toMatchObject({ ok: true })
-    expect(validateValues(salida, { ...base, precio: Number.NaN })).toEqual({ ok: false, errors: { precio: MESSAGES.money } })
+    expect(validateValues(salida, { ...base, precio: Number.NaN })).toEqual({ ok: false, errors: { precio: MESSAGES.moneyNotNumber } })
+    expect(validateValues(salida, { ...base, precio: '500' })).toEqual({ ok: false, errors: { precio: MESSAGES.moneyNotNumber } })
   })
 
   it('qué llevar: recorta y quita vacíos; lista vacía opcional desaparece', () => {

@@ -10,6 +10,7 @@ export const MESSAGES = Object.freeze({
   date: 'La fecha no es válida.',
   time: 'La hora no es válida.',
   money: 'El precio no puede ser negativo.',
+  moneyNotNumber: 'Escribe el precio en números (por ejemplo, 500).',
   list: 'Agrega al menos un elemento.',
   choice: 'Elige una opción.',
   peopleEmpty: 'Agrega al menos una persona.',
@@ -68,7 +69,7 @@ function kindSchema(field: FieldDef): z.ZodType {
     case 'time':
       return z.string(err(req, MESSAGES.time)).regex(HH_MM, MESSAGES.time)
     case 'money':
-      return z.number(err(req, MESSAGES.money)).min(0, MESSAGES.money)
+      return z.number(err(req, MESSAGES.moneyNotNumber)).min(0, MESSAGES.money)
     case 'list':
       return z.array(z.string(), err(MESSAGES.list, MESSAGES.list)).min(1, MESSAGES.list)
     case 'choice': {

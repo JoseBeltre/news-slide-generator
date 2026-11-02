@@ -1,5 +1,6 @@
 import 'fake-indexeddb/auto'
 import Dexie, { type Table } from 'dexie'
+import { reactive } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createDb } from '../../../src/data/local/db'
 import { createRepository } from '../../../src/data/local/repository'
@@ -76,6 +77,17 @@ describe('createRepository', () => {
     await repo.put({ name: 'tercero' })
     expect((await repo.list()).map((i) => i.name)).toEqual(['tercero', 'segundo', 'primero'])
   })
+
+  it('put guarda una copia: un objeto reactive() mutado después no cambia lo guardado', async () => {
+    type Tagged = Item & { tags: string[] }
+    const repo = createRepository(itemsTable() as unknown as Table<Tagged, string>, stepClock())
+    const draft = reactive({ name: 'Ana', tags: ['a'] })
+    const saved = await repo.put(draft)
+    draft.tags.push('b')
+    draft.name = 'Otra'
+    expect(await repo.get(saved.id)).toMatchObject({ name: 'Ana', tags: ['a'] })
+    expect(saved.tags).toEqual(['a'])
+  })
 })
 
 describe('createDb', () => {
@@ -85,7 +97,8 @@ describe('createDb', () => {
     expect(db.tables.map((t) => t.name).sort()).toEqual(
       ['announcements', 'imageBlobs', 'images', 'ministries', 'presentations', 'settings', 'themes'].sort(),
     )
-    expect(db.verno).toBe(1)
+    expect(db.verno).toBe(2)
+    expect(db.table('settings').schema.idxByName.updatedAt).toBeDefined()
     expect(db.table('images').schema.idxByName.hash?.unique).toBe(true)
   })
 })

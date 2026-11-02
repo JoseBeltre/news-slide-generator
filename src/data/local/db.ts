@@ -30,6 +30,8 @@ export class AppDb extends Dexie {
       themes: 'id, updatedAt',
       settings: 'id',
     })
+    // v2 (P4): `settings` se lista por updatedAt como las demás tablas.
+    this.version(2).stores({ settings: 'id, updatedAt' })
   }
 }
 
