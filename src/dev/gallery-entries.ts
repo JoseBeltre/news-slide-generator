@@ -52,7 +52,8 @@ const BIRTHDAYS = [
   ['uno-foto', { modo: 'individual', personas: [P('María Altagracia', 7, 11, 0)] }],
   ['uno-foto-versiculo', { modo: 'individual', personas: [P('Juan Carlos Rodríguez Peña', 30, 12, 1)], versiculo: VERSICULO }],
   ['grupo-8', { modo: 'grupo', personas: OCHO }],
-  ['grupo-fotos', { modo: 'grupo', personas: OCHO.slice(0, 6).map((p, i) => (i % 2 === 0 ? { ...p, photoId: `retrato-${i}` } : p)) }],
+  ['grupo-6', { modo: 'grupo', personas: OCHO.slice(0, 6) }],
+  ['uno-sin-dia', { modo: 'individual', personas: [P('Pedro Antonio', 9, 11)], mostrarDia: 'no' }],
   ['grupo-3', { modo: 'grupo', personas: OCHO.slice(0, 3) }],
   ['grupo-pagina', { modo: 'grupo', personas: [...OCHO, P('Esther', 13, 11)] }],
 ] as const
@@ -87,7 +88,7 @@ export function galleryEntries(): GalleryEntry[] {
         out.push({ id: `estilo-${slideStyle}-${name}-${themeId}`, label: `${slideStyle} · ${name} · ${themeId}`, spec: spec!, ctx })
       }
     }
-    // Cumpleaños: individual con y sin foto, grupo de nombres, con fotos, pocos y paginado.
+    // Cumpleaños: individual con y sin foto o día, tarjetas (≤ 6), lista (7–8), pocos y paginado.
     for (const themeId of THEMES) {
       const ctx = makeCtx({ theme: PRESET_THEMES.find((t) => t.id === themeId)!, loadImage })
       for (const [name, values] of BIRTHDAYS) {

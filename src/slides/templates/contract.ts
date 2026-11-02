@@ -37,7 +37,8 @@ export type SlideSpec =
   | {
       kind: 'birthday-single'
       person: Person
-      dayText: string
+      /** "7 de noviembre"; sin él, el día no se muestra (oculto o es el mismo día de la presentación). */
+      dayText?: string
       message: string
       verse?: string
       logo: LogoSelection
@@ -46,7 +47,10 @@ export type SlideSpec =
     }
   | {
       kind: 'birthday-group'
-      people: Array<Person & { dayText: string }>
+      /** Sin fotos: las listas de cumpleaños no llevan imágenes (pedido del responsable). */
+      people: Array<{ name: string; day: number; month: number; dayText?: string }>
+      /** Hasta 6 personas: tarjetas 3 × 2; más: lista de 2 columnas × 4. */
+      layout: 'tarjetas' | 'lista'
       message: string
       logo: LogoSelection
       palette: SlidePalette

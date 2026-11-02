@@ -30,11 +30,21 @@ describe('birthdayLayout (RF-21, RF-25, RF-26)', () => {
     ])
   })
 
-  it('grupo con 7 y una foto → 6 + 1 (con fotos caben 6)', () => {
-    const personas = nadie(7)
-    personas[3] = { ...personas[3]!, photoId: 'foto' }
-    const pages = birthdayLayout({ modo: 'grupo', personas }, ctx)
-    expect(pages.map((s) => (s.kind === 'birthday-group' ? s.people.length : 0))).toEqual([6, 1])
+  it('grupo: hasta 6 en tarjetas, 7 u 8 en lista; nunca con fotos', () => {
+    const conFoto = nadie(6).map((x, i) => (i === 2 ? { ...x, photoId: 'foto' } : x))
+    const [tarjetas] = birthdayLayout({ modo: 'grupo', personas: conFoto }, ctx)
+    expect(tarjetas!.kind === 'birthday-group' && tarjetas!.layout).toBe('tarjetas')
+    expect(JSON.stringify(tarjetas)).not.toContain('photoId')
+    const [lista] = birthdayLayout({ modo: 'grupo', personas: nadie(7) }, ctx)
+    expect(lista!.kind === 'birthday-group' && [lista!.layout, lista!.people.length]).toEqual(['lista', 7])
+  })
+
+  it('el día se oculta si se pide, y nunca se muestra el mismo día de la presentación', () => {
+    const personas = [p('Ana', 5, 11), p('Beto', 7, 11)]
+    const visibles = birthdayLayout({ modo: 'individual', personas }, ctx)
+    expect(visibles.map((s) => s.kind === 'birthday-single' && s.dayText)).toEqual(['5 de noviembre', undefined])
+    const ocultos = birthdayLayout({ modo: 'grupo', personas, mostrarDia: 'no' }, ctx)
+    expect(ocultos[0]!.kind === 'birthday-group' && ocultos[0]!.people.every((x) => x.dayText === undefined)).toBe(true)
   })
 
   it('grupo que cabe en una slide → sin paginación', () => {
@@ -52,10 +62,10 @@ describe('birthdayLayout (RF-21, RF-25, RF-26)', () => {
   })
 
   it('mensaje vacío → el mensaje por defecto; nunca año ni edad', () => {
-    const pages = birthdayLayout({ modo: 'individual', personas: [p('Ana', 7, 11)], mensaje: '  ' }, ctx)
+    const pages = birthdayLayout({ modo: 'individual', personas: [p('Ana', 9, 11)], mensaje: '  ' }, ctx)
     const single = pages[0]!
     expect(single.kind === 'birthday-single' && single.message).toBe('¡Feliz cumpleaños!')
-    expect(single.kind === 'birthday-single' && single.dayText).toBe('7 de noviembre')
+    expect(single.kind === 'birthday-single' && single.dayText).toBe('9 de noviembre')
     expect(JSON.stringify(pages)).not.toMatch(/20\d\d|\d+ años/)
   })
 

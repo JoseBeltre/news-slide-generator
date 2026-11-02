@@ -100,7 +100,7 @@ describe('cumpleaños', () => {
   it('modo y mensaje por defecto', () => {
     expect(validateValues(cumple, { personas: [{ name: 'Ana', day: 3, month: 11 }] })).toEqual({
       ok: true,
-      values: { modo: 'individual', personas: [{ name: 'Ana', day: 3, month: 11 }], mensaje: '¡Feliz cumpleaños!' },
+      values: { modo: 'individual', personas: [{ name: 'Ana', day: 3, month: 11 }], mostrarDia: 'si', mensaje: '¡Feliz cumpleaños!' },
     })
   })
 
@@ -143,6 +143,7 @@ describe('cumpleaños', () => {
       values: {
         modo: 'individual',
         personas: [{ name: 'Ana', day: 3, month: 11, photoId: 'f1' }],
+        mostrarDia: 'si',
         mensaje: '¡Feliz cumpleaños!',
       },
     })

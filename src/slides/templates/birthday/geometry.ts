@@ -1,88 +1,88 @@
-// Geometría de las slides de cumpleaños de grupo: cabecera con el mensaje y el logo, rejilla de
-// tarjetas del mismo tamaño y el indicador "(1/2)". Puro, en px del lienzo y dentro del área segura.
+// Geometría de las slides de cumpleaños de grupo: banderines y el mensaje arriba, tarjetas (hasta 6)
+// o lista de 2 columnas (7–8) con el nombre como protagonista y el día discreto, y el indicador "(1/2)".
+// Sin logo ni fotos (pedido del responsable). Puro, en px del lienzo y dentro del área segura.
 import { SAFE_AREA, type Rect, type TextSlotDef } from '../../engine'
 
-const SAFE_RIGHT = SAFE_AREA.x + SAFE_AREA.width
 const SAFE_BOTTOM = SAFE_AREA.y + SAFE_AREA.height
 
 export const GROUP = {
-  /** Mensaje como cabecera (rol clave: el nombre manda). */
-  heading: { x: SAFE_AREA.x, y: 72, width: 1280, height: 150 },
-  logo: { x: 1424, y: 84, width: SAFE_RIGHT - 1424, height: 126 },
-  cardsTop: 246,
-  page: { x: SAFE_RIGHT - 240, y: 966, width: 240, height: 42 },
+  bunting: { x: 0, y: 0, width: 1920, height: 70 },
+  /** Mensaje como cabecera (rol clave: el nombre manda); deja libre la esquina del confeti. */
+  heading: { left: { x: SAFE_AREA.x, y: 92, width: 1320, height: 150 }, center: { x: 460, y: 92, width: 1000, height: 150 } },
+  cardsTop: 278,
+  page: { x: SAFE_AREA.x + SAFE_AREA.width - 240, y: 966, width: 240, height: 42 },
 } as const
 
-const GAP = { photos: { x: 40, y: 32 }, names: { x: 48, y: 16 } }
-/** Alto máximo de una tarjeta de solo nombres: con pocas personas no se estiran sin fin. */
-const NAME_CARD_MAX = 200
-/** Entre el bloque del día y el nombre de una tarjeta de solo nombres (el filete va en medio). */
-export const NAME_GAP = 44
+const GAP = { tarjetas: { x: 48, y: 40 }, lista: { x: 72, y: 20 } }
+const COLS = { tarjetas: 3, lista: 2 }
+const ROWS = { tarjetas: 2, lista: 4 }
+/** Alto máximo de una fila de la lista. */
+const ROW_MAX = 168
 
-export function headingSlot(): TextSlotDef {
-  return { id: 'mensaje', role: 'key', fieldKey: 'mensaje', box: GROUP.heading, maxLines: 2, maxFontSize: 120 }
+export function headingSlot(align: 'left' | 'center'): TextSlotDef {
+  return { id: 'mensaje', role: 'key', fieldKey: 'mensaje', box: GROUP.heading[align], maxLines: 2, maxFontSize: 120, align, valign: 'center' }
 }
 
 export function pageSlot(): TextSlotDef {
   return { id: 'pagina', role: 'meta', box: GROUP.page, maxLines: 1, maxFontSize: 36, align: 'right' }
 }
 
-/**
- * Tarjetas del grupo: 3 columnas × 2 filas si alguien tiene foto, 2 × 4 si solo hay nombres
- * (RF-25). Con menos personas, la rejilla se ajusta y queda centrada en su zona.
- */
-export function groupCards(count: number, withPhotos: boolean, paged: boolean): Rect[] {
+/** Celdas del grupo; con menos personas la rejilla se encoge y queda centrada (la última fila también). */
+export function groupCells(count: number, layout: 'tarjetas' | 'lista', paged: boolean): Rect[] {
   const area = { x: SAFE_AREA.x, y: GROUP.cardsTop, width: SAFE_AREA.width, height: (paged ? GROUP.page.y - 14 : SAFE_BOTTOM - 16) - GROUP.cardsTop }
-  const gap = withPhotos ? GAP.photos : GAP.names
-  const cols = withPhotos ? Math.min(3, count) : count <= 3 ? 1 : 2
-  const rows = withPhotos ? 2 : 4
+  const gap = GAP[layout]
+  const cols = Math.min(COLS[layout], count)
   const width = (area.width - gap.x * (cols - 1)) / cols
-  const fullHeight = (area.height - gap.y * (rows - 1)) / rows
-  const height = withPhotos ? fullHeight : Math.min(NAME_CARD_MAX, fullHeight)
+  const full = (area.height - gap.y * (ROWS[layout] - 1)) / ROWS[layout]
+  const height = layout === 'lista' ? Math.min(ROW_MAX, full) : full
   const usedRows = Math.ceil(count / cols)
   const blockHeight = usedRows * height + (usedRows - 1) * gap.y
   const top = area.y + (area.height - blockHeight) / 2
   return Array.from({ length: count }, (_, i) => {
     const row = Math.floor(i / cols)
-    // La última fila incompleta queda centrada.
     const inRow = Math.min(cols, count - row * cols)
     const left = area.x + (area.width - (inRow * width + (inRow - 1) * gap.x)) / 2
     return { x: Math.round(left + (i % cols) * (width + gap.x)), y: Math.round(top + row * (height + gap.y)), width: Math.floor(width), height: Math.floor(height) }
   })
 }
 
-export interface CardLayout {
-  photo?: Rect
-  day: TextSlotDef
+export interface CellLayout {
   name: TextSlotDef
+  day?: TextSlotDef
 }
 
 /**
- * Interior de una tarjeta. Con fotos: foto redonda y la fecha al lado, el nombre debajo; sin foto
- * en esa rejilla, la fecha arriba y el nombre más grande. Solo nombres: la fecha a la izquierda.
+ * Interior de una celda. Tarjeta: el nombre grande al centro y el día debajo, pequeño. Lista: el
+ * nombre a la izquierda y el día a la derecha. Sin día, el nombre ocupa todo.
  */
-export function cardLayout(card: Rect, i: number, mode: 'photos' | 'names', hasPhoto: boolean): CardLayout {
-  const pad = mode === 'photos' ? 22 : 26
-  const inner = { x: card.x + pad, y: card.y + (mode === 'photos' ? 16 : 0), width: card.width - pad * 2, height: card.height - (mode === 'photos' ? 32 : 0) }
+export function cellLayout(cell: Rect, i: number, layout: 'tarjetas' | 'lista', withDay: boolean): CellLayout {
   const ids = { day: `dia-${i}`, name: `nombre-${i}` }
-  if (mode === 'names') {
-    const dayWidth = 280
+  if (layout === 'tarjetas') {
+    const pad = 28
+    const inner = { x: cell.x + pad, y: cell.y + pad, width: cell.width - pad * 2, height: cell.height - pad * 2 }
+    const dayHeight = withDay ? 76 : 0
     return {
-      day: { id: ids.day, role: 'key', fieldKey: 'personas', box: { ...inner, width: dayWidth }, maxLines: 1, maxFontSize: 76, uppercase: true, align: 'center', valign: 'center' },
-      name: { id: ids.name, role: 'birthdayNameGroup', fieldKey: 'personas', box: { ...inner, x: inner.x + dayWidth + NAME_GAP, width: inner.width - dayWidth - NAME_GAP }, maxLines: 2, maxFontSize: 76, valign: 'center' },
+      name: { id: ids.name, role: 'birthdayNameGroup', fieldKey: 'personas', box: { ...inner, height: inner.height - dayHeight }, maxLines: 2, maxFontSize: 84, align: 'center', valign: 'center' },
+      ...(withDay
+        ? { day: { id: ids.day, role: 'key', fieldKey: 'personas', box: { ...inner, y: inner.y + inner.height - dayHeight, height: dayHeight }, maxLines: 1, maxFontSize: 60, align: 'center' } }
+        : {}),
     }
   }
-  const top = 144
-  const nameBox = { x: inner.x, y: inner.y + top + 12, width: inner.width, height: inner.height - top - 12 }
-  if (!hasPhoto) {
-    return {
-      day: { id: ids.day, role: 'key', fieldKey: 'personas', box: { ...inner, height: top }, maxLines: 1, maxFontSize: 110, uppercase: true, align: 'center', valign: 'center' },
-      name: { id: ids.name, role: 'birthdayNameGroup', fieldKey: 'personas', box: nameBox, maxLines: 2, maxFontSize: 84, valign: 'center' },
-    }
-  }
+  const marker = 40
+  const dayWidth = withDay ? 230 : 0
+  const nameX = cell.x + marker
   return {
-    photo: { x: inner.x, y: inner.y, width: top, height: top },
-    day: { id: ids.day, role: 'key', fieldKey: 'personas', box: { x: inner.x + top + 24, y: inner.y, width: inner.width - top - 24, height: top }, maxLines: 1, maxFontSize: 96, uppercase: true, align: 'center', valign: 'center' },
-    name: { id: ids.name, role: 'birthdayNameGroup', fieldKey: 'personas', box: nameBox, maxLines: 2, maxFontSize: 76, valign: 'center' },
+    name: {
+      id: ids.name,
+      role: 'birthdayNameGroup',
+      fieldKey: 'personas',
+      box: { x: nameX, y: cell.y, width: cell.x + cell.width - dayWidth - (withDay ? 24 : 0) - nameX, height: cell.height - 12 },
+      maxLines: 2,
+      maxFontSize: 76,
+      valign: 'center',
+    },
+    ...(withDay
+      ? { day: { id: ids.day, role: 'key', fieldKey: 'personas', box: { x: cell.x + cell.width - dayWidth, y: cell.y, width: dayWidth, height: cell.height - 12 }, maxLines: 1, maxFontSize: 60, align: 'right', valign: 'center' } }
+      : {}),
   }
 }

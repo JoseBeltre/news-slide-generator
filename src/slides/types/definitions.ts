@@ -132,6 +132,18 @@ export const ANNOUNCEMENT_TYPES: readonly AnnouncementTypeDef[] = Object.freeze(
         defaultValue: 'individual',
       },
       { key: 'personas', label: 'Personas', kind: 'people', required: true },
+      // Pedido del responsable: el día puede ocultarse (no tiene sentido el mismo día del cumpleaños).
+      {
+        key: 'mostrarDia',
+        label: 'Mostrar el día',
+        kind: 'choice',
+        required: false,
+        options: [
+          { value: 'si', label: 'Mostrar el día' },
+          { value: 'no', label: 'Ocultar el día' },
+        ],
+        defaultValue: 'si',
+      },
       {
         key: 'mensaje',
         label: 'Mensaje',

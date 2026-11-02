@@ -16,7 +16,7 @@ export interface SingleOptions {
   bottom: number
   /** Alto de la caja del mensaje: con valign bottom, queda pegado al nombre. */
   messageHeight?: number
-  /** El día del cumpleaños como línea propia ("7 de noviembre"), cuando la foto ocupa el bloque de fecha. */
+  /** El día del cumpleaños como línea discreta bajo el nombre ("7 de noviembre"). */
   withDayLine: boolean
   withVerse: boolean
   /** Alto de la franja del ornamento entre el nombre y el versículo. */
@@ -25,7 +25,8 @@ export interface SingleOptions {
 }
 
 const VERSE_HEIGHT = 200
-const DAY_HEIGHT = 92
+// El día va discreto (pedido del responsable): una línea pequeña bajo el nombre.
+const DAY_HEIGHT = 80
 const MESSAGE_HEIGHT = 168
 
 export function singleSlots(column: { x: number; width: number }, o: SingleOptions): SingleSlots {
@@ -49,7 +50,7 @@ export function singleSlots(column: { x: number; width: number }, o: SingleOptio
       valign: o.withDayLine || o.withVerse ? 'bottom' : 'center',
       ...align,
     },
-    ...(o.withDayLine ? { day: { id: 'dia', role: 'key', fieldKey: 'personas', box: at(dayTop, DAY_HEIGHT), maxLines: 1, maxFontSize: 76, ...align } } : {}),
+    ...(o.withDayLine ? { day: { id: 'dia', role: 'key', fieldKey: 'personas', box: at(dayTop, DAY_HEIGHT), maxLines: 1, maxFontSize: 64, ...align } } : {}),
     ...(o.withVerse
       ? {
           verse: { id: 'versiculo', role: 'secondary', fieldKey: 'versiculo', box: at(verseTop, VERSE_HEIGHT), maxLines: 4, maxFontSize: 52, valign: 'top', ...align },

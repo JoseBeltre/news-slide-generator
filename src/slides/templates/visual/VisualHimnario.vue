@@ -7,7 +7,6 @@ import { logoGroupFor } from '../../../data/ministries'
 import { accentInk, mixColors } from '../../themes'
 import type { SlideContext, SlideSpec } from '../contract'
 import { lineSlot, monthLabel } from '../classic/layout'
-import Fleuron from '../parts/Fleuron.vue'
 import HimnarioCover from '../parts/HimnarioCover.vue'
 import LogoGroup from '../parts/LogoGroup.vue'
 import PhotoCutout from '../parts/PhotoCutout.vue'
@@ -52,7 +51,7 @@ const layout = computed(() => {
     lines: when
       ? [line('fecha-semana', dateKey, 120, when.relative ?? when.weekday), line('fecha-mes', dateKey, 196, monthLabel(when)), ...(when.time ? [line('fecha-hora', timeKey, 272, when.time)] : [])]
       : [],
-    column: visualColumn(data, { ...COLUMN, top: 420, bottom: 1000, marker: 22, markerGap: 30, titleMax: 150 }),
+    column: visualColumn(data, { ...COLUMN, top: 396, bottom: 1000, marker: 22, markerGap: 30, titleMax: 150 }),
   }
 })
 </script>
@@ -73,7 +72,6 @@ const layout = computed(() => {
         <SlideText v-if="layout.day" :slot="layout.day.slot" :text="layout.day.text" :font-family="palette.fontFamily" />
         <SlideText v-for="l in layout.lines" :key="l.slot.id" :slot="l.slot" :text="l.text" :font-family="palette.fontFamily" />
       </div>
-      <Fleuron :box="{ x: COLUMN.x, y: 372, width: 264, height: 44 }" :color="palette.accent" />
       <LogoGroup v-if="hasLogo" :selection="spec.logo" :ministries="ctx.ministries" :background="background" :box="VISUAL_LOGO" :divider="palette.accent" :load-image="ctx.loadImage" />
 
       <SlideText v-if="layout.column.title" :slot="layout.column.title.slot" :text="layout.column.title.text" :font-family="palette.fontFamily" />

@@ -21,7 +21,8 @@ const props = defineProps<{ spec: Extract<SlideSpec, { kind: 'announcement' }>; 
 
 const LINES = 0.09
 const COLUMN = { x: 96, width: 904 }
-const SHEET = { x: 96, y: 88, width: 330, height: 400, headerBottom: 150 }
+// La hojita es discreta (pedido del responsable): el día no compite con la persona ni con el título.
+const SHEET = { x: 96, y: 96, width: 250, height: 290, headerBottom: 146 }
 const PAD = { x: SHEET.x + 14, width: SHEET.width - 28 }
 const SIDE_X = SHEET.x + SHEET.width + 44
 const ICON = 56
@@ -38,14 +39,14 @@ const layout = computed(() => {
   const when = data.when
   const [dateKey, timeKey] = when?.fieldKeys ?? []
   const side = (id: string, key: string | undefined, y: number, text: string) => ({
-    slot: lineSlot(id, key, { x: SIDE_X, width: COLUMN.x + COLUMN.width - SIDE_X, y, height: 88 }, 72, { uppercase: true }),
+    slot: lineSlot(id, key, { x: SIDE_X, width: COLUMN.x + COLUMN.width - SIDE_X, y, height: 80 }, 64, { uppercase: true }),
     text,
   })
-  const column = visualColumn(data, { ...COLUMN, top: 520, bottom: 1000, marker: ICON, markerGap: 28, titleMax: 150 })
+  const column = visualColumn(data, { ...COLUMN, top: 420, bottom: 1000, marker: ICON, markerGap: 28, titleMax: 150 })
   return {
-    day: when && { slot: lineSlot('fecha-dia', dateKey, { ...PAD, y: 164, height: 310 }, 270, { align: 'center' }), text: when.day },
+    day: when && { slot: lineSlot('fecha-dia', dateKey, { ...PAD, y: 156, height: 216 }, 170, { align: 'center' }), text: when.day },
     side: when
-      ? [side('fecha-semana', dateKey, 120, when.relative ?? when.weekday), side('fecha-mes', dateKey, 220, monthLabel(when)), ...(when.time ? [side('fecha-hora', timeKey, 320, when.time)] : [])]
+      ? [side('fecha-semana', dateKey, 112, when.relative ?? when.weekday), side('fecha-mes', dateKey, 202, monthLabel(when)), ...(when.time ? [side('fecha-hora', timeKey, 292, when.time)] : [])]
       : [],
     column,
     person: column.person && { ...column.person, icon: iconFor(data.rows.find((r) => r.text === column.person!.text)?.icon) },

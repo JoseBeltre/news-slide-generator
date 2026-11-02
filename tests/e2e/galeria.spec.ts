@@ -3,7 +3,7 @@
 import { expect, test } from '@playwright/test'
 
 const STYLES = ['himnario', 'almanaque', 'cartel']
-const CASES = ['culto-lleno-neutro', 'salida-llena-vino', 'aviso-sin-fecha-pizarra', 'visual-neutro', 'portada-neutro', 'cierre-neutro', 'cumple-uno-foto-versiculo-neutro', 'cumple-grupo-8-neutro', 'cumple-grupo-fotos-cielo']
+const CASES = ['culto-lleno-neutro', 'salida-llena-vino', 'aviso-sin-fecha-pizarra', 'visual-neutro', 'portada-neutro', 'cierre-neutro', 'cumple-uno-foto-versiculo-neutro', 'cumple-grupo-8-neutro', 'cumple-grupo-6-cielo']
 const IDS = [...STYLES.flatMap((s) => CASES.map((c) => `estilo-${s}-${c}`)), 'imagen-flyer-vertical']
 
 for (const id of IDS) {

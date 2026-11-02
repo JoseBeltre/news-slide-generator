@@ -42,7 +42,7 @@ const VARIANTS: Record<Variant, (t: TextTypeId) => Partial<AnnouncementInput> & 
   medio_relativas: (t) => ({ values: NORMAL[t], dateStyle: 'medio', relativeDates: true }),
 }
 
-// Cumpleaños (RF-22…25): individual con y sin foto, grupo de 8 nombres y grupo con fotos.
+// Cumpleaños (RF-22…25): individual con y sin foto o día, tarjetas (≤ 6) y lista (7–8).
 const person = (name: string, day: number, photo = false) => ({ name, day, month: 11, ...(photo ? { photoId: 'retrato' } : {}) })
 const GROUP_NAMES = ['Ana Lucía', 'José Miguel Fernández', 'Marta', 'Pedro Antonio', 'Altagracia Rodríguez', 'Luis', 'Rosa Elena Batista', 'Juan Carlos']
 const BIRTHDAYS: Record<string, Record<string, unknown>> = {
@@ -52,8 +52,9 @@ const BIRTHDAYS: Record<string, Record<string, unknown>> = {
     personas: [person('Juan Carlos Rodríguez Peña', 9, true)],
     versiculo: 'Enséñanos de tal modo a contar nuestros días, que traigamos al corazón sabiduría. Salmo 90:12',
   },
-  'grupo de 8': { modo: 'grupo', personas: GROUP_NAMES.map((n, i) => person(n, 2 + i)) },
-  'grupo con fotos': { modo: 'grupo', personas: GROUP_NAMES.slice(0, 6).map((n, i) => person(n, 2 + i, i % 2 === 0)) },
+  'grupo de 8 (lista)': { modo: 'grupo', personas: GROUP_NAMES.map((n, i) => person(n, 2 + i)) },
+  'grupo de 6 (tarjetas)': { modo: 'grupo', personas: GROUP_NAMES.slice(0, 6).map((n, i) => person(n, 2 + i)) },
+  'sin día': { modo: 'individual', personas: [person('María Altagracia', 9)], mostrarDia: 'no' },
 }
 
 /** Casos que deben salir "No cabe", con su campo culpable. */

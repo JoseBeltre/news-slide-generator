@@ -36,7 +36,7 @@ describe('tipos de anuncio del MVP (§3.2)', () => {
     ['culto', ['titulo', 'fecha', 'hora', 'predicador', 'fotoPredicador', 'lugar', 'lema', 'versiculo']],
     ['salida', ['titulo', 'fecha', 'horaSalida', 'destino', 'puntoEncuentro', 'precio', 'queLlevar', 'fechaLimite', 'contacto']],
     ['obra_misionera', ['titulo', 'fecha', 'hora', 'puntoEncuentro', 'zona', 'queLlevar', 'contacto']],
-    ['cumpleanos', ['modo', 'personas', 'mensaje', 'versiculo']],
+    ['cumpleanos', ['modo', 'personas', 'mostrarDia', 'mensaje', 'versiculo']],
     ['actividad', ['titulo', 'fecha', 'hora', 'lugar', 'descripcion', 'precio', 'contacto']],
     ['aviso', ['titulo', 'mensaje', 'fecha', 'contacto']],
     ['imagen', ['imagen', 'tituloInterno']],

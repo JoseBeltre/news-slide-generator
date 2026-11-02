@@ -24,11 +24,12 @@ describe.each(SLIDE_STYLES.map((s) => s.id))('cumpleaños · estilo %s', (slideS
       return imgs.length === n && imgs.every((i) => i.complete)
     })
 
-  it('individual sin foto: nombre corto ≥ 160 px, sin imágenes ni avatar, sin violaciones', async () => {
+  it('individual sin foto: nombre corto ≥ 160 px, sin imágenes, avatar ni logo, sin violaciones', async () => {
     const [spec] = slides({ modo: 'individual', personas: [P('Ana', 7, 11)] })
     const { status, canvas } = await renderSlide(spec!, ctx)
     expect(status).toEqual({ status: 'ok', offendingFields: [] })
     expect(canvas.querySelector('[data-photo]')).toBeNull()
+    expect(canvas.querySelector('[data-logo]')).toBeNull()
     const name = canvas.querySelector('[data-slot-id="nombre"]') as HTMLElement
     expect(parseFloat(getComputedStyle(name).fontSize)).toBeGreaterThanOrEqual(160)
     expect(auditSlide(canvas)).toEqual([])
@@ -51,20 +52,25 @@ describe.each(SLIDE_STYLES.map((s) => s.id))('cumpleaños · estilo %s', (slideS
     else expect(status.offendingFields).toEqual(['personas'])
   })
 
-  it('grupo mezclado (3 con foto, 3 sin) → 6 tarjetas del mismo tamaño, fotos sin texto encima', async () => {
+  it('grupo de 6 → tarjetas del mismo tamaño, sin fotos aunque las tengan, sin logo', async () => {
     const personas = ['Ana Lucía', 'José Miguel', 'Marta', 'Pedro Antonio', 'Altagracia', 'Luis'].map((n, i) => P(n, 2 + i, 11, i % 2 === 0 ? `foto-${i}` : undefined))
     const [spec] = slides({ modo: 'grupo', personas })
-    const { status, canvas, host } = await renderSlide(spec!, ctx)
-    await waitPhotos(host, 3)
+    const { status, canvas } = await renderSlide(spec!, ctx)
     expect(status).toEqual({ status: 'ok', offendingFields: [] })
     const names = [...canvas.querySelectorAll('[data-role="birthdayNameGroup"]')].map((el) => canvasRect(el, canvas))
     expect(names).toHaveLength(6)
     expect(new Set(names.map((r) => Math.round(r.width))).size).toBe(1)
-    for (const img of host.querySelectorAll('[data-photo]')) {
-      const photo = canvasRect(img, canvas)
-      for (const el of canvas.querySelectorAll('[data-role]')) expect(intersects(canvasRect(el, canvas), photo)).toBe(false)
-    }
+    expect(canvas.querySelector('[data-photo]')).toBeNull()
+    expect(canvas.querySelector('[data-logo]')).toBeNull()
     expect(auditSlide(canvas)).toEqual([])
+  })
+
+  it('"Ocultar el día" → ningún día en la slide', async () => {
+    const [spec] = slides({ modo: 'individual', personas: [P('Ana', 9, 11)], mostrarDia: 'no' })
+    const { status, canvas } = await renderSlide(spec!, ctx)
+    expect(status.status).toBe('ok')
+    expect(canvas.querySelector('[data-slot-id="dia"]')).toBeNull()
+    expect(canvas.textContent).not.toContain('noviembre')
   })
 
   it('grupo de 9 sin foto → la primera slide con 8 y "(1/2)"', async () => {
