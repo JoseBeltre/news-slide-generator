@@ -65,7 +65,8 @@ export type AnnouncementInput = Pick<Announcement, 'typeId' | 'templateId' | 'va
   Partial<Pick<Announcement, 'customPrimaryColor' | 'dateStyle' | 'relativeDates' | 'slideStyle'>>
 
 export interface SlideStatus {
-  status: 'ok' | 'no_cabe'
+  /** 'midiendo' mientras algún texto montado aún no se ajustó (p. ej. cargando la fuente): nunca es 'ok'. */
+  status: 'ok' | 'no_cabe' | 'midiendo'
   offendingFields: string[]
   reason?: 'fit' | 'density'
 }

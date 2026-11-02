@@ -4,7 +4,9 @@ import { defineComponent, h } from 'vue'
 import { SlideCanvas, auditSlide } from '../../../src/slides/engine'
 import LogoGroup from '../../../src/slides/templates/parts/LogoGroup.vue'
 import SlideView from '../../../src/slides/templates/SlideView.vue'
-import { buildSlides, paletteFor } from '../../../src/slides/templates/registry'
+import { buildSlides, frameSlide, paletteFor } from '../../../src/slides/templates/registry'
+import { PRESET_THEMES } from '../../../src/slides/themes'
+import { renderSlide } from '../helpers/slides'
 import type { SlideSpec, SlideStatus } from '../../../src/slides/templates/contract'
 import { makeCtx } from '../../fixtures/context'
 import { TEST_MINISTRIES } from '../../fixtures/ministries'
@@ -26,12 +28,32 @@ describe('SlideView', () => {
     const ctx = makeCtx()
     const spec: SlideSpec = { kind: 'cover', palette: paletteFor({}, undefined, ctx), slideStyle: 'almanaque' }
     const { wrapper, host } = mountInHost(SlideView, 1920, 1080, { props: { spec, ctx } })
-    await until(() => (wrapper.emitted('status') ?? []).length > 0 && !!host.querySelector('[data-logo]'))
-    const last = wrapper.emitted('status')!.at(-1)![0] as SlideStatus
-    expect(last).toEqual({ status: 'ok', offendingFields: [] })
+    const last = () => (wrapper.emitted('status') ?? []).at(-1)?.[0] as SlideStatus | undefined
+    await until(() => !!last() && last()!.status !== 'midiendo' && !!host.querySelector('[data-logo]'))
+    expect(last()).toEqual({ status: 'ok', offendingFields: [] })
     await until(() => (host.querySelector('[data-logo]') as HTMLImageElement).complete)
     await frame()
     expect(auditSlide(host.querySelector('.slide-canvas') as HTMLElement)).toEqual([])
+  })
+
+  // Revisión final P3: antes de medir no hay "ok"; y un spec nuevo no borra el "No cabe" de un texto que no cambió.
+  it('emite "midiendo" hasta que todos los textos se ajustaron', async () => {
+    const ctx = makeCtx()
+    const [spec] = buildSlides({ typeId: 'culto', templateId: 'clasica', values: NORMAL.culto, logo: { kind: 'iglesia' } }, ctx)
+    const { status, wrapper } = await renderSlide(spec!, ctx)
+    expect((wrapper.emitted('status')![0]![0] as SlideStatus).status).toBe('midiendo')
+    expect(status.status).toBe('ok')
+  })
+
+  it('un spec nuevo con el mismo texto que no cabe sigue en "No cabe"', async () => {
+    const base = makeCtx()
+    const ctx = makeCtx({ settings: { ...base.settings, slideStyle: 'himnario', coverTitle: 'Anuncios de la iglesia adventista del distrito central norte' } })
+    const { status, wrapper } = await renderSlide(frameSlide('cover', ctx), ctx)
+    expect(status.status).toBe('no_cabe')
+    const otherTheme = makeCtx({ ...ctx, theme: PRESET_THEMES.find((t) => t.id === 'vino')! })
+    await wrapper.setProps({ spec: frameSlide('cover', otherTheme) })
+    for (let i = 0; i < 10; i++) await frame()
+    expect((wrapper.emitted('status')!.at(-1)![0] as SlideStatus).status).toBe('no_cabe')
   })
 
   it('buildSlides con una plantilla desconocida usa la del tipo', () => {

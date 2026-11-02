@@ -103,6 +103,7 @@ P3 en la rama `fase1/p3-plantillas-y-temas` (sin subir): todo hecho **salvo cump
 | 2026-11-01 | **Plantilla Visual = afiche propio con la foto recortada** de quien predica o del invitado especial (rediseño tras el rechazo de T7): la persona de pie en un escenario por estilo, a la derecha y de alto casi completo; su nombre (`FieldDef.captionField` de la foto) destacado en la columna de texto; logos arriba a la derecha. Nunca texto encima (§5.5); solo en tipos con campo de imagen (hoy, culto). Sin foto se ve igual que la Clásica. Con todos los opcionales llenos puede salir "No cabe" (usar la Clásica). **Cierre** = la portada del estilo con "¡Feliz sábado!". | P3 · T7, T11 |
 | 2026-11-01 | **Cierre:** el saludo "¡Feliz sábado!" arriba y el logo **centrado (vertical)** debajo, a 260 px de alto (más pequeño que en la portada); en el **Cartel**, el horizontal a 200 px, porque el afiche va alineado a la izquierda. | Responsable |
 | 2026-11-01 | **Capturas de regresión solo locales:** `tests/e2e/galeria.spec.ts-snapshots/` en `.gitignore` y `updateSnapshots: 'missing'` en Playwright: la primera corrida de `pnpm test:e2e` en una máquina crea las bases y las siguientes comparan. | P3 · T12 |
+| 2026-11-01 | **`SlideStatus` gana `'midiendo'`**: mientras algún texto montado no se haya ajustado (o si la fuente no carga) la slide nunca dice `ok`. Un `spec` nuevo no borra los informes: cada `SlideText` se registra, se invalida al cambiar y se olvida al desmontarse. P4 debe tratar `midiendo` como "aún no listo". | Revisión final P3 |
 | 2026-11-01 | **Capturas de slides solo en local:** `docs/slides-direcciones/` está en `.gitignore` (pedido del responsable; pesaban 52 MB). Se sacaron del historial no subido de la rama P3 (respaldo: rama local `backup/p3-antes-de-limpiar`). Se regeneran con la galería (`pnpm dev` → `/galeria.html?only=<id>`). | Responsable |
 | 2026-11-01 | `FitText`: si la fuente no carga, no dibuja nada ni emite informe (y lo registra en consola); nunca mide con la fuente de respaldo. Si llega un texto nuevo mientras carga la fuente, se descarta la medición vieja. | Tarea 8 |
 
@@ -124,6 +125,8 @@ Gestor de paquetes: **pnpm** (fijado en `package.json` → `packageManager: pnpm
 Requisito de una sola vez: `pnpm exec playwright install chromium`.
 
 ## Problemas abiertos
+
+- Menores diferidos de la revisión final P3 (para P4/P5): `ImageSlide` dibuja un instante con la proporción anterior al cambiar de imagen; grupo de cumpleaños pagina 8+1 en vez de repartir parejo; orden de cumpleaños por días con signo (uno de hace 170 días antes que uno de mañana); slide de imagen con `imagen` vacío pide el id "undefined" (negra y `ok`); logo subido sin blob deja su caja vacía; alto del logo se calcula una vez en `@load`.
 
 - Menores diferidos de la revisión P2 (para P4): mensaje de precio inválido igual al de negativo ("500" texto o NaN → "no puede ser negativo"); `settings` sin índice `updatedAt` → `repository.list()` fallaría (indexarlo antes de tener datos); `put` copia superficial → al guardar objetos `reactive()` usar `toRaw`/`structuredClone`. / bloqueos
 
@@ -184,3 +187,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | Ajustes del responsable: cumpleaños sin logo, con día discreto u oculto, adornos festivos y colores suaves, grupos sin fotos (tarjetas/lista); Visual sin ornamento (Himnario) y con hojita más pequeña (Almanaque) | typecheck 0; `pnpm test` 609/609; `test:e2e` 30/30 | ver `git log` |
 | 2026-11-01 | Cumpleaños 2.ª ronda: colores de fiesta variados, confeti de esquina, pastel, globos y gorrito más grandes, gorrito sobre el marco; listas en fondo claro sin recuadros ni diagonal | typecheck 0; `pnpm test` 609/609; `test:e2e` 30/30 | ver `git log` |
 | 2026-11-01 | Cumpleaños y Visual aprobados por el responsable; pasa a la sesión principal para la revisión final de la rama, la unión a `master` y el push | — | ver `git log` |
+| 2026-11-01 | P3 · revisión final (revisor nuevo): 0 Critical; 2 Important arreglados (estado `midiendo`; "No cabe" que se perdía con un spec nuevo); 6 menores diferidos | `pnpm test` 611/611; `test:e2e` 30/30 | ver `git log` |

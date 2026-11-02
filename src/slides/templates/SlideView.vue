@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Dibuja cualquier SlideSpec en el lienzo de 1920×1080 y emite su estado (§5.6, RF-10).
 // Es el mismo componente en la vista previa, las miniaturas y la ventana pública (§8.2).
-import { computed, onMounted, provide, reactive, watch, type Component } from 'vue'
+import { computed, onMounted, provide, watch, type Component } from 'vue'
 import { SlideCanvas, summarizeFit, type FitReport } from '../engine'
 import type { SlideContext, SlideSpec, SlideStatus } from './contract'
 import BirthdayGroup from './birthday/BirthdayGroup.vue'
@@ -23,10 +23,25 @@ const COMPONENTS: Partial<Record<SlideSpec['kind'], Component>> = {
   'birthday-group': BirthdayGroup,
 }
 
-const reports = reactive(new Map<string, FitReport>())
-provide(FIT_COLLECTOR, (report) => {
-  reports.set(report.slotId, report)
-  emitStatus()
+// Textos montados y su último ajuste. Un texto sin informe está "midiendo" (la fuente carga en asíncrono).
+const mounted = new Set<string>()
+const reports = new Map<string, FitReport>()
+provide(FIT_COLLECTOR, {
+  register: (slotId) => mounted.add(slotId),
+  invalidate: (slotId) => {
+    reports.delete(slotId)
+    emitStatus()
+  },
+  report: (report) => {
+    if (!mounted.has(report.slotId)) return
+    reports.set(report.slotId, report)
+    emitStatus()
+  },
+  forget: (slotId) => {
+    mounted.delete(slotId)
+    reports.delete(slotId)
+    emitStatus()
+  },
 })
 
 function statusNow(): SlideStatus {
@@ -34,6 +49,7 @@ function statusNow(): SlideStatus {
   if (spec.kind === 'announcement' && spec.data.density.status === 'no_cabe') {
     return { status: 'no_cabe', offendingFields: [spec.data.density.fieldKey], reason: 'density' }
   }
+  if ([...mounted].some((id) => !reports.has(id))) return { status: 'midiendo', offendingFields: [] }
   const fit = summarizeFit([...reports.values()])
   return fit.status === 'ok'
     ? { status: 'ok', offendingFields: [] }
@@ -41,14 +57,9 @@ function statusNow(): SlideStatus {
 }
 const emitStatus = () => emit('status', statusNow())
 
-// Una slide nueva empieza sin informes; la densidad se conoce sin medir nada.
-watch(
-  () => props.spec,
-  () => {
-    reports.clear()
-    emitStatus()
-  },
-)
+// Un spec nuevo no borra los informes: cada texto que cambió se invalida solo, y el que no cambió
+// conserva su ajuste (si no cabía, sigue sin caber). La densidad se conoce sin medir nada.
+watch(() => props.spec, emitStatus)
 onMounted(emitStatus)
 
 const component = computed(() =>
