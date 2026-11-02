@@ -45,10 +45,12 @@
 | `templates/classic/` | `ClassicSlide` elige `HimnarioSlide` / `AlmanaqueSlide` / `CartelSlide` por `spec.slideStyle`; `layout.ts`: `stackRows` (filas desde abajo), `rowLines`, `titleSlot` (hasta 4 líneas), `lineSlot`, `detailRows`, `monthLabel` |
 | `templates/cover/` | `CoverSlide` → `CoverHimnario` / `CoverAlmanaque` / `CoverCartel`; dibuja portada y cierre (`frameTitle`: el cierre dice "¡Feliz sábado!") |
 | `templates/registry.ts` | `buildSlides`, `templatesFor` (la Visual solo en tipos con campo de imagen: culto), `paletteFor`, `frameSlide('cover' \| 'closing', ctx)` |
+| `templates/birthday/` | `layout.ts` (`birthdayLayout`: reparto por modo, orden por cercanía, 6 con fotos / 8 solo nombres, `page`), `geometry.ts` (`groupCards`, `cardLayout`), `single.ts` (`singleSlots`), `BirthdaySingle` → `SingleHimnario` / `SingleAlmanaque` / `SingleCartel`, `BirthdayGroup` (tarjetas vestidas por estilo). Plantilla `cumpleanos` en el registro |
+| `templates/parts/FramedPhoto.vue` | Foto normal (no recortada) llenando un arco, círculo o rectángulo con borde (`data-photo`); la usan los cumpleaños |
 | `templates/image/ImageSlide.vue` | Flyer completo (`data-image="nitida"`) con relleno de la misma imagen difuminada (`data-image="relleno"`) |
 | `templates/parts/PhotoCutout.vue` | Foto recortada de la Visual (`data-photo`), de pie en su caja; `classic/layout.ts` → `visualPhoto(spec)` |
 | `tests/browser/helpers/slides.ts` | `renderSlide(spec, ctx)` → `{ status, canvas, host }` cuando todo texto se ajustó y toda imagen cargó; `canvasRect` |
-| `tests/fixtures/images.ts` | `syntheticFlyer(w, h)`, `syntheticCutout()`: imágenes generadas en el navegador (sin binarios en el repo) |
+| `tests/fixtures/images.ts` | `syntheticFlyer(w, h)`, `syntheticCutout()`, `syntheticPortrait(hue)`: imágenes generadas en el navegador (sin binarios en el repo) |
 | `templates/parts/` | `LogoGroup` (1–3 logos en partes iguales), `LogoSlot` (un logo por candidatos), `HimnarioCover`, `AlmanaqueSheet`, `CartelField`, `Texture` (tela / renglones / trama, con `texturedStops` para el data-bg), `Fleuron`, `TypeEmblem` |
 | `normalize.ts` | `NormalizedData.when`: la fecha principal en piezas (`weekday`, `day`, `month`, `relative`, `year`, `time`) para dibujarla como protagonista |
 | `themes.ts` | `SlidePalette.field`/`onField` (color puro del tipo para hojas y campos), `accentInk`, `mixColors` |
@@ -172,3 +174,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | Cierre: logo centrado debajo del saludo y más pequeño (pedido del responsable) | `cover` 21/21; `pnpm test` 533/533; `test:e2e` 21/21 | ver `git log` |
 | 2026-11-01 | Cierre del Cartel con el logo horizontal (pedido del responsable) | `pnpm test` 533/533; `test:e2e` 21/21 | ver `git log` |
 | 2026-11-01 | P3 · T8: reparto de cumpleaños (`birthday/layout.ts`: modo, orden por cercanía cruzando el año, 6/8 por slide, "(1/2)"); plantilla `cumpleanos` en el registro | `pnpm test:unit` 253/253; typecheck 0 | ver `git log` |
+| 2026-11-01 | P3 · T9: cumpleaños individual y grupo en los 3 estilos (Himnario: arco de vitral y día como número del himno; Almanaque: la hoja marca el cumpleaños y foto impresa; Cartel: el día en el campo y foto pegada); matriz +36 casos, 9 capturas de regresión nuevas | typecheck 0; `pnpm test` 593/593 | ver `git log` |

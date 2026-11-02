@@ -4,6 +4,8 @@
 import { computed, onMounted, provide, reactive, watch, type Component } from 'vue'
 import { SlideCanvas, summarizeFit, type FitReport } from '../engine'
 import type { SlideContext, SlideSpec, SlideStatus } from './contract'
+import BirthdayGroup from './birthday/BirthdayGroup.vue'
+import BirthdaySingle from './birthday/BirthdaySingle.vue'
 import ClassicSlide from './classic/ClassicSlide.vue'
 import CoverSlide from './cover/CoverSlide.vue'
 import ImageSlide from './image/ImageSlide.vue'
@@ -17,6 +19,8 @@ const COMPONENTS: Partial<Record<SlideSpec['kind'], Component>> = {
   cover: CoverSlide,
   closing: CoverSlide,
   image: ImageSlide,
+  'birthday-single': BirthdaySingle,
+  'birthday-group': BirthdayGroup,
 }
 
 const reports = reactive(new Map<string, FitReport>())

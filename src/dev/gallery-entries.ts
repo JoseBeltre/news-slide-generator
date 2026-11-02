@@ -2,7 +2,7 @@
 // Las mismas entradas usan las capturas de regresión (tests/e2e/galeria.spec.ts).
 import { FULL, MINIMAL, NORMAL, TEXT_TYPE_IDS, longTitle } from '../../tests/fixtures/announcements'
 import { makeCtx } from '../../tests/fixtures/context'
-import { syntheticCutout, syntheticFlyer } from '../../tests/fixtures/images'
+import { syntheticCutout, syntheticFlyer, syntheticPortrait } from '../../tests/fixtures/images'
 import { TEST_MINISTRIES } from '../../tests/fixtures/ministries'
 import { SLIDE_STYLES } from '../slides/styles'
 import { PRESET_THEMES } from '../slides/themes'
@@ -30,7 +30,32 @@ const IMAGES: Record<string, () => Promise<Blob>> = {
   'flyer-vertical': () => syntheticFlyer(1080, 1920),
   'flyer-horizontal': () => syntheticFlyer(1920, 1080),
   'foto-predicador': () => syntheticCutout(),
+  ...Object.fromEntries([0, 1, 2, 3, 4, 5].map((i) => [`retrato-${i}`, () => syntheticPortrait(i * 55)])),
 }
+
+// Cumpleaños: nombres reales de largo variado (sin año ni edad, §3.3).
+const P = (name: string, day: number, month: number, foto?: number) => ({ name, day, month, ...(foto !== undefined ? { photoId: `retrato-${foto}` } : {}) })
+const VERSICULO = 'Enséñanos de tal modo a contar nuestros días, que traigamos al corazón sabiduría. Salmo 90:12'
+const OCHO = [
+  P('Ana Lucía', 2, 11),
+  P('José Miguel Fernández', 4, 11),
+  P('Marta', 5, 11),
+  P('Pedro Antonio', 7, 11),
+  P('Altagracia Rodríguez', 8, 11),
+  P('Luis', 9, 11),
+  P('Rosa Elena Batista', 10, 11),
+  P('Juan Carlos', 12, 11),
+]
+const BIRTHDAYS = [
+  ['uno', { modo: 'individual', personas: [P('María Altagracia', 7, 11)] }],
+  ['uno-versiculo', { modo: 'individual', personas: [P('Juan Carlos Rodríguez', 9, 11)], versiculo: VERSICULO }],
+  ['uno-foto', { modo: 'individual', personas: [P('María Altagracia', 7, 11, 0)] }],
+  ['uno-foto-versiculo', { modo: 'individual', personas: [P('Juan Carlos Rodríguez Peña', 30, 12, 1)], versiculo: VERSICULO }],
+  ['grupo-8', { modo: 'grupo', personas: OCHO }],
+  ['grupo-fotos', { modo: 'grupo', personas: OCHO.slice(0, 6).map((p, i) => (i % 2 === 0 ? { ...p, photoId: `retrato-${i}` } : p)) }],
+  ['grupo-3', { modo: 'grupo', personas: OCHO.slice(0, 3) }],
+  ['grupo-pagina', { modo: 'grupo', personas: [...OCHO, P('Esther', 13, 11)] }],
+] as const
 const loadImage = async (id: string) => IMAGES[id]?.()
 
 export function galleryEntries(): GalleryEntry[] {
@@ -60,6 +85,14 @@ export function galleryEntries(): GalleryEntry[] {
       ] as const) {
         const [spec] = buildSlides({ typeId: 'culto', templateId: 'visual', values, logo: IGLESIA, slideStyle }, ctx)
         out.push({ id: `estilo-${slideStyle}-${name}-${themeId}`, label: `${slideStyle} · ${name} · ${themeId}`, spec: spec!, ctx })
+      }
+    }
+    // Cumpleaños: individual con y sin foto, grupo de nombres, con fotos, pocos y paginado.
+    for (const themeId of THEMES) {
+      const ctx = makeCtx({ theme: PRESET_THEMES.find((t) => t.id === themeId)!, loadImage })
+      for (const [name, values] of BIRTHDAYS) {
+        const slides = buildSlides({ typeId: 'cumpleanos', templateId: 'cumpleanos', values: values as unknown as Record<string, unknown>, logo: IGLESIA, slideStyle }, ctx)
+        out.push({ id: `estilo-${slideStyle}-cumple-${name}-${themeId}`, label: `${slideStyle} · cumpleaños ${name} · ${themeId}`, spec: slides[0]!, ctx })
       }
     }
     for (const themeId of THEMES) {

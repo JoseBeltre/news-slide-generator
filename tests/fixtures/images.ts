@@ -33,3 +33,28 @@ export async function syntheticCutout(width = 800, height = 1000): Promise<Blob>
   g.fill()
   return c.convertToBlob({ type: 'image/png' })
 }
+
+/**
+ * Foto de cumpleaños de prueba: una foto normal (con fondo), retrato con cabeza y hombros. El tono
+ * del fondo cambia con `hue` para distinguir a las personas en la galería.
+ */
+export async function syntheticPortrait(hue = 200, width = 600, height = 750): Promise<Blob> {
+  const c = new OffscreenCanvas(width, height)
+  const g = c.getContext('2d')!
+  const grad = g.createLinearGradient(0, 0, width, height)
+  grad.addColorStop(0, `hsl(${hue} 45% 62%)`)
+  grad.addColorStop(1, `hsl(${(hue + 40) % 360} 40% 38%)`)
+  g.fillStyle = grad
+  g.fillRect(0, 0, width, height)
+  g.fillStyle = '#8a5a44'
+  g.beginPath()
+  g.ellipse(width / 2, height * 0.38, width * 0.19, height * 0.19, 0, 0, Math.PI * 2)
+  g.fill()
+  g.fillStyle = `hsl(${(hue + 180) % 360} 35% 30%)`
+  g.beginPath()
+  g.moveTo(width * 0.06, height)
+  g.bezierCurveTo(width * 0.1, height * 0.62, width * 0.9, height * 0.62, width * 0.94, height)
+  g.closePath()
+  g.fill()
+  return c.convertToBlob({ type: 'image/png' })
+}

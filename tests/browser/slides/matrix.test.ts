@@ -9,7 +9,7 @@ import type { AnnouncementInput, SlideContext, SlideSpec } from '../../../src/sl
 import { buildSlides, frameSlide } from '../../../src/slides/templates/registry'
 import { FULL, MINIMAL, NORMAL, TEXT_TYPE_IDS, longTitle, type TextTypeId } from '../../fixtures/announcements'
 import { makeCtx } from '../../fixtures/context'
-import { syntheticCutout, syntheticFlyer } from '../../fixtures/images'
+import { syntheticCutout, syntheticFlyer, syntheticPortrait } from '../../fixtures/images'
 import { cleanupMounted } from '../helpers/mount'
 import { renderSlide } from '../helpers/slides'
 
@@ -26,6 +26,7 @@ const THEMES: Array<[string, Partial<AnnouncementInput>, Theme]> = [
 
 const images: Record<string, () => Promise<Blob>> = {
   foto: () => syntheticCutout(),
+  retrato: () => syntheticPortrait(),
   vertical: () => syntheticFlyer(1080, 1920),
   horizontal: () => syntheticFlyer(1920, 1080),
 }
@@ -39,6 +40,20 @@ const VARIANTS: Record<Variant, (t: TextTypeId) => Partial<AnnouncementInput> & 
   titulo_largo: (t) => ({ values: longTitle(t) }),
   sin_logo: (t) => ({ values: NORMAL[t], logo: { kind: 'ninguno' } }),
   medio_relativas: (t) => ({ values: NORMAL[t], dateStyle: 'medio', relativeDates: true }),
+}
+
+// Cumpleaños (RF-22…25): individual con y sin foto, grupo de 8 nombres y grupo con fotos.
+const person = (name: string, day: number, photo = false) => ({ name, day, month: 11, ...(photo ? { photoId: 'retrato' } : {}) })
+const GROUP_NAMES = ['Ana Lucía', 'José Miguel Fernández', 'Marta', 'Pedro Antonio', 'Altagracia Rodríguez', 'Luis', 'Rosa Elena Batista', 'Juan Carlos']
+const BIRTHDAYS: Record<string, Record<string, unknown>> = {
+  individual: { modo: 'individual', personas: [person('María Altagracia', 7)] },
+  'individual con foto y versículo': {
+    modo: 'individual',
+    personas: [person('Juan Carlos Rodríguez Peña', 9, true)],
+    versiculo: 'Enséñanos de tal modo a contar nuestros días, que traigamos al corazón sabiduría. Salmo 90:12',
+  },
+  'grupo de 8': { modo: 'grupo', personas: GROUP_NAMES.map((n, i) => person(n, 2 + i)) },
+  'grupo con fotos': { modo: 'grupo', personas: GROUP_NAMES.slice(0, 6).map((n, i) => person(n, 2 + i, i % 2 === 0)) },
 }
 
 /** Casos que deben salir "No cabe", con su campo culpable. */
@@ -84,6 +99,12 @@ describe.each(STYLES)('matriz §5.7 · estilo %s', (slideStyle) => {
       check(announcement(slideStyle, 'culto', { values: { ...NORMAL.culto, fotoPredicador: 'foto' }, ...extra }, themed, 'visual'), themed))
     it(`portada · ${name}`, () => check(frameSlide('cover', themed), themed))
     it(`cierre · ${name}`, () => check(frameSlide('closing', themed), themed))
+    for (const [caso, values] of Object.entries(BIRTHDAYS)) {
+      it(`cumpleaños ${caso} · ${name}`, () => {
+        const [spec] = buildSlides({ typeId: 'cumpleanos', templateId: 'cumpleanos', values, logo: { kind: 'iglesia' }, slideStyle, ...extra }, themed)
+        return check(spec!, themed)
+      })
+    }
   }
 })
 
