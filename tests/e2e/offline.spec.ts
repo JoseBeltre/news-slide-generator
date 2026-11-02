@@ -19,12 +19,16 @@ test('funciona sin red después de la primera carga, también en rutas profundas
   await page.reload() // la página queda controlada por el Service Worker
   await context.setOffline(true)
   await page.goto('/presentacion/cualquier-cosa')
-  await expect(page.getByRole('heading', { name: 'Anuncios del Sábado' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Anuncios del Sábado' })).toBeVisible()
+  await page.goto('/anuncios')
+  await expect(page.getByRole('heading', { name: 'Anuncios', level: 1 })).toBeVisible()
   // load() obliga a descargar el woff2: sin red solo puede venir del precache.
   const caras = await page.evaluate(async () => {
     const r400 = await document.fonts.load('400 100px "Atkinson Hyperlegible"')
     const r700 = await document.fonts.load('700 100px "Atkinson Hyperlegible"')
-    return [r400.length, r700.length]
+    const inter = await document.fonts.load('16px "Inter Variable"')
+    const serif = await document.fonts.load('400 32px "Instrument Serif"')
+    return [r400.length, r700.length, inter.length, serif.length]
   })
   expect(caras.every((n) => n > 0)).toBe(true)
 })

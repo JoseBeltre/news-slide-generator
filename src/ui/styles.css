@@ -1,0 +1,87 @@
+/* Único CSS de la interfaz (plan P4): Tailwind + los tokens de DESIGN.md. Nada de reglas para
+   componentes: los estilos van como clases de Tailwind en cada componente. No aplica a las slides. */
+@import "tailwindcss";
+
+@theme {
+  /* Solo la paleta de DESIGN.md: sin los colores por defecto de Tailwind. */
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-background: #f3f0d6;
+  --color-surface: #ffffff;
+  --color-muted: #e8e5d0;
+  --color-ink: #1a1a1a;
+  --color-ink-muted: #55513f;
+  --color-hairline: #cfcaae;
+  --color-field-border: #857f63;
+  --color-primary: #1a1a1a;
+  --color-on-primary: #f3f0d6;
+  --color-danger: #9e2a1f;
+  --color-danger-bg: #f6dcd3;
+  --color-success: #2e6230;
+  --color-success-bg: #dce9cf;
+  --color-warning: #7a5300;
+  --color-warning-bg: #f5e2b3;
+
+  --font-sans: "Inter Variable", system-ui, sans-serif;
+  --font-display: "Instrument Serif", Georgia, serif;
+  --font-meta: ui-monospace, Consolas, monospace;
+
+  --text-display: 2.75rem;
+  --text-display--line-height: 1.1;
+  --text-display-sm: 2rem;
+  --text-display-sm--line-height: 1.15;
+  --text-heading: 1.75rem;
+  --text-heading--line-height: 1.2;
+  --text-heading-sm: 1.5rem;
+  --text-heading-sm--line-height: 1.25;
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1rem;
+  --text-meta--letter-spacing: 0.08em;
+  --text-meta--font-weight: 500;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+}
+
+/* Tema oscuro (vista del presentador y preferencia del sistema): mismos tokens, otros valores.
+   Los colores de estado se aclaran para mantener ≥ 4.5:1 sobre el fondo oscuro. */
+@layer theme {
+  [data-theme="dark"] {
+    --color-background: #0a0a0a;
+    --color-surface: #141414;
+    --color-muted: #1f1f1f;
+    --color-ink: #ffffff;
+    --color-ink-muted: #b9b6a3;
+    --color-hairline: #2e2e2e;
+    --color-field-border: #6b6b6b;
+    --color-primary: #f5f5dc;
+    --color-on-primary: #0a0a0a;
+    --color-danger: #f2a196;
+    --color-danger-bg: #3a1712;
+    --color-success: #a9cf8f;
+    --color-success-bg: #18301a;
+    --color-warning: #e8c26a;
+    --color-warning-bg: #3a2c08;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --color-background: #0a0a0a;
+      --color-surface: #141414;
+      --color-muted: #1f1f1f;
+      --color-ink: #ffffff;
+      --color-ink-muted: #b9b6a3;
+      --color-hairline: #2e2e2e;
+      --color-field-border: #6b6b6b;
+      --color-primary: #f5f5dc;
+      --color-on-primary: #0a0a0a;
+      --color-danger: #f2a196;
+      --color-danger-bg: #3a1712;
+      --color-success: #a9cf8f;
+      --color-success-bg: #18301a;
+      --color-warning: #e8c26a;
+      --color-warning-bg: #3a2c08;
+    }
+  }
+}

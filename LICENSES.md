@@ -9,6 +9,8 @@ Todas las dependencias, fuentes, logos y assets deben tener licencias compatible
 | Recurso | Licencia | Notas |
 |---|---|---|
 | Atkinson Hyperlegible (Braille Institute), vía `@fontsource/atkinson-hyperlegible` | SIL Open Font License 1.1 | Empaquetada localmente; nunca se carga desde Google Fonts. |
+| Inter (Rasmus Andersson), vía `@fontsource-variable/inter` | SIL Open Font License 1.1 | Interfaz. Empaquetada localmente. |
+| Instrument Serif (Instrument), vía `@fontsource/instrument-serif` | SIL Open Font License 1.1 | Títulos de la interfaz. Empaquetada localmente. |
 
 ## Logos
 
@@ -25,6 +27,10 @@ Todas las dependencias, fuentes, logos y assets deben tener licencias compatible
 | `zod` | MIT |
 | `@lucide/vue` (íconos SVG, empaquetados) | ISC |
 | `@fontsource/atkinson-hyperlegible` | MIT (paquete) / OFL-1.1 (fuente) |
+| `vue-router` | MIT |
+| `@fontsource-variable/inter` (Inter, interfaz) | MIT (paquete) / OFL-1.1 (fuente) |
+| `@fontsource/instrument-serif` (Instrument Serif, títulos de la interfaz) | MIT (paquete) / OFL-1.1 (fuente) |
+| `tailwindcss` (CSS generado en el build) | MIT |
 | Workbox (incluido en `sw.js` por `vite-plugin-pwa`) | MIT |
 
 ## Herramientas de desarrollo (no se distribuyen)

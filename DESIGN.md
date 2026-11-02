@@ -177,6 +177,26 @@ Filas con borde inferior `hairline` (no tarjetas sueltas) para las listas largas
 
 Bandas a todo el ancho del contenedor, con fondo `-bg`, texto del color de estado, ícono a la izquierda y radio 8 px. Se cierran con una ×. Nunca hay modales para avisos; los modales son solo para confirmar acciones destructivas.
 
+## Implementación (Tailwind CSS v4)
+
+**Regla estricta:** la interfaz se estiliza solo con clases de Tailwind. Ningún componente lleva `<style>`, `style="…"` escrito a mano ni `@apply`. El único CSS es `src/ui/styles.css`: el `@import` de Tailwind, el `@theme` con estos tokens y su redefinición para el tema oscuro. Un valor que solo se conoce en ejecución (el color de un tipo) entra como variable CSS (`:style="{ '--type-accent': color }"`) y se usa con una clase (`bg-(--type-accent)`). `tests/unit/architecture.test.ts` lo hace cumplir.
+
+| Token | Clase de Tailwind |
+|---|---|
+| `background`, `surface`, `muted` | `bg-background`, `bg-surface`, `bg-muted` |
+| `ink`, `ink-muted` | `text-ink`, `text-ink-muted` (y `border-ink`, `outline-ink`) |
+| `hairline`, `field-border` | `border-hairline`, `border-field-border` |
+| Botón principal (`ink` en claro, `accent` en oscuro) | `bg-primary text-on-primary` |
+| Estados | `text-danger bg-danger-bg`, `text-success bg-success-bg`, `text-warning bg-warning-bg` |
+| `display`, `heading` | `font-display text-display-sm md:text-display`, `font-display text-heading-sm md:text-heading` |
+| `body`, `label` | `font-sans text-base`, `text-sm font-medium` (Inter es la fuente por defecto) |
+| `meta` | `font-meta text-meta uppercase` |
+| Radios | `rounded-sm` (4 px), `rounded-md` (8 px), `rounded-lg` (16 px) |
+
+La paleta por defecto de Tailwind está desactivada (`--color-*: initial`): solo existen los colores de esta tabla, así que un color fuera de la paleta no compila. En el tema oscuro los colores de estado se aclaran (`danger #F2A196`, `success #A9CF8F`, `warning #E8C26A` sobre fondos `#3A1712`, `#18301A`, `#3A2C08`), todos ≥ 7:1.
+
+**Organización:** `src/app` (marco y rutas), `src/ui` (controles de este sistema, sin nada de anuncios), `src/features/<funcionalidad>` (pantallas). Páginas ≤ 80 líneas que solo componen; componentes ≤ 150; nada duplicado.
+
 ## Do's and Don'ts
 
 ### Sí
