@@ -61,7 +61,7 @@
 ## Próxima tarea
 
 **P4 (formularios y vista previa)**, paso 5 de la hoja de ruta:
-1. Escribir el plan `docs/superpowers/plans/2026-11-01-fase1-p4-*.md` a partir del SRS y de la hoja de ruta.
+1. Plan escrito: `docs/superpowers/plans/2026-11-01-fase1-p4-formularios-y-vista-previa.md` (7 tareas), **pendiente de aprobación del responsable**. Fuera de alcance anotado: pantalla de Configuración (RF-110…113) sin bloque asignado todavía.
 2. Sistema de diseño de la interfaz: **`DESIGN.md` (NDS Core adaptado)**, ya elegido. Aplica **solo a la interfaz**, nunca a las slides.
 3. Lo que P4 consume de P3: `buildSlides`, `templatesFor`, `frameSlide`, `SlideView` (estado `midiendo` = aún no listo), `deriveTheme(...).warning` para el aviso de color ajustado, `Settings.slideStyle` / `dateStyle` / `relativeDates` y los menores diferidos listados en "Problemas abiertos".
 
