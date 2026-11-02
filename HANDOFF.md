@@ -62,7 +62,7 @@
 
 **P4 (formularios y vista previa)**, paso 5 de la hoja de ruta:
 1. Escribir el plan `docs/superpowers/plans/2026-11-01-fase1-p4-*.md` a partir del SRS y de la hoja de ruta.
-2. **Antes de diseñar la interfaz:** presentar al responsable **3 `DESIGN.md` de designmd.app**, cada uno con su fundamento (UX primero, base `ui-ux-pro-max`). Elige él. Aplica **solo a la interfaz**, nunca a las slides.
+2. Sistema de diseño de la interfaz: **`DESIGN.md` (NDS Core adaptado)**, ya elegido. Aplica **solo a la interfaz**, nunca a las slides.
 3. Lo que P4 consume de P3: `buildSlides`, `templatesFor`, `frameSlide`, `SlideView` (estado `midiendo` = aún no listo), `deriveTheme(...).warning` para el aviso de color ajustado, `Settings.slideStyle` / `dateStyle` / `relativeDates` y los menores diferidos listados en "Problemas abiertos".
 
 ## Decisiones tomadas
@@ -101,6 +101,8 @@
 | 2026-11-01 | **Cierre:** el saludo "¡Feliz sábado!" arriba y el logo **centrado (vertical)** debajo, a 260 px de alto (más pequeño que en la portada); en el **Cartel**, el horizontal a 200 px, porque el afiche va alineado a la izquierda. | Responsable |
 | 2026-11-01 | **Capturas de regresión solo locales:** `tests/e2e/galeria.spec.ts-snapshots/` en `.gitignore` y `updateSnapshots: 'missing'` en Playwright: la primera corrida de `pnpm test:e2e` en una máquina crea las bases y las siguientes comparan. | P3 · T12 |
 | 2026-11-01 | **`SlideStatus` gana `'midiendo'`**: mientras algún texto montado no se haya ajustado (o si la fuente no carga) la slide nunca dice `ok`. Un `spec` nuevo no borra los informes: cada `SlideText` se registra, se invalida al cambiar y se olvida al desmontarse. P4 debe tratar `midiendo` como "aún no listo". | Revisión final P3 |
+| 2026-11-01 | **Sistema de diseño de la interfaz: NDS Core** (designmd.app), elegido por el responsable entre DSGov, Wellhub Yoga y NDS Core. Adaptado a app de trabajo en `DESIGN.md` (raíz): crema `#F3F0D6` y tinta `#1A1A1A`, títulos en Instrument Serif, Inter para leer, estados apagados, tema oscuro para el presentador. **Solo la interfaz**; las slides no lo usan. | Responsable |
+| 2026-11-01 | **Usuarios de la interfaz (SRS v1.5):** el equipo que gestiona los anuncios son jóvenes y adultos que manejan bien la tecnología. Las personas mayores y con baja visión son público de las slides, no de la interfaz. Interfaz rápida y eficiente (atajos, WCAG AA), no "para principiantes". | Responsable |
 | 2026-11-01 | **Capturas de slides solo en local:** `docs/slides-direcciones/` está en `.gitignore` (pedido del responsable; pesaban 52 MB). Se sacaron del historial no subido de la rama P3 (respaldo: rama local `backup/p3-antes-de-limpiar`). Se regeneran con la galería (`pnpm dev` → `/galeria.html?only=<id>`). | Responsable |
 | 2026-11-01 | `FitText`: si la fuente no carga, no dibuja nada ni emite informe (y lo registra en consola); nunca mide con la fuente de respaldo. Si llega un texto nuevo mientras carga la fuente, se descarta la medición vieja. | Tarea 8 |
 
@@ -186,3 +188,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | Cumpleaños y Visual aprobados por el responsable; pasa a la sesión principal para la revisión final de la rama, la unión a `master` y el push | — | ver `git log` |
 | 2026-11-01 | P3 · revisión final (revisor nuevo): 0 Critical; 2 Important arreglados (estado `midiendo`; "No cabe" que se perdía con un spec nuevo); 6 menores diferidos | `pnpm test` 611/611; `test:e2e` 30/30 | ver `git log` |
 | 2026-11-01 | P3 unido a `master` (fast-forward) y subido a GitHub | verificado en `master`: 611/611, E2E 30/30, build OK | dfb6389 |
+| 2026-11-01 | P4 · elección del DESIGN.md (NDS Core) y adaptación a app; SRS v1.5 (usuarios de la interfaz) | docs | ver `git log` |

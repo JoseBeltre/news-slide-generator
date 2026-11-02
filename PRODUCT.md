@@ -10,8 +10,8 @@ web
 
 ## Users
 
-- **Equipo de anuncios** de la Iglesia Adventista del Séptimo Día Mansedumbre II (República Dominicana): voluntarios, sin formación de diseño, que preparan los anuncios de la semana desde Windows con Chrome o Brave.
-- **La congregación**: lee las slides proyectadas cada sábado desde los bancos, a ~12–15 m de la pantalla; incluye personas mayores y con baja visión.
+- **Equipo de anuncios** de la Iglesia Adventista del Séptimo Día Mansedumbre II (República Dominicana): jóvenes y adultos que manejan bien la tecnología, sin formación de diseño, que preparan los anuncios de la semana desde el celular o la laptop (Windows con Chrome o Brave). Para ellos es **la interfaz**: rápida, clara y eficiente, sin tratarlos como principiantes.
+- **La congregación**: lee las slides proyectadas cada sábado desde los bancos, a ~12–15 m de la pantalla; incluye personas mayores y con baja visión. Para ellos son **las slides** (§5); nunca usan la interfaz.
 
 ## Product Purpose
 
@@ -57,4 +57,4 @@ El diseño y la legibilidad los impone el motor (C-04): el usuario solo llena da
 
 ## Accessibility & Inclusion
 
-WCAG AAA para el texto (7:1), tipografía para baja visión, distancia de lectura de 12–15 m. La información nunca depende solo del color.
+**Slides:** WCAG AAA para el texto (7:1), tipografía para baja visión, distancia de lectura de 12–15 m. **Interfaz:** WCAG AA como mínimo, foco visible, todo usable con teclado y en el celular. En ambas, la información nunca depende solo del color.

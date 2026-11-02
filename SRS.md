@@ -1,7 +1,7 @@
 # SRS — Generador de Slides de Anuncios para la Iglesia
 
 > **Nombre provisional:** Anuncios del Sábado
-> **Versión del documento:** 1.4 — 1 de noviembre de 2026
+> **Versión del documento:** 1.5 — 1 de noviembre de 2026
 > **Destinatario principal:** agente de desarrollo (Claude Code) y el responsable del proyecto.
 > **Estado:** lista para empezar la Fase 1. Las preguntas bloqueantes de §13 ya están respondidas.
 
@@ -13,6 +13,7 @@
 | 1.1 | Se elimina el concepto de anuncio "destacado" y la división de un anuncio en 2 slides (fuera del MVP). Cumpleaños: modo "varios por slide" o "uno por slide", y sin avatares cuando no hay foto. Biblioteca de logos de la iglesia y de los ministerios. La vista del presentador pasa al MVP. La hoja impresa se reemplaza por una vista de lectura para el celular. Persistencia en la nube desde el MVP (local-first + Supabase). Hosting en Hostinger. Múltiples fuentes en F2. Stack definido: Vue 3 + Vite + TypeScript. |
 | 1.2 | Respuestas del responsable incorporadas: modo extendido confirmado; Windows + Chrome o Brave; logo por anuncio = iglesia local (por defecto) o ninguno; cumpleaños con modo **híbrido** y "uno por slide" por defecto; cuentas por persona y una cuenta compartida de equipo; vista de lectura pública; subdominio propio con despliegue por FTP; proyecto de código abierto. |
 | 1.3 | Quitar fondo (F2): la opción principal pasa a ser **RMBG-1.4 + transformers.js** en lugar de `@imgly/background-removal`, para evitar la AGPL y mantener el proyecto con licencia MIT. |
+| 1.5 | Usuarios de la interfaz aclarados por el responsable (§2.1, RNF-03): el equipo que gestiona los anuncios son **jóvenes y adultos que manejan bien la tecnología**; las personas mayores y con baja visión son público de **las slides**, no de la interfaz. Sistema de diseño de la interfaz: **NDS Core** (designmd.app), elegido por el responsable. |
 | 1.4 | Rediseño de las slides: el responsable acepta bajar ~12 % los tamaños de §5.3 (opción "moderada") para ganar composición y contraste de escala; los íconos de §5.4 pasan a ser opcionales (≥ 56 px si se dibujan). Interlineado por rol (§5.2). Tres estilos de slide elegibles por anuncio (§9) y logos de hasta 3 ministerios, en logotipo o isotipo (RF-37). |
 
 ---
@@ -99,11 +100,13 @@ Construir una aplicación web que genere **slides de anuncios** para proyectarlo
 
 | Rol | Descripción | Necesidades clave |
 |---|---|---|
-| **Encargado de anuncios** | Recibe los anuncios durante la semana y los carga. No necesariamente es técnico. | Formulario rápido (≈2 min por anuncio), desde el celular o la laptop. |
+| **Encargado de anuncios** | Recibe los anuncios durante la semana y los carga. Forma parte de un equipo de **jóvenes y adultos que manejan bien la tecnología**; no son diseñadores. | Formulario rápido (≈2 min por anuncio), desde el celular o la laptop. |
 | **Operador** | Proyecta el sábado desde la laptop conectada a las pantallas. | Abrir la presentación del día y controlarla sin complicaciones, aunque no haya internet. |
 | **Presentador** | Da los anuncios de palabra. | Ver los puntos clave de cada anuncio, en la vista del presentador o en su celular. |
 | **Congregación** | Público, incluidos adultos mayores y personas con baja visión. | Leer todo con claridad desde lejos. |
 
+> **Interfaz vs. slides:** las personas mayores y con baja visión están en la **congregación**, que solo ve las slides; para ellas son las reglas de §5. La interfaz la usa el equipo (jóvenes y adultos con soltura tecnológica): debe ser rápida, clara y eficiente, sin tratar al usuario como principiante.
+>
 > Una misma persona puede tener varios roles. Solo quienes **editan** necesitan cuenta (§8.5). Presentar y leer no requieren sesión si los datos ya están en el dispositivo.
 
 ### 2.2 Entorno operativo
@@ -320,7 +323,7 @@ Los tipos se definen **de forma declarativa** (esquema de datos), no con código
 |---|---|---|
 | RNF-01 | **Offline** | Es una PWA instalable. Tras la primera carga, crear, editar y presentar funcionan sin red. Fuentes, íconos, logos y código se sirven localmente mediante Service Worker. |
 | RNF-02 | **Legibilidad** | Cumplir íntegramente §5. Se verifica con pruebas automáticas. |
-| RNF-03 | **Usabilidad** | Crear un anuncio típico en **≤ 2 minutos**. Interfaz 100% en español. Controles grandes. Formularios usables desde el celular. |
+| RNF-03 | **Usabilidad** | Crear un anuncio típico en **≤ 2 minutos**. Interfaz 100% en español. Controles cómodos para tocar en el celular (≥ 44 px) y atajos de teclado en la laptop. Formularios usables desde el celular. |
 | RNF-04 | **Rendimiento** | Cambio de slide en < 100 ms (también entre ventanas). Vista previa en < 200 ms al teclear. Imágenes redimensionadas (lado mayor ≤ 2560 px; fotos de personas ≤ 1600 px) y comprimidas (WebP calidad ~82) antes de guardarlas y subirlas. |
 | RNF-05 | **Determinismo** | Los mismos datos con la misma plantilla y el mismo tema producen siempre la misma salida. |
 | RNF-06 | **Compatibilidad** | Presentación: **Chrome y Brave en Windows** (prioridad), Edge. Edición: Chrome, Brave y Edge de escritorio, Chrome Android y Safari iOS. Vista de lectura: cualquier navegador móvil moderno. Las pruebas E2E deben correr al menos en Chromium; validar manualmente en Brave antes de cada versión. |
