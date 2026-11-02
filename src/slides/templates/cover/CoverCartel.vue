@@ -28,9 +28,13 @@ const MONTH = line('portada-mes', 652, 96, 80, true)
 const YEAR = line('portada-anio', 752, 96, 80)
 const LOGO = { x: 96, y: 96, width: 860, height: 300 }
 const TITLE: TextSlotDef = { id: 'portada-titulo', role: 'title', box: { x: 96, y: 470, width: 860, height: 520 }, maxLines: 2, maxFontSize: 240, valign: 'bottom' }
+// Cierre (pedido del responsable): el saludo arriba y el logo centrado (vertical), más pequeño, debajo.
+const CLOSING = { title: { ...TITLE, box: { ...TITLE.box, y: 96, height: 500 } }, bar: 630, logo: { x: 96, y: 700, width: 450, height: 260 } }
+const COVER = { title: TITLE, bar: 440, logo: LOGO }
 
 const palette = computed(() => props.spec.palette)
 const title = computed(() => frameTitle(props.spec, props.ctx))
+const geo = computed(() => (props.spec.kind === 'closing' ? CLOSING : COVER))
 const date = computed(() => coverDate(props.ctx))
 </script>
 
@@ -44,9 +48,9 @@ const date = computed(() => coverDate(props.ctx))
       <SlideText :slot="YEAR" :text="date.year" :font-family="palette.fontFamily" />
     </div>
     <div :data-bg="palette.background.join(',')">
-      <LogoGroup :selection="{ kind: 'iglesia' }" :ministries="ctx.ministries" :background="palette.background" :box="LOGO" cover align="start" :load-image="ctx.loadImage" />
-      <div aria-hidden="true" :style="{ position: 'absolute', left: '96px', top: '440px', width: '200px', height: '10px', background: palette.accent }" />
-      <SlideText :slot="TITLE" :text="title" :font-family="palette.fontFamily" />
+      <LogoGroup :selection="{ kind: 'iglesia' }" :ministries="ctx.ministries" :background="palette.background" :box="geo.logo" cover align="start" :load-image="ctx.loadImage" />
+      <div aria-hidden="true" :style="{ position: 'absolute', left: '96px', top: `${geo.bar}px`, width: '200px', height: '10px', background: palette.accent }" />
+      <SlideText :slot="geo.title" :text="title" :font-family="palette.fontFamily" />
     </div>
   </SlideBackground>
 </template>

@@ -39,9 +39,17 @@ const MONTH = line('portada-mes', 752, 84, 64, true)
 const YEAR = line('portada-anio', 886, 84, 64)
 const LOGO = { x: 96, y: 112, width: 1000, height: 320 }
 const TITLE: TextSlotDef = { id: 'portada-titulo', role: 'title', box: { x: 96, y: 480, width: 1040, height: 460 }, maxLines: 2, maxFontSize: 230 }
+// Cierre (pedido del responsable): el saludo arriba y el logo centrado (vertical), más pequeño, debajo.
+const CLOSING = {
+  title: { ...TITLE, box: { ...TITLE.box, y: 112, height: 460 }, align: 'center' as const, valign: 'bottom' as const },
+  logo: { x: 391, y: 660, width: 450, height: 260 },
+  logoAlign: 'center' as const,
+}
+const COVER = { title: TITLE, logo: LOGO, logoAlign: 'start' as const }
 
 const palette = computed(() => props.spec.palette)
 const title = computed(() => frameTitle(props.spec, props.ctx))
+const geo = computed(() => (props.spec.kind === 'closing' ? CLOSING : COVER))
 const church = computed(() => (props.ctx.settings.churchName.length <= CHURCH_UPPERCASE_MAX ? CHURCH_ONE_LINE : CHURCH_TWO_LINES))
 const lined = computed(() => texturedStops(palette.value.background, palette.value.text, LINES))
 const date = computed(() => coverDate(props.ctx))
@@ -59,8 +67,8 @@ const date = computed(() => coverDate(props.ctx))
       <SlideText :slot="YEAR" :text="date.year" :font-family="palette.fontFamily" />
     </div>
     <div :data-bg="lined.join(',')">
-      <LogoGroup :selection="{ kind: 'iglesia' }" :ministries="ctx.ministries" :background="lined" :box="LOGO" cover align="start" :load-image="ctx.loadImage" />
-      <SlideText :slot="TITLE" :text="title" :font-family="palette.fontFamily" />
+      <LogoGroup :selection="{ kind: 'iglesia' }" :ministries="ctx.ministries" :background="lined" :box="geo.logo" cover :align="geo.logoAlign" :load-image="ctx.loadImage" />
+      <SlideText :slot="geo.title" :text="title" :font-family="palette.fontFamily" />
     </div>
   </SlideBackground>
 </template>
