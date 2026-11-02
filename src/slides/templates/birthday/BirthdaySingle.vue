@@ -1,7 +1,7 @@
 <script setup lang="ts">
-// Cumpleaños individual (RF-22, RF-23): a la izquierda, globos, gorrito y confeti en tonos apagados
-// (o la foto con el gorrito encima); a la derecha, el mensaje, el nombre como protagonista, el día
-// discreto y el versículo. Sin logo y sin grandes superficies de color: el color del tipo queda en los
+// Cumpleaños individual (RF-22, RF-23): a la izquierda, globos grandes con gorrito o pastel (o la foto
+// con el gorrito encima) y confeti de colores saliendo de las esquinas; a la derecha, el mensaje, el
+// nombre como protagonista, el día discreto y el versículo. Sin logo y sin grandes superficies de color: el color del tipo queda en los
 // detalles (pedido del responsable). Cada estilo (§9) pone su fondo, su marco de foto y su separador.
 import { computed } from 'vue'
 import { accentInk, mixColors } from '../../themes'
@@ -24,11 +24,16 @@ const RULE_X = 652
 const RIGHT = { x: 716, width: 1824 - 716 }
 const BOTTOM = 1000
 const ORNAMENT = 64
-// Arte de la izquierda: globos (caja 100 × 160 escalada) con el gorrito al pie, o la foto.
-const BALLOONS = { x: 150, y: 140, width: 400, height: 640 }
-const HAT = { x: 420, y: 790, width: 140, height: 182 }
+// Arte de la izquierda: globos grandes (caja 100 × 160 escalada) con el gorrito o el pastel al pie, o
+// la foto con el gorrito asentado encima del marco.
+const BALLOONS = { x: 110, y: 88, width: 450, height: 720 }
+const HAT = { x: 384, y: 772, width: 190, height: 247 }
+const CAKE = { x: 300, y: 742, width: 290, height: 319 }
 const PHOTO = { x: 150, y: 250, width: 430, height: 620 }
-const PHOTO_HAT = { x: 108, y: 96, width: 150, height: 195 }
+// El gorrito apoya su base (y = 124/130 de su caja) 14 px dentro del borde superior del marco.
+const HAT_SIZE = { width: 160, height: 208 }
+const hatOn = (centerX: number) => ({ ...HAT_SIZE, x: centerX - HAT_SIZE.width / 2, y: PHOTO.y + 14 - (HAT_SIZE.height * 124) / 130 })
+const CORNERS = ['tl', 'tr', 'bl', 'br'] as const
 
 const palette = computed(() => props.spec.palette)
 const style = computed(() => props.spec.slideStyle)
@@ -43,9 +48,10 @@ const soft = computed(() => mixColors(palette.value.accent, palette.value.backgr
 const photo = computed(() => props.spec.person.photoId)
 const slots = computed(() => singleSlots(RIGHT, { top: 112, bottom: BOTTOM, withDayLine: !!props.spec.dayText, withVerse: !!props.spec.verse, ornament: ORNAMENT }))
 const frame = computed(() => {
-  if (style.value === 'himnario') return { shape: 'arch' as const, border: palette.value.accent, width: 8, rotate: 0 }
-  if (style.value === 'almanaque') return { shape: 'rect' as const, border: '#fbfaf6', width: 16, rotate: 2.5 }
-  return { shape: 'rect' as const, border: soft.value, width: 10, rotate: -2 }
+  // En el arco el gorrito va en la cima, al centro; en los marcos rectos, cerca de la esquina izquierda.
+  if (style.value === 'himnario') return { shape: 'arch' as const, border: palette.value.accent, width: 8, rotate: 0, hat: hatOn(PHOTO.x + PHOTO.width / 2), hatTurn: -8 }
+  if (style.value === 'almanaque') return { shape: 'rect' as const, border: '#fbfaf6', width: 16, rotate: 2.5, hat: hatOn(PHOTO.x + 110), hatTurn: -14 }
+  return { shape: 'rect' as const, border: soft.value, width: 10, rotate: -2, hat: hatOn(PHOTO.x + 110), hatTurn: -16 }
 })
 </script>
 
@@ -58,20 +64,18 @@ const frame = computed(() => {
       </svg>
     </template>
     <Texture v-else-if="style === 'almanaque'" kind="renglones" :ink="palette.text" :opacity="LINES" />
-    <svg v-else aria-hidden="true" width="1920" height="1080" style="position: absolute; inset: 0">
-      <polygon points="680,0 708,0 628,1080 600,1080" :fill="soft" opacity="0.6" />
-    </svg>
 
     <template v-if="photo">
       <FramedPhoto :image-id="photo" :box="PHOTO" :shape="frame.shape" :border="frame.border" :border-width="frame.width" :rotate="frame.rotate" :load-image="ctx.loadImage" />
-      <Festive kind="gorro" :box="PHOTO_HAT" :palette="palette" :rotate="-22" :outline="style === 'himnario'" />
-      <Festive kind="confeti" :box="{ x: 120, y: 890, width: 480, height: 100 }" :palette="palette" :variant="2" />
+      <Festive kind="gorro" :box="frame.hat" :palette="palette" :rotate="frame.hatTurn" />
     </template>
     <template v-else>
-      <Festive kind="confeti" :box="{ x: 110, y: 96, width: 500, height: 880 }" :palette="palette" />
-      <Festive kind="globos" :box="BALLOONS" :palette="palette" :outline="style === 'himnario'" />
-      <Festive kind="gorro" :box="HAT" :palette="palette" :rotate="14" :outline="style === 'himnario'" />
+      <Festive kind="globos" :box="BALLOONS" :palette="palette" />
+      <!-- El Almanaque lleva pastel; los otros, gorrito. -->
+      <Festive v-if="style === 'almanaque'" kind="pastel" :box="CAKE" :palette="palette" :variant="1" />
+      <Festive v-else kind="gorro" :box="HAT" :palette="palette" :rotate="12" />
     </template>
+    <Festive kind="confeti" :corners="CORNERS" :palette="palette" :variant="2" />
 
     <template v-if="slots.ornamentY !== undefined">
       <Fleuron v-if="style === 'himnario'" :box="{ x: RIGHT.x, y: slots.ornamentY, width: 264, height: 44 }" :color="palette.accent" />

@@ -1,6 +1,7 @@
 // Registro de plantillas y `buildSlides`: el único punto de entrada de anuncio → slides.
 import { normalizeAnnouncement } from '../normalize'
-import { deriveTheme, resolveTheme, type SlidePalette } from '../themes'
+import { contrastRatio } from '../engine'
+import { deriveTheme, mixColors, resolveTheme, type SlidePalette } from '../themes'
 import { getTypeDef } from '../types/definitions'
 import type { AnnouncementTypeId } from '../types/fields'
 import { birthdayLayout, type BirthdayValues } from './birthday/layout'
@@ -13,6 +14,15 @@ const PHOTO_TYPES = TEXT_TYPES.filter((id) => getTypeDef(id).fields.some((f) => 
 /** Paleta del anuncio: su color personalizado (RF-32) o el tema de la iglesia, con el acento del tipo. */
 export function paletteFor(a: Pick<AnnouncementInput, 'customPrimaryColor'>, typeId: AnnouncementTypeId | undefined, ctx: SlideContext): SlidePalette {
   return (a.customPrimaryColor ? deriveTheme(a.customPrimaryColor, typeId) : resolveTheme(ctx.theme, typeId)).palette
+}
+
+/**
+ * Las listas de cumpleaños van siempre en fondo claro (pedido del responsable): un tema oscuro se
+ * aclara a un tinte de su propio fondo, con el contraste recalculado.
+ */
+export function lightPalette(palette: SlidePalette): SlidePalette {
+  const dark = contrastRatio('#ffffff', palette.background[0]!) > contrastRatio('#000000', palette.background[0]!)
+  return dark ? deriveTheme(mixColors(palette.background[0]!, '#ffffff', 0.9), 'cumpleanos').palette : palette
 }
 
 const announcementLayout =
@@ -40,7 +50,7 @@ export const TEMPLATES: readonly TemplateDef[] = Object.freeze([
     layout: (a, ctx) => {
       const framing = { logo: a.logo, palette: paletteFor(a, 'cumpleanos', ctx), slideStyle: a.slideStyle ?? ctx.settings.slideStyle }
       const pages = birthdayLayout(a.values as unknown as BirthdayValues, { referenceDate: referenceDate(ctx), defaultMessage: ctx.settings.birthdayDefaultMessage })
-      return pages.map((page) => ({ ...page, ...framing }))
+      return pages.map((page) => ({ ...page, ...framing, ...(page.kind === 'birthday-group' ? { palette: lightPalette(framing.palette) } : {}) }))
     },
   },
   {
