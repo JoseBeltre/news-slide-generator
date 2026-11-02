@@ -83,6 +83,16 @@ export function formatEventDate(iso: string, opts: DateFormatOptions): string {
   return `${WEEKDAYS_SHORT[date.getDay()]} ${day}${month}${year}`
 }
 
+/** Día de un cumpleaños sin año (§3.3): "7 de noviembre". */
+export function formatDayMonth(day: number, month: number): string {
+  return `${day} de ${MONTHS[month - 1]!.toLocaleLowerCase('es-DO')}`
+}
+
+/** Mes en mayúsculas, completo o abreviado ("NOVIEMBRE", "NOV"). */
+export function monthName(month: number, short = false): string {
+  return (short ? MONTHS_SHORT : MONTHS)[month - 1]!
+}
+
 /** Fecha del evento en piezas, para que una plantilla la componga en bloque ("SÁB / 7 / NOV"). */
 export interface EventDateParts {
   weekday: string

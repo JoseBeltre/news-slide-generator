@@ -58,14 +58,15 @@ describe('tipos de anuncio del MVP (§3.2)', () => {
     for (const t of ANNOUNCEMENT_TYPES) {
       const hasImage = t.fields.some((f) => f.kind === 'image')
       if (t.id === 'imagen') expect(t.templateIds).toEqual(['imagen'])
-      else if (t.id !== 'cumpleanos') expect(t.templateIds).toEqual(hasImage ? ['clasica', 'visual'] : ['clasica'])
+      else if (t.id === 'cumpleanos') expect(t.templateIds).toEqual(['cumpleanos'])
+      else expect(t.templateIds).toEqual(hasImage ? ['clasica', 'visual'] : ['clasica'])
       expect(t.templateIds).toContain(t.defaultTemplateId)
     }
     expect(getTypeDef('culto').templateIds).toEqual(['clasica', 'visual'])
   })
 
-  it('templatesFor coincide con los templateIds de cada tipo de texto', () => {
-    for (const t of ANNOUNCEMENT_TYPES.filter((t) => t.id !== 'cumpleanos')) {
+  it('templatesFor coincide con los templateIds de cada tipo', () => {
+    for (const t of ANNOUNCEMENT_TYPES) {
       expect(templatesFor(t.id).map((x) => x.id)).toEqual(t.templateIds)
     }
   })

@@ -3,6 +3,7 @@ import { normalizeAnnouncement } from '../normalize'
 import { deriveTheme, resolveTheme, type SlidePalette } from '../themes'
 import { getTypeDef } from '../types/definitions'
 import type { AnnouncementTypeId } from '../types/fields'
+import { birthdayLayout, type BirthdayValues } from './birthday/layout'
 import { dateOptionsFor, referenceDate, type AnnouncementInput, type SlideContext, type SlideSpec, type TemplateDef } from './contract'
 
 const TEXT_TYPES: readonly AnnouncementTypeId[] = ['culto', 'salida', 'obra_misionera', 'actividad', 'aviso']
@@ -32,6 +33,16 @@ const announcementLayout =
 export const TEMPLATES: readonly TemplateDef[] = Object.freeze([
   { id: 'clasica', name: 'Clásica', typeIds: TEXT_TYPES, layout: announcementLayout('clasica') },
   { id: 'visual', name: 'Visual', typeIds: PHOTO_TYPES, layout: announcementLayout('visual') },
+  {
+    id: 'cumpleanos',
+    name: 'Cumpleaños',
+    typeIds: ['cumpleanos'],
+    layout: (a, ctx) => {
+      const framing = { logo: a.logo, palette: paletteFor(a, 'cumpleanos', ctx), slideStyle: a.slideStyle ?? ctx.settings.slideStyle }
+      const pages = birthdayLayout(a.values as unknown as BirthdayValues, { referenceDate: referenceDate(ctx), defaultMessage: ctx.settings.birthdayDefaultMessage })
+      return pages.map((page) => ({ ...page, ...framing }))
+    },
+  },
   {
     id: 'imagen',
     name: 'Imagen completa',

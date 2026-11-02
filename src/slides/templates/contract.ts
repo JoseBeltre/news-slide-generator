@@ -42,6 +42,7 @@ export type SlideSpec =
       verse?: string
       logo: LogoSelection
       palette: SlidePalette
+      slideStyle: SlideStyleId
     }
   | {
       kind: 'birthday-group'
@@ -49,6 +50,8 @@ export type SlideSpec =
       message: string
       logo: LogoSelection
       palette: SlidePalette
+      slideStyle: SlideStyleId
+      /** "(1/2)": solo si el grupo ocupa más de una slide (RF-25). */
       page?: [number, number]
     }
   | { kind: 'image'; imageId: string }

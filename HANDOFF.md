@@ -171,3 +171,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | Visual rechazada por el responsable: su estilo se redefine en la sesión del rediseño, junto con cumpleaños | — | ver `git log` |
 | 2026-11-01 | Cierre: logo centrado debajo del saludo y más pequeño (pedido del responsable) | `cover` 21/21; `pnpm test` 533/533; `test:e2e` 21/21 | ver `git log` |
 | 2026-11-01 | Cierre del Cartel con el logo horizontal (pedido del responsable) | `pnpm test` 533/533; `test:e2e` 21/21 | ver `git log` |
+| 2026-11-01 | P3 · T8: reparto de cumpleaños (`birthday/layout.ts`: modo, orden por cercanía cruzando el año, 6/8 por slide, "(1/2)"); plantilla `cumpleanos` en el registro | `pnpm test:unit` 253/253; typecheck 0 | ver `git log` |

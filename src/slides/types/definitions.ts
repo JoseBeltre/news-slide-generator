@@ -136,7 +136,8 @@ export const ANNOUNCEMENT_TYPES: readonly AnnouncementTypeDef[] = Object.freeze(
       },
       versiculo,
     ],
-    ...DESIGNED,
+    templateIds: ['cumpleanos'],
+    defaultTemplateId: 'cumpleanos',
   },
   {
     id: 'actividad',
