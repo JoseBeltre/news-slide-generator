@@ -41,6 +41,31 @@ describe('iglesia precargada (RF-35)', () => {
   })
 })
 
+describe('ministerios precargados (RF-35)', () => {
+  const byId = (id: string) => PRELOADED_MINISTRIES.find((m) => m.id === id)
+  const shape = (id: string) => byId(id)?.logos.map((l) => [l.color, l.orientation])
+
+  it('iglesia primero y luego los ministerios de la IASD, con id único', () => {
+    expect(PRELOADED_MINISTRIES.map((m) => m.id)).toEqual([
+      CHURCH_MINISTRY_ID, 'aventureros', 'conquistadores', 'escuela-sabatica', 'guias-mayores', 'jovenes-adventistas', 'ministerio-mujer',
+    ])
+    expect(PRELOADED_MINISTRIES.filter((m) => m.isChurch)).toHaveLength(1)
+  })
+
+  it('variantes: JA en tres colores, la Mujer con isotipo, las insignias cuadradas', () => {
+    expect(shape('jovenes-adventistas')).toEqual([['color', 'horizontal'], ['negro', 'horizontal'], ['blanco', 'horizontal']])
+    expect(shape('ministerio-mujer')).toEqual([['color', 'horizontal'], ['color', 'cuadrado']])
+    for (const id of ['aventureros', 'conquistadores', 'escuela-sabatica', 'guias-mayores']) expect(shape(id)).toEqual([['color', 'cuadrado']])
+  })
+
+  it('todo logo a color declara su color dominante; todos son assets SVG', () => {
+    for (const l of PRELOADED_MINISTRIES.flatMap((m) => m.logos)) {
+      if (l.color === 'color') expect(l.dominantColor).toMatch(/^#[0-9a-f]{6}$/i)
+      expect(l.source.kind === 'asset' && l.source.src).toMatch(/\.svg/)
+    }
+  })
+})
+
 describe('logoCandidatesFor (RF-09, RF-38)', () => {
   it('iglesia → sus 4 logos; ninguno → []', () => {
     expect(logoCandidatesFor({ kind: 'iglesia' }, ministerios)).toHaveLength(4)
@@ -54,7 +79,7 @@ describe('logoCandidatesFor (RF-09, RF-38)', () => {
   })
 
   it('ministerio borrado o inexistente → [] (la slide no deja hueco)', () => {
-    expect(logoCandidatesFor({ kind: 'ministerio', ministryId: 'mujer' }, ministerios)).toEqual([])
+    expect(logoCandidatesFor({ kind: 'ministerio', ministryId: 'no-existe' }, ministerios)).toEqual([])
     const borrado = { ...jovenes, deletedAt: '2026-11-01T01:00:00.000Z' }
     expect(logoCandidatesFor({ kind: 'ministerio', ministryId: 'jovenes' }, [...PRELOADED_MINISTRIES, borrado])).toEqual([])
   })
@@ -98,7 +123,7 @@ describe('listMinistries', () => {
 
     const lista = await listMinistries(db)
     expect(lista.map((m) => m.name)).toEqual([
-      PRELOADED_MINISTRIES[0]!.name,
+      ...PRELOADED_MINISTRIES.map((m) => m.name),
       'Escuela Sabática',
       'Ministerio de la Mujer',
       'Sociedad de Jóvenes',

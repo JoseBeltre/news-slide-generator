@@ -17,6 +17,7 @@ Todas las dependencias, fuentes, logos y assets deben tener licencias compatible
 | Recurso | Licencia | Notas |
 |---|---|---|
 | Logo de la Iglesia Adventista del Séptimo Día (`src/assets/logos/iglesia/`) | Marca registrada de la Asociación General; **no** está cubierto por la licencia MIT | Se usa según las normas de identidad de la iglesia, provisto por el responsable. Quien reutilice este código debe sustituirlo o tener permiso de uso. |
+| Logos de ministerios IASD: Aventureros, Conquistadores, Escuela Sabática, Guías Mayores, Jóvenes Adventistas, Ministerio de la Mujer (`src/assets/logos/ministerios/`) | Marcas de la Asociación General; **no** están cubiertas por la licencia MIT | El responsable los proporcionó. Se vectorizaron a SVG (vtracer) y se les quitó el fondo. Se aplican las mismas condiciones que al logo de la iglesia. |
 
 ## Dependencias de runtime
 
