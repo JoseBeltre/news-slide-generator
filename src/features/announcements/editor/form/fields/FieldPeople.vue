@@ -18,6 +18,12 @@ function add() {
 }
 const update = (i: number, p: Person) => emitPeople(people.value.map((old, j) => (j === i ? p : old)))
 const remove = (i: number) => emitPeople(people.value.filter((_, j) => j !== i))
+
+/** Errores de la persona i: los de sus campos y el de la fecha completa ("31 de febrero"). */
+function errorsOf(i: number) {
+  const e = props.nestedErrors ?? {}
+  return { name: e[`${i}.name`], day: e[`${i}.day`] ?? e[`${i}`], month: e[`${i}.month`] }
+}
 </script>
 
 <template>
@@ -28,6 +34,7 @@ const remove = (i: number) => emitPeople(people.value.filter((_, j) => j !== i))
       :person="p"
       :index="i"
       :id-prefix="id"
+      :errors="errorsOf(i)"
       @update="update(i, $event)"
       @remove="remove(i)"
     />

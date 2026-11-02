@@ -27,7 +27,11 @@ const COMPONENTS: Partial<Record<SlideSpec['kind'], Component>> = {
 const mounted = new Set<string>()
 const reports = new Map<string, FitReport>()
 provide(FIT_COLLECTOR, {
-  register: (slotId) => mounted.add(slotId),
+  // Un texto nuevo (otro estilo, una persona más) vuelve la slide a "midiendo" hasta que se mida.
+  register: (slotId) => {
+    mounted.add(slotId)
+    emitStatus()
+  },
   invalidate: (slotId) => {
     reports.delete(slotId)
     emitStatus()

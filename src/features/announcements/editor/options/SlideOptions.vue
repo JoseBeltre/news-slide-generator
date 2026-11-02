@@ -6,7 +6,7 @@ import type { Announcement } from '../../../../data/models'
 import { toIsoDate } from '../../../../lib/format'
 import type { SlideContext } from '../../../../slides/templates/contract'
 import { templatesFor } from '../../../../slides/templates/registry'
-import type { AnnouncementTypeDef } from '../../../../slides/types/fields'
+import { hasMainDate, type AnnouncementTypeDef } from '../../../../slides/types/fields'
 import UiChoiceGroup from '../../../../ui/UiChoiceGroup.vue'
 import DateFormatPicker from './DateFormatPicker.vue'
 import LogoPicker from './LogoPicker.vue'
@@ -19,7 +19,7 @@ const props = defineProps<{ typeDef: AnnouncementTypeDef; ctx: SlideContext }>()
 const draft = defineModel<NewRecord<Announcement>>({ required: true })
 
 const templates = computed(() => templatesFor(props.typeDef.id).map((t) => ({ value: t.id, label: t.name })))
-const hasDate = computed(() => props.typeDef.fields.some((f) => f.kind === 'date' && f.key === 'fecha'))
+const hasDate = computed(() => hasMainDate(props.typeDef))
 const sampleDate = computed(() => {
   const fecha = draft.value.values.fecha
   return typeof fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fecha) ? fecha : toIsoDate(new Date())

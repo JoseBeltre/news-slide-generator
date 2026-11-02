@@ -1,6 +1,6 @@
 // Borrador del editor (RF-03): de él salen el formulario, la validación (RF-04) y la vista previa.
 // Guardar espera a que la slide termine de medirse, para no guardar "listo" algo que no cabe (RF-10).
-import { computed, ref, watch, type Ref } from 'vue'
+import { computed, nextTick, ref, watch, type Ref } from 'vue'
 import { eventDateOf, statusFor } from '../../../data/announcements'
 import type { NewRecord, Repository } from '../../../data/local/repository'
 import type { Announcement } from '../../../data/models'
@@ -62,20 +62,22 @@ export function useAnnouncementDraft(initial: NewRecord<Announcement>, ctx: Ref<
 
   async function save(): Promise<Announcement> {
     const valid = validation.value.ok
+    // Un cambio recién hecho (otro estilo, una tecla) todavía no llegó a la vista previa: se espera a que
+    // la slide se vuelva a dibujar, que la deja en "midiendo" hasta medir los textos nuevos.
+    if (valid) await nextTick()
     const measured = valid ? await measuredStatus() : 'ok'
     const status = measured === 'midiendo' ? 'borrador' : statusFor(valid, measured)
     const d = draft.value
-    const saved = await repo.put({
-      ...d,
-      status,
-      eventDate: eventDateOf(d.typeId, d.values),
-      imageIds: imageIdsOf(d.typeId, d.values),
-    })
+    const record = { ...d, status, eventDate: eventDateOf(d.typeId, d.values), imageIds: imageIdsOf(d.typeId, d.values) }
+    // La línea base es lo que se envía, no lo que haya al terminar: lo que se teclee mientras se escribe
+    // en la base de datos queda como cambio pendiente.
+    const sent = snapshot(record)
+    const saved = await repo.put(record)
     draft.value.id = saved.id
     draft.value.status = saved.status
     draft.value.eventDate = saved.eventDate
     draft.value.imageIds = saved.imageIds
-    baseline.value = snapshot(draft.value)
+    baseline.value = sent
     return saved
   }
 

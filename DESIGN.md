@@ -110,7 +110,7 @@ Los colores de estado son apagados, en la misma familia terrosa: nunca saturados
 | `field-border` | `#6B6B6B` | Borde de campos (≥ 3:1) |
 | `accent` | `#F5F5DC` | Botón principal y foco |
 
-La vista del presentador (P6) usa siempre el tema oscuro: en el templo, una pantalla clara junto al público distrae.
+La vista del presentador (P6) usa siempre el tema oscuro: en el templo, una pantalla clara junto al público distrae. Hoy los tokens oscuros se escriben una sola vez, para la preferencia del sistema; P6 decide cómo forzarlos sin duplicar el bloque.
 
 ## Typography
 

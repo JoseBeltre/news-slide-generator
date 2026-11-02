@@ -1,6 +1,7 @@
 // Atajos de teclado de la interfaz (DESIGN.md: N, Ctrl+S, 1–7, Esc). Se llama en el setup de un
 // componente; el atajo vive mientras el componente esté montado.
 import { onBeforeUnmount, onMounted } from 'vue'
+import { confirmState } from './useConfirm'
 
 export interface ShortcutOptions {
   /** Si el atajo también vale con el foco en un campo de texto (Ctrl+S sí; N no). */
@@ -23,7 +24,8 @@ export function matchesShortcut(keys: string, e: KeyboardEvent): boolean {
 
 export function useShortcut(keys: string, handler: (e: KeyboardEvent) => void, opts: ShortcutOptions = {}): void {
   const listener = (e: KeyboardEvent) => {
-    if (!matchesShortcut(keys, e)) return
+    // Con una pregunta abierta, los atajos no actúan detrás del diálogo.
+    if (confirmState.request || !matchesShortcut(keys, e)) return
     if (!opts.allowInFields && isEditable(e.target)) return
     e.preventDefault()
     handler(e)

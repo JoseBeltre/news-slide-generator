@@ -3,7 +3,7 @@
 import { eventDateParts, formatEventDate, formatMoney, formatTime, type DateStyle, type EventDateParts } from '../lib/format'
 import { checkDensity, countWords } from './engine'
 import { getTypeDef } from './types/definitions'
-import type { AnnouncementTypeId, FieldDef } from './types/fields'
+import { isMainDate, type AnnouncementTypeId, type FieldDef } from './types/fields'
 
 export interface InfoRow {
   fieldKeys: string[]
@@ -70,7 +70,7 @@ export function normalizeAnnouncement(
   }
   const filled = def.fields.filter((f) => isFilled(values[f.key]))
   // La fecha principal se une con la primera hora del tipo en una sola fila.
-  const mainDate = filled.find((f) => f.kind === 'date' && f.key === 'fecha')
+  const mainDate = filled.find(isMainDate)
   const mainTime = mainDate ? filled.find((f) => f.kind === 'time') : undefined
 
   const out: NormalizedData = { typeId, rows: [], density: { status: 'ok' } }

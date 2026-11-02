@@ -44,27 +44,10 @@
   --radius-lg: 16px;
 }
 
-/* Tema oscuro (vista del presentador y preferencia del sistema): mismos tokens, otros valores.
+/* Tema oscuro (preferencia del sistema): mismos tokens, otros valores. Un solo bloque; la vista del
+   presentador (P6), que va siempre en oscuro, decidirá cómo forzarlo sin copiarlo.
    Los colores de estado se aclaran para mantener ≥ 4.5:1 sobre el fondo oscuro. */
 @layer theme {
-  [data-theme="dark"] {
-    --color-background: #0a0a0a;
-    --color-surface: #141414;
-    --color-muted: #1f1f1f;
-    --color-ink: #ffffff;
-    --color-ink-muted: #b9b6a3;
-    --color-hairline: #2e2e2e;
-    --color-field-border: #6b6b6b;
-    --color-primary: #f5f5dc;
-    --color-on-primary: #0a0a0a;
-    --color-danger: #f2a196;
-    --color-danger-bg: #3a1712;
-    --color-success: #a9cf8f;
-    --color-success-bg: #18301a;
-    --color-warning: #e8c26a;
-    --color-warning-bg: #3a2c08;
-  }
-
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --color-background: #0a0a0a;

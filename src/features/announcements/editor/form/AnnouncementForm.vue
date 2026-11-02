@@ -18,8 +18,19 @@ const emit = defineEmits<{ 'update:field': [key: string, value: unknown]; blur: 
 
 const touched = reactive(new Set<string>())
 
+const visible = (key: string) => props.submitted || touched.has(key)
+
 function errorFor(key: string): string | undefined {
-  return props.flagged?.[key] ?? (props.submitted || touched.has(key) ? props.errors[key] : undefined)
+  return props.flagged?.[key] ?? (visible(key) ? props.errors[key] : undefined)
+}
+
+/** Errores de partes del campo ("personas.0.name" → "0.name"). */
+function nestedErrorsFor(key: string): Record<string, string> {
+  if (!visible(key)) return {}
+  const prefix = `${key}.`
+  return Object.fromEntries(
+    Object.entries(props.errors).filter(([k]) => k.startsWith(prefix)).map(([k, m]) => [k.slice(prefix.length), m]),
+  )
 }
 
 function onFocusOut(key: string) {
@@ -36,6 +47,7 @@ function onFocusOut(key: string) {
         :field="f"
         :model-value="values[f.key]"
         :error="errorFor(f.key)"
+        :nested-errors="nestedErrorsFor(f.key)"
         @update:model-value="emit('update:field', f.key, $event)"
       />
     </div>

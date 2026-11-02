@@ -31,7 +31,7 @@ const GROUP = {
   cards: 'grid grid-cols-2 gap-2 sm:grid-cols-[repeat(auto-fit,minmax(8.5rem,1fr))]',
 }
 const OPTION = {
-  segmented: 'h-9 rounded-sm px-3 text-sm font-medium aria-checked:bg-primary aria-checked:text-on-primary',
+  segmented: 'h-11 rounded-sm md:h-9 px-3 text-sm font-medium aria-checked:bg-primary aria-checked:text-on-primary',
   cards:
     'flex flex-col items-start gap-1 rounded-md border border-field-border bg-surface p-3 text-left aria-checked:border-2 aria-checked:border-ink',
 }

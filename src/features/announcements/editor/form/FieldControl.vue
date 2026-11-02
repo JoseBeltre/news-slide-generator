@@ -11,7 +11,7 @@ import FieldMoney from './fields/FieldMoney.vue'
 import FieldPeople from './fields/FieldPeople.vue'
 import FieldText from './fields/FieldText.vue'
 
-const props = defineProps<{ field: FieldDef; modelValue: unknown; error?: string }>()
+const props = defineProps<{ field: FieldDef; modelValue: unknown; error?: string; nestedErrors?: Record<string, string> }>()
 const emit = defineEmits<{ 'update:modelValue': [value: unknown] }>()
 
 const CONTROLS: Record<FieldKind, Component> = {
@@ -45,6 +45,7 @@ const count = computed(() => {
         :model-value="modelValue"
         :invalid="invalid"
         :described-by="describedBy"
+        :nested-errors="nestedErrors"
         @update:model-value="emit('update:modelValue', $event)"
       />
     </template>

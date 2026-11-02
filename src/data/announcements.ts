@@ -1,6 +1,6 @@
 // Reglas de los anuncios para la interfaz (RF-02, RF-07, RF-08): funciones puras, sin base de datos.
 import type { SlideStatus } from '../slides/templates/contract'
-import type { AnnouncementTypeId } from '../slides/types/fields'
+import { hasMainDate, type AnnouncementTypeId } from '../slides/types/fields'
 import { getTypeDef } from '../slides/types/definitions'
 import type { Person } from '../slides/types/validation'
 import { plainCopy } from '../lib/plain'
@@ -13,8 +13,7 @@ const nonEmpty = (v: unknown): v is string => typeof v === 'string' && v.trim() 
 
 /** Fecha principal del anuncio ('fecha' del tipo), para archivar y ordenar. Los cumpleaños no tienen. */
 export function eventDateOf(typeId: string, values: Record<string, unknown>): string | undefined {
-  const hasDate = getTypeDef(typeId).fields.some((f) => f.key === 'fecha' && f.kind === 'date')
-  return hasDate && nonEmpty(values.fecha) ? values.fecha : undefined
+  return hasMainDate(getTypeDef(typeId)) && nonEmpty(values.fecha) ? values.fecha : undefined
 }
 
 /** Pasado = su fecha es anterior a hoy. Uno de hoy sigue activo; uno sin fecha nunca pasa. */

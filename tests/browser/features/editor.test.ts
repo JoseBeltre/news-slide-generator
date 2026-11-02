@@ -59,6 +59,28 @@ describe('editor con vista previa (RF-03, RNF-04)', () => {
     await until(() => host.textContent!.includes('Guardado'))
   })
 
+  // Revisión final P4: guardar al instante tras cambiar de estilo no puede guardar "listo" algo que no cabe.
+  it('cambiar a un estilo donde el título no cabe y guardar enseguida → no_cabe', async () => {
+    const { host, router, db } = await newCulto()
+    byLabel(host, /^Himnario/)!.click()
+    // 92 caracteres: caben en Himnario, no en Cartel (medido con el motor).
+    type(input(host, 'titulo'), 'Gran concierto de alabanza y adoración con coros invitados de toda la región este sábado por')
+    await until(() => host.querySelector('[data-fit-status]')?.getAttribute('data-fit-status') === 'ok', 8000)
+    byLabel(host, /^Cartel/)!.click()
+    clickSave(host)
+    await until(() => router.currentRoute.value.name === 'editar', 8000)
+    expect((await db.announcements.get(router.currentRoute.value.params.id as string))?.status).toBe('no_cabe')
+  })
+
+  it('guardar algo que no valida dice que quedó como borrador (RF-10)', async () => {
+    const { host, router } = await mountApp('/anuncios/nuevo/culto', testDb())
+    await until(() => !!input(host, 'titulo'))
+    type(input(host, 'titulo'), 'Solo el título')
+    clickSave(host)
+    await until(() => router.currentRoute.value.name === 'editar')
+    await until(() => host.textContent!.includes('Guardado como borrador'))
+  })
+
   it('Ctrl+S dentro del título guarda', async () => {
     const { host, router } = await newCulto()
     input(host, 'titulo').dispatchEvent(new KeyboardEvent('keydown', { key: 's', ctrlKey: true, bubbles: true, cancelable: true }))
@@ -111,6 +133,22 @@ describe('opciones de la slide (§6.3)', () => {
     color.value = '#777777'
     color.dispatchEvent(new Event('input', { bubbles: true }))
     await until(() => host.textContent!.includes('Ajustamos el color para que el texto se lea bien en la pantalla.'))
+  })
+
+  // Revisión final P4: de un anuncio a otro (mismo registro de ruta) también se pregunta.
+  it('con cambios sin guardar, pasar a otro anuncio pide confirmación', async () => {
+    const db = testDb()
+    const a = await seed(db, { typeId: 'culto', values: { ...NORMAL.culto, titulo: 'Primero' } })
+    const b = await seed(db, { typeId: 'culto', values: { ...NORMAL.culto, titulo: 'Segundo' } })
+    const { host, router } = await mountApp(`/anuncios/${a.id}`, db)
+    await until(() => input(host, 'titulo')?.value === 'Primero')
+    type(input(host, 'titulo'), 'Primero cambiado')
+    void router.push(`/anuncios/${b.id}`)
+    await until(() => !!dialog())
+    byLabel(dialog()!, 'Cancelar')!.click()
+    await until(() => !dialog())
+    expect(router.currentRoute.value.params.id).toBe(a.id)
+    expect(input(host, 'titulo').value).toBe('Primero cambiado')
   })
 
   it('con cambios sin guardar, ir a Inicio pide confirmación', async () => {

@@ -8,4 +8,6 @@ export interface ControlProps {
   modelValue: unknown
   invalid: boolean
   describedBy?: string
+  /** Errores de partes del valor ("0.name" en personas), sin el prefijo del campo. */
+  nestedErrors?: Record<string, string>
 }

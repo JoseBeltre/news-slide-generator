@@ -41,3 +41,8 @@ export interface AnnouncementTypeDef {
   templateIds: string[]
   defaultTemplateId: string
 }
+
+/** La fecha principal de un anuncio es su campo "fecha" de tipo date: la que se dibuja grande, archiva y ordena. */
+export const isMainDate = (f: FieldDef): boolean => f.kind === 'date' && f.key === 'fecha'
+
+export const hasMainDate = (def: AnnouncementTypeDef): boolean => def.fields.some(isMainDate)

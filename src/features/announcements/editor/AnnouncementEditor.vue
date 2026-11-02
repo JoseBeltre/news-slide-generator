@@ -38,8 +38,9 @@ const submitted = ref(!!props.initial.id && !validation.value.ok)
 const errors = computed(() => (validation.value.ok ? {} : validation.value.errors))
 const flagged = computed(() => flaggedFields(slideStatus.value))
 const saving = ref(false)
-const justSaved = ref(false)
-watch(dirty, (d) => d && (justSaved.value = false))
+/** Qué se guardó la última vez: "listo" o un borrador (no valida o no cabe, RF-10). */
+const savedAs = ref<Announcement['status']>()
+watch(dirty, (d) => d && (savedAs.value = undefined))
 
 async function onSave() {
   if (saving.value) return
@@ -48,7 +49,7 @@ async function onSave() {
   try {
     const wasNew = !draft.value.id
     const saved = await save()
-    justSaved.value = true
+    savedAs.value = saved.status
     if (wasNew) {
       emit('saved', saved)
       await router.replace({ name: 'editar', params: { id: saved.id } })
@@ -68,7 +69,9 @@ onMounted(() => {
 
 <template>
   <UiPageHeader :title="typeDef.name">
-    <span v-if="justSaved" role="status" class="text-sm text-success">Guardado</span>
+    <span v-if="savedAs" role="status" :class="['text-sm', savedAs === 'listo' ? 'text-success' : 'text-warning']">
+      {{ savedAs === 'listo' ? 'Guardado' : 'Guardado como borrador' }}
+    </span>
     <UiButton variant="primary" aria-keyshortcuts="Control+S" :disabled="saving" @click="onSave">Guardar</UiButton>
   </UiPageHeader>
   <EditorLayout>

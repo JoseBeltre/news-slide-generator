@@ -142,6 +142,19 @@ describe('formulario generado desde FieldDef (RF-01, RF-04)', () => {
     expect(host.textContent).toContain('Este campo es obligatorio.')
   })
 
+  // Revisión final P4: los errores de cada persona (personas.0.name, personas.1) se ven en su fila.
+  it('personas: cada error aparece en su campo, con aria-invalid', () => {
+    const personas = [{ name: '', day: 31, month: 2 }, { name: 'Luis', day: 9, month: 13 }]
+    const errors = { 'personas.0.name': 'Escribe el nombre.', 'personas.0': 'Ese día no existe en ese mes.', 'personas.1.month': 'El día o el mes no es válido.' }
+    const { host } = mountForm('cumpleanos', { values: { modo: 'grupo', personas }, errors, submitted: true })
+    const names = host.querySelectorAll<HTMLInputElement>('[data-person-name]')
+    expect(names[0]!.getAttribute('aria-invalid')).toBe('true')
+    expect(names[1]!.getAttribute('aria-invalid')).not.toBe('true')
+    const text = host.querySelector('[data-people]')!.textContent!
+    for (const m of Object.values(errors)) expect(text).toContain(m)
+    expect(host.querySelector<HTMLSelectElement>('#campo-personas-2-mes')!.getAttribute('aria-invalid')).toBe('true')
+  })
+
   it('antes de salir del campo o de guardar, el error no se muestra', async () => {
     const { host } = mountForm('culto', { errors: { titulo: 'Este campo es obligatorio.' } })
     expect(host.textContent).not.toContain('Este campo es obligatorio.')

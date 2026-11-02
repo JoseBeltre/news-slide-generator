@@ -110,3 +110,13 @@ describe('tipos de anuncio del MVP (§3.2)', () => {
     expect(() => getTypeDef('recaudacion')).toThrow()
   })
 })
+
+describe('fecha principal (una sola regla)', () => {
+  it('hasMainDate: los tipos con campo "fecha" de tipo date', async () => {
+    const { hasMainDate } = await import('../../../src/slides/types/fields')
+    const { getTypeDef } = await import('../../../src/slides/types/definitions')
+    expect(['culto', 'salida', 'obra_misionera', 'actividad', 'aviso'].every((t) => hasMainDate(getTypeDef(t)))).toBe(true)
+    expect(hasMainDate(getTypeDef('cumpleanos'))).toBe(false)
+    expect(hasMainDate(getTypeDef('imagen'))).toBe(false)
+  })
+})

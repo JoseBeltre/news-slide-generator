@@ -12,7 +12,8 @@ import type { ControlProps } from '../controlProps'
 
 const MIN_FLYER_WIDTH = 1280
 
-const props = defineProps<ControlProps>()
+/** `removeLabel`: nombre accesible de "Quitar" cuando hay varias imágenes (fotos de personas). */
+const props = defineProps<ControlProps & { removeLabel?: string }>()
 const emit = defineEmits<{ 'update:modelValue': [value: string | undefined] }>()
 
 const db = useDb()
@@ -68,7 +69,14 @@ async function onFile(e: Event) {
           @change="onFile"
         />
       </UiButton>
-      <UiButton v-if="url" variant="ghost" @click="emit('update:modelValue', undefined)">Quitar</UiButton>
+      <UiButton
+        v-if="url"
+        variant="ghost"
+        :aria-label="removeLabel ?? `Quitar ${field.label.toLocaleLowerCase('es-DO')}`"
+        @click="emit('update:modelValue', undefined)"
+      >
+        Quitar
+      </UiButton>
     </div>
     <UiBanner v-if="lowRes">
       La imagen mide {{ width }} px de ancho y en el proyector puede verse borrosa. Si la tienes más grande

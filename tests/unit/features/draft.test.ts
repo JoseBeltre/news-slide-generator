@@ -4,6 +4,7 @@ import { draftFrom } from '../../../src/data/announcements'
 import type { NewRecord, Repository } from '../../../src/data/local/repository'
 import type { Announcement } from '../../../src/data/models'
 import { DEFAULT_SETTINGS, SETTINGS_ID } from '../../../src/data/settings'
+import { plainCopy } from '../../../src/lib/plain'
 import { useAnnouncementDraft } from '../../../src/features/announcements/editor/useAnnouncementDraft'
 import { NORMAL } from '../../fixtures/announcements'
 import { makeCtx } from '../../fixtures/context'
@@ -15,6 +16,8 @@ function memoryRepo() {
   const saved: Announcement[] = []
   const repo: Repository<Announcement> = {
     async put(r: NewRecord<Announcement>) {
+      r = plainCopy(r) // como el repositorio real: guarda una copia al llamarse
+      await new Promise((done) => setTimeout(done, 10)) // como IndexedDB: la escritura toma un momento
       const rec = { ...r, id: r.id ?? `id-${saved.length + 1}`, updatedAt: 'ahora' } as Announcement
       saved.push(rec)
       return rec
@@ -72,7 +75,7 @@ describe('useAnnouncementDraft', () => {
     const d = setup()
     d.slideStatus.value = { status: 'midiendo', offendingFields: [] }
     const saving = d.save()
-    await vi.advanceTimersByTimeAsync(2000)
+    await vi.advanceTimersByTimeAsync(2100)
     expect((await saving).status).toBe('borrador')
   })
 
@@ -93,6 +96,19 @@ describe('useAnnouncementDraft', () => {
     expect(() => d.slides.value).not.toThrow()
     expect(d.slides.value).toEqual([])
     expect(d.validation.value.ok).toBe(false)
+  })
+
+  // Revisión final P4: lo que se teclea mientras se escribe en la base de datos no se pierde.
+  it('un cambio durante la escritura sigue pendiente (dirty) y no se pierde', async () => {
+    const d = setup()
+    d.slideStatus.value = { status: 'ok', offendingFields: [] }
+    const saving = d.save()
+    await new Promise((r) => setTimeout(r, 5))
+    d.draft.value.values.titulo = 'Escrito mientras se guardaba'
+    const rec = await saving
+    expect(rec.values.titulo).toBe(NORMAL.culto.titulo)
+    expect(d.draft.value.values.titulo).toBe('Escrito mientras se guardaba')
+    expect(d.dirty.value).toBe(true)
   })
 
   it('save de un anuncio que no valida: borrador sin esperar la medición', async () => {

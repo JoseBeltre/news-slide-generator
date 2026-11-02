@@ -61,7 +61,7 @@
 
 ## Próxima tarea
 
-**P4 (formularios y vista previa): las 7 tareas hechas** en la rama `fase1/p4-formularios-y-vista-previa`. Falta: revisión final de toda la rama (revisor nuevo), arreglos que salgan, unir a `master` y subir a GitHub. Verificado en la rama: typecheck 0, `pnpm test` 701/701, `test:e2e` 33/33 (incluye el flujo sin red y el celular), build OK.
+**P4 (formularios y vista previa): las 7 tareas hechas** en la rama `fase1/p4-formularios-y-vista-previa`. Revisión final hecha (revisor nuevo): 0 Critical; 5 Important + 3 Minor re-graduados, todos arreglados con prueba. Verificado en la rama: typecheck 0, `pnpm test` 708/708, `test:e2e` 33/33, build OK. **Falta: unir a `master` y subir a GitHub (con el visto bueno del responsable).**
 
 Después: **P5** (presentación del sábado, miniaturas, "Preparar sin internet"). Propuesta: empezar P5 con la **pantalla de Configuración** (RF-110…113, ministerios y logos subidos), que no tiene bloque asignado.
 
@@ -143,6 +143,8 @@ Requisito de una sola vez: `pnpm exec playwright install chromium`.
 
 ## Problemas abiertos
 
+- Menores diferidos de la revisión final P4: `slides` del editor atrapa errores sin registrarlos y 0 slides válidas cuentan como `ok`; banda/mensaje "No cabe" parpadean al teclear; Ctrl+S no agrega lo escrito en el campo de chips; `dirty` verdadero tras escribir y borrar un opcional; cadena de foco visible repetida (constante `FOCUS_RING`); la prueba de la hoja de la interfaz no cubre las clases del body ni el oscuro; duplicar con doble clic crea dos copias.
+
 - Menores diferidos de la revisión final P3 (para P4/P5): `ImageSlide` dibuja un instante con la proporción anterior al cambiar de imagen; grupo de cumpleaños pagina 8+1 en vez de repartir parejo; orden de cumpleaños por días con signo (uno de hace 170 días antes que uno de mañana); ~~slide de imagen con `imagen` vacío pide el id "undefined"~~ (resuelto en P4 T6); logo subido sin blob deja su caja vacía; alto del logo se calcula una vez en `@load`.
 
 - ~~Menores diferidos de la revisión P2~~ **resueltos en P4 Tarea 2**: mensaje propio para precio no numérico ("Escribe el precio en números…"); `settings` con índice `updatedAt` (Dexie v2); `repository.put` guarda una copia profunda sin proxies de Vue.
@@ -214,3 +216,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | P4 · Tarea 5: formulario generado desde los tipos (contadores, errores al salir del campo, precio, chips, imágenes con aviso RF-42, personas sin año) | `pnpm test` (ver ledger); typecheck 0 | ver `git log` |
 | 2026-11-01 | P4 · Tarea 6: editor con vista previa en vivo, "No cabe" en el campo, opciones de la slide, notas, guardado con Ctrl+S y aviso de cambios sin guardar | `pnpm test` 701/701; typecheck 0 | ver `git log` |
 | 2026-11-01 | P4 · Tarea 7: flujo completo sin red (crear, Inicio, duplicar, recargar, eliminar) y celular (Pixel 7) en E2E; verificación completa | typecheck 0; `pnpm test` 701/701; `test:e2e` 33/33; build OK | ver `git log` |
+| 2026-11-01 | P4 · revisión final (revisor nuevo) y arreglos: estado al guardar tras cambiar de estilo, errores por persona, aviso entre anuncios, atajos con el diálogo abierto, zonas táctiles 44 px, teclas durante el guardado, "Guardado como borrador", regla de fecha única, tokens oscuros sin duplicar | typecheck 0; `pnpm test` 708/708; `test:e2e` 33/33; build OK | ver `git log` |

@@ -62,6 +62,21 @@ describe('lista de anuncios (RF-08)', () => {
     expect((await db.announcements.toArray()).every((a) => !a.deletedAt)).toBe(true)
   })
 
+  // Revisión final P4: con el diálogo abierto los atajos no actúan detrás, y cambiar de pantalla lo cierra.
+  it('con "¿Eliminar…?" abierto, la tecla N no navega; cambiar de ruta cierra la pregunta sin borrar', async () => {
+    const db = await seedThree()
+    const { host, router } = await mountApp('/anuncios', db)
+    await until(() => rowTitles(host).length === 2)
+    byLabel(host, 'Eliminar «Culto joven»')!.click()
+    await until(() => !!document.querySelector('dialog[open]'))
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'n', bubbles: true }))
+    await new Promise((r) => setTimeout(r, 50))
+    expect(router.currentRoute.value.name).toBe('anuncios')
+    await router.push('/')
+    await until(() => !document.querySelector('dialog[open]'))
+    expect((await db.announcements.toArray()).every((a) => !a.deletedAt)).toBe(true)
+  })
+
   it('Duplicar → copia en borrador y abre su editor (RF-02)', async () => {
     const db = await seedThree()
     const { host, router } = await mountApp('/anuncios', db)

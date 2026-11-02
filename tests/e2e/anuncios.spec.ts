@@ -86,6 +86,13 @@ test.describe('en el celular', () => {
       await page.goto(path)
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), path).toBe(true)
+      // Zonas táctiles ≥ 44 px en el celular (DESIGN.md, RNF-03).
+      const small = await page.evaluate(() =>
+        [...document.querySelectorAll<HTMLElement>('button, a, [role="radio"]')]
+          .filter((el) => el.offsetParent && el.getBoundingClientRect().height < 44)
+          .map((el) => `${el.tagName} "${el.textContent?.trim()}" ${Math.round(el.getBoundingClientRect().height)}px`),
+      )
+      expect(small, path).toEqual([])
     }
   })
 })
