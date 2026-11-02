@@ -28,8 +28,9 @@ const MONTH = line('portada-mes', 652, 96, 80, true)
 const YEAR = line('portada-anio', 752, 96, 80)
 const LOGO = { x: 96, y: 96, width: 860, height: 300 }
 const TITLE: TextSlotDef = { id: 'portada-titulo', role: 'title', box: { x: 96, y: 470, width: 860, height: 520 }, maxLines: 2, maxFontSize: 240, valign: 'bottom' }
-// Cierre (pedido del responsable): el saludo arriba y el logo centrado (vertical), más pequeño, debajo.
-const CLOSING = { title: { ...TITLE, box: { ...TITLE.box, y: 96, height: 500 } }, bar: 630, logo: { x: 96, y: 700, width: 450, height: 260 } }
+// Cierre (pedido del responsable): el saludo arriba y el logo debajo, más pequeño. Horizontal, no el centrado:
+// el afiche va alineado a la izquierda.
+const CLOSING = { title: { ...TITLE, box: { ...TITLE.box, y: 96, height: 500 } }, bar: 630, logo: { x: 96, y: 720, width: 640, height: 200 } }
 const COVER = { title: TITLE, bar: 440, logo: LOGO }
 
 const palette = computed(() => props.spec.palette)

@@ -33,8 +33,9 @@ describe.each(SLIDE_STYLES.map((s) => s.id))('portada y cierre · estilo %s', (s
     expect(canvas.textContent).not.toContain('Anuncios')
   })
 
-  // Pedido del responsable: en el cierre, el logo centrado (vertical), debajo del saludo y más pequeño que en la portada.
-  it('el cierre usa el logo centrado, debajo del saludo y más pequeño que en la portada', async () => {
+  // Pedido del responsable: en el cierre, el logo debajo del saludo y más pequeño que en la portada; centrado
+  // (vertical) salvo en el Cartel, que va alineado a la izquierda y usa el horizontal.
+  it('el cierre lleva el logo debajo del saludo y más pequeño que en la portada', async () => {
     const base = makeCtx()
     const ctx = makeCtx({ settings: { ...base.settings, slideStyle } })
     const cover = await renderSlide(frameSlide('cover', ctx), ctx)
@@ -42,7 +43,7 @@ describe.each(SLIDE_STYLES.map((s) => s.id))('portada y cierre · estilo %s', (s
     cleanupMounted()
     const { canvas } = await renderSlide(frameSlide('closing', ctx), ctx)
     const logo = canvas.querySelector('[data-cover]')!
-    expect(logo.getAttribute('src')).toMatch(/iasd-vertical/)
+    expect(logo.getAttribute('src')).toMatch(slideStyle === 'cartel' ? /iasd-horizontal/ : /iasd-vertical/)
     const greeting = [...canvas.querySelectorAll('[data-role="title"]')].find((el) => el.textContent!.includes('¡Feliz sábado!'))!
     const g = canvasRect(greeting, canvas)
     const l = canvasRect(logo, canvas)
