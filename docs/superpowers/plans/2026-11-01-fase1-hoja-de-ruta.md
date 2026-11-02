@@ -29,7 +29,7 @@ P1 → P2 → P3 → P4 → P5 → P6, en serie: cada bloque consume las interfa
 
 - **§13.2-A:** logo principal IASD recibido y precargado (P2). Falta el isotipo (variantes `cuadrado`).
 - **RF-102** (`navigator.storage.persist()`): §11 lo pone en el paso 10, pero "Preparar sin internet" (P5) es más fiable con él. Se propondrá al llegar a P5.
-- Tailwind para la interfaz de la app (opcional según §8.1): **no** (P4). Los tokens de `DESIGN.md` van como variables CSS en `src/ui/tokens.css`, con CSS con alcance por componente.
+- Tailwind para la interfaz de la app (§8.1): **sí, obligatorio** (decisión del responsable, 2026-11-01). Los tokens de `DESIGN.md` van en el `@theme` de `src/ui/styles.css`, el único CSS de la interfaz; ningún componente lleva `<style>` ni CSS a mano. Organización por funcionalidad (`src/app`, `src/ui`, `src/features`), páginas que solo componen y una prueba de arquitectura que lo hace cumplir (ver plan P4).
 
 ## Al terminar P6
 

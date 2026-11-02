@@ -13,7 +13,7 @@
 | 1.1 | Se elimina el concepto de anuncio "destacado" y la división de un anuncio en 2 slides (fuera del MVP). Cumpleaños: modo "varios por slide" o "uno por slide", y sin avatares cuando no hay foto. Biblioteca de logos de la iglesia y de los ministerios. La vista del presentador pasa al MVP. La hoja impresa se reemplaza por una vista de lectura para el celular. Persistencia en la nube desde el MVP (local-first + Supabase). Hosting en Hostinger. Múltiples fuentes en F2. Stack definido: Vue 3 + Vite + TypeScript. |
 | 1.2 | Respuestas del responsable incorporadas: modo extendido confirmado; Windows + Chrome o Brave; logo por anuncio = iglesia local (por defecto) o ninguno; cumpleaños con modo **híbrido** y "uno por slide" por defecto; cuentas por persona y una cuenta compartida de equipo; vista de lectura pública; subdominio propio con despliegue por FTP; proyecto de código abierto. |
 | 1.3 | Quitar fondo (F2): la opción principal pasa a ser **RMBG-1.4 + transformers.js** en lugar de `@imgly/background-removal`, para evitar la AGPL y mantener el proyecto con licencia MIT. |
-| 1.5 | Usuarios de la interfaz aclarados por el responsable (§2.1, RNF-03): el equipo que gestiona los anuncios son **jóvenes y adultos que manejan bien la tecnología**; las personas mayores y con baja visión son público de **las slides**, no de la interfaz. Sistema de diseño de la interfaz: **NDS Core** (designmd.app), elegido por el responsable. |
+| 1.5 | Usuarios de la interfaz aclarados por el responsable (§2.1, RNF-03): el equipo que gestiona los anuncios son **jóvenes y adultos que manejan bien la tecnología**; las personas mayores y con baja visión son público de **las slides**, no de la interfaz. Sistema de diseño de la interfaz: **NDS Core** (designmd.app), elegido por el responsable. §8.1: la interfaz se estiliza **solo con Tailwind CSS v4** (sin CSS a mano). |
 | 1.4 | Rediseño de las slides: el responsable acepta bajar ~12 % los tamaños de §5.3 (opción "moderada") para ganar composición y contraste de escala; los íconos de §5.4 pasan a ser opcionales (≥ 56 px si se dibujan). Interlineado por rol (§5.2). Tres estilos de slide elegibles por anuncio (§9) y logos de hasta 3 ministerios, en logotipo o isotipo (RF-37). |
 
 ---
@@ -553,7 +553,7 @@ interface TemplateDef {
 | Ordenar la cola | **vue-draggable-plus** (SortableJS) | Con alternativa por botones. |
 | Íconos | **Lucide** (`lucide-vue-next`) | SVG empaquetado. |
 | Fuente | `@fontsource/atkinson-hyperlegible` | Local. |
-| Estilos de la app | Tailwind CSS (opcional) | Solo para la interfaz de la app. |
+| Estilos de la app | **Tailwind CSS v4** (obligatorio) | Solo para la interfaz de la app. Sin CSS escrito a mano: los tokens de `DESIGN.md` van en el `@theme`. |
 | Estilos de las slides | CSS con **variables** (tokens de tema) y CSS con alcance por plantilla | Las plantillas deben ser autocontenidas y tematizables. |
 | Pruebas | **Vitest** + **Playwright** | |
 | F2 | `moveable` (núcleo agnóstico, con una envoltura propia) · `@huggingface/transformers` + RMBG-1.4 (quitar fondo) · `modern-screenshot` + `jsPDF` | |
