@@ -24,6 +24,8 @@ export interface FieldDef {
   maxLength?: number
   /** Texto que precede al valor en la slide cuando el ícono solo no basta ("Llevar:", "Hasta el"). */
   slidePrefix?: string
+  /** Solo para kind 'image': campo que nombra a la persona de la foto (la Visual lo destaca). */
+  captionField?: string
   /** Solo para kind 'choice'. */
   options?: FieldOption[]
   defaultValue?: unknown

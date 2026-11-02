@@ -30,6 +30,8 @@ export interface NormalizedData {
   when?: EventWhen
   imageFieldKey?: string
   imageId?: string
+  /** Campo que nombra a la persona de la foto (FieldDef.captionField). */
+  imageCaptionKey?: string
   density: DensityStatus
 }
 
@@ -75,7 +77,7 @@ export function normalizeAnnouncement(
   for (const field of filled) {
     const value = values[field.key]
     if (field.kind === 'image') {
-      if (!out.imageId) Object.assign(out, { imageFieldKey: field.key, imageId: String(value) })
+      if (!out.imageId) Object.assign(out, { imageFieldKey: field.key, imageId: String(value), ...(field.captionField ? { imageCaptionKey: field.captionField } : {}) })
       continue
     }
     if (!field.role || field.role === 'presenter-only' || field === mainTime) continue

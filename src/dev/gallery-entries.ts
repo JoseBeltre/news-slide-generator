@@ -76,7 +76,7 @@ export function galleryEntries(): GalleryEntry[] {
       const [spec] = buildSlides({ typeId, templateId: 'clasica', values, logo, slideStyle }, ctx)
       out.push({ id: `estilo-${slideStyle}-${name}-${themeId}`, label: `${slideStyle} · ${name} · ${themeId}`, spec: spec!, ctx })
     }
-    // Visual: la Clásica con la foto del predicador (solo culto tiene campo de imagen).
+    // Visual: afiche con la foto recortada de quien predica o del invitado (solo culto tiene campo de imagen).
     for (const themeId of ['neutro', 'cielo', 'vino']) {
       const ctx = makeCtx({ theme: PRESET_THEMES.find((t) => t.id === themeId)!, loadImage })
       for (const [name, values] of [

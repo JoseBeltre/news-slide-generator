@@ -59,8 +59,15 @@ export const ANNOUNCEMENT_TYPES: readonly AnnouncementTypeDef[] = Object.freeze(
       titulo,
       fecha,
       hora,
-      { key: 'predicador', label: 'Predicador/a', kind: 'text', required: false, role: 'key', icon: 'user', maxLength: 40 },
-      { key: 'fotoPredicador', label: 'Foto del predicador (PNG sin fondo)', kind: 'image', required: false },
+      // La persona puede ser quien predica o un invitado especial (cantante, conferencista).
+      { key: 'predicador', label: 'Predicador/a o invitado/a especial', kind: 'text', required: false, role: 'key', icon: 'user', maxLength: 40 },
+      {
+        key: 'fotoPredicador',
+        label: 'Foto del predicador/a o invitado/a (PNG sin fondo)',
+        kind: 'image',
+        required: false,
+        captionField: 'predicador',
+      },
       lugar,
       { key: 'lema', label: 'Tema o lema', kind: 'text', required: false, role: 'secondary', icon: 'quote', maxLength: 80 },
       versiculo,

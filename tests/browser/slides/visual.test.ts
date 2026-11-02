@@ -38,4 +38,16 @@ describe.each(SLIDE_STYLES.map((s) => s.id))('Visual · estilo %s', (slideStyle)
     }
     expect(await texts('visual')).toEqual(await texts('clasica'))
   })
+
+  it('la persona de la foto se destaca: su nombre va aparte y más grande que los datos', async () => {
+    const photo = await syntheticCutout()
+    const ctx = makeCtx({ loadImage: async (id) => (id === 'foto' ? photo : undefined) })
+    const values = { ...NORMAL.culto, fotoPredicador: 'foto' }
+    const [spec] = buildSlides({ typeId: 'culto', templateId: 'visual', values, logo: { kind: 'iglesia' }, slideStyle }, ctx)
+    const { canvas } = await renderSlide(spec!, ctx)
+    const person = canvas.querySelector<HTMLElement>('[data-slot-id="persona"]')!
+    expect(person.textContent).toBe('Pr. Juan Pérez')
+    const place = [...canvas.querySelectorAll<HTMLElement>('[data-role="key"]')].find((el) => el.textContent === 'Templo central')!
+    expect(parseFloat(person.style.fontSize)).toBeGreaterThan(parseFloat(place.style.fontSize))
+  })
 })

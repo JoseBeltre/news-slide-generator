@@ -9,14 +9,13 @@ import { accentInk } from '../../themes'
 import type { SlideContext, SlideSpec } from '../contract'
 import AlmanaqueSheet from '../parts/AlmanaqueSheet.vue'
 import LogoGroup from '../parts/LogoGroup.vue'
-import PhotoCutout from '../parts/PhotoCutout.vue'
 import SlideBackground from '../parts/SlideBackground.vue'
 import SlideText from '../parts/SlideText.vue'
 import Texture from '../parts/Texture.vue'
 import TypeEmblem from '../parts/TypeEmblem.vue'
 import { sheetSeam } from '../parts/styleParts'
 import { texturedStops } from '../parts/texture'
-import { SAFE_BOTTOM, SAFE_RIGHT, detailRows, lineSlot, monthLabel, stackRows, titleSlot, visualPhoto } from './layout'
+import { SAFE_BOTTOM, SAFE_RIGHT, detailRows, lineSlot, monthLabel, stackRows, titleSlot } from './layout'
 
 const props = defineProps<{ spec: Extract<SlideSpec, { kind: 'announcement' }>; ctx: SlideContext }>()
 
@@ -27,22 +26,18 @@ const PAD = { x: SHEET.x + 16, width: SHEET.width - 32 }
 const RIGHT_X = 800
 const ICON = 56
 const BOTTOM = SAFE_BOTTOM - 16
-// Visual: la foto de pie a la derecha, de alto completo; título y datos en la columna del medio.
-const PHOTO = { x: 1376, y: 96, width: 544, height: 984 }
-const PHOTO_GAP = 40
 
 const palette = computed(() => props.spec.palette)
 const lined = computed(() => texturedStops(palette.value.background, palette.value.text, LINES))
 const ink = computed(() => accentInk(palette.value.accent, lined.value, palette.value.text))
 const seam = computed(() => sheetSeam(palette.value))
-const photo = computed(() => visualPhoto(props.spec))
 const hasLogo = computed(() => logoGroupFor(props.spec.logo, props.ctx.ministries).length > 0)
 
 const layout = computed(() => {
   const data = props.spec.data
   const when = data.when
   const [dateKey, timeKey] = when?.fieldKeys ?? []
-  const right = photo.value ? PHOTO.x - PHOTO_GAP : SAFE_RIGHT
+  const right = SAFE_RIGHT
   const stack = stackRows(detailRows(data), { x: RIGHT_X, width: right - RIGHT_X, bottom: BOTTOM, marker: ICON, markerGap: 28 })
   const hasRows = stack.rows.length > 0
   const tearY = stack.top - 48
@@ -95,7 +90,6 @@ const layout = computed(() => {
       <path :d="`M${SHEET.x + SHEET.width + 40} ${layout.tearY}H${layout.right}`" :stroke="palette.accent" stroke-width="5" stroke-dasharray="5 15" stroke-linecap="round" />
     </svg>
 
-    <PhotoCutout v-if="photo" :image-id="photo" :box="PHOTO" :load-image="ctx.loadImage" />
 
     <div :data-bg="lined.join(',')">
       <SlideText v-if="layout.title" :slot="layout.title.slot" :text="layout.title.text" :font-family="palette.fontFamily" />

@@ -7,31 +7,26 @@ import { logoGroupFor } from '../../../data/ministries'
 import type { SlideContext, SlideSpec } from '../contract'
 import CartelField from '../parts/CartelField.vue'
 import LogoGroup from '../parts/LogoGroup.vue'
-import PhotoCutout from '../parts/PhotoCutout.vue'
 import SlideBackground from '../parts/SlideBackground.vue'
 import SlideText from '../parts/SlideText.vue'
 import TypeEmblem from '../parts/TypeEmblem.vue'
 import { CARTEL } from '../parts/styleParts'
-import { SAFE_BOTTOM, detailRows, lineSlot, monthLabel, stackRows, titleSlot, visualPhoto } from './layout'
+import { SAFE_BOTTOM, detailRows, lineSlot, monthLabel, stackRows, titleSlot } from './layout'
 
 const props = defineProps<{ spec: Extract<SlideSpec, { kind: 'announcement' }>; ctx: SlideContext }>()
 
 const DATE = CARTEL.date
 const LEFT = { x: 96, width: 824 }
 const BOTTOM = SAFE_BOTTOM - 16
-// Visual: la foto de pie sobre la franja diagonal, como en los afiches; el texto de la izquierda se estrecha.
-const PHOTO = { x: 820, y: 200, width: 510, height: 880 }
-const PHOTO_GAP = 24
 
 const palette = computed(() => props.spec.palette)
-const photo = computed(() => visualPhoto(props.spec))
 const hasLogo = computed(() => logoGroupFor(props.spec.logo, props.ctx.ministries).length > 0)
 
 const layout = computed(() => {
   const data = props.spec.data
   const when = data.when
   const [dateKey, timeKey] = when?.fieldKeys ?? []
-  const width = photo.value ? PHOTO.x - PHOTO_GAP - LEFT.x : LEFT.width
+  const width = LEFT.width
   const stack = stackRows(detailRows(data), { x: LEFT.x, width, bottom: BOTTOM, marker: 36, markerGap: 22 })
   const hasRows = stack.rows.length > 0
   const titleBottom = hasRows ? stack.top - 52 : BOTTOM
@@ -76,7 +71,6 @@ const layout = computed(() => {
       />
     </div>
 
-    <PhotoCutout v-if="photo" :image-id="photo" :box="PHOTO" :load-image="ctx.loadImage" />
 
     <div :data-bg="palette.background.join(',')">
       <SlideText v-if="layout.title" :slot="layout.title.slot" :text="layout.title.text" :font-family="palette.fontFamily" />

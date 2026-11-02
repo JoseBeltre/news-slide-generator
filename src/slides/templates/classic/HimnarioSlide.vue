@@ -8,13 +8,12 @@ import type { SlideContext, SlideSpec } from '../contract'
 import Fleuron from '../parts/Fleuron.vue'
 import HimnarioCover from '../parts/HimnarioCover.vue'
 import LogoGroup from '../parts/LogoGroup.vue'
-import PhotoCutout from '../parts/PhotoCutout.vue'
 import SlideBackground from '../parts/SlideBackground.vue'
 import SlideText from '../parts/SlideText.vue'
 import TypeEmblem from '../parts/TypeEmblem.vue'
 import { CLOTH_OPACITY } from '../parts/styleParts'
 import { texturedStops } from '../parts/texture'
-import { SAFE_BOTTOM, SAFE_RIGHT, detailRows, lineSlot, monthLabel, stackRows, titleSlot, visualPhoto } from './layout'
+import { SAFE_BOTTOM, SAFE_RIGHT, detailRows, lineSlot, monthLabel, stackRows, titleSlot } from './layout'
 
 const props = defineProps<{ spec: Extract<SlideSpec, { kind: 'announcement' }>; ctx: SlideContext }>()
 
@@ -22,21 +21,17 @@ const COLUMN = { x: 128, width: 464 }
 const RULE_X = 652
 const RIGHT_X = 716
 const BOTTOM = SAFE_BOTTOM - 16
-// Visual: la foto de pie sobre el filete inferior del marco, a la derecha y de alto completo.
-const PHOTO = { x: 1328, y: 120, width: 528, height: 904 }
-const PHOTO_GAP = 40
 
 const palette = computed(() => props.spec.palette)
 const background = computed(() => texturedStops(palette.value.background, palette.value.text, CLOTH_OPACITY))
 const gold = computed(() => accentInk(palette.value.accent, background.value, palette.value.text))
-const photo = computed(() => visualPhoto(props.spec))
 const hasLogo = computed(() => logoGroupFor(props.spec.logo, props.ctx.ministries).length > 0)
 
 const layout = computed(() => {
   const data = props.spec.data
   const when = data.when
   const [dateKey, timeKey] = when?.fieldKeys ?? []
-  const right = photo.value ? PHOTO.x - PHOTO_GAP : SAFE_RIGHT
+  const right = SAFE_RIGHT
   const stack = stackRows(detailRows(data), { x: RIGHT_X, width: right - RIGHT_X, bottom: BOTTOM, marker: 22, markerGap: 30 })
   const hasRows = stack.rows.length > 0
   const ornamentY = stack.top - 76
@@ -91,7 +86,6 @@ const layout = computed(() => {
         :load-image="ctx.loadImage"
       />
 
-      <PhotoCutout v-if="photo" :image-id="photo" :box="PHOTO" :load-image="ctx.loadImage" />
       <SlideText v-if="layout.title" :slot="layout.title.slot" :text="layout.title.text" :font-family="palette.fontFamily" />
       <Fleuron v-if="layout.ornament" :box="layout.ornament" :color="palette.accent" />
       <template v-for="r in layout.rows" :key="r.slot.id">
