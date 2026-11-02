@@ -3,12 +3,12 @@
 import { computed } from 'vue'
 import { typeVisual } from './typeVisual'
 
-type Size = 'xs' | 'sm' | 'lg'
+type Size = 'xs' | 'sm'
 const props = withDefaults(defineProps<{ typeId: string; size?: Size }>(), { size: 'sm' })
 const visual = computed(() => typeVisual(props.typeId))
 
-const BOX: Record<Size, string> = { xs: 'size-6 border-l-2', sm: 'size-9 border-l-4', lg: 'size-14 border-l-4' }
-const ICON: Record<Size, number> = { xs: 14, sm: 18, lg: 32 }
+const BOX: Record<Size, string> = { xs: 'size-6 border-l-2', sm: 'size-9 border-l-4' }
+const ICON: Record<Size, number> = { xs: 14, sm: 18 }
 </script>
 
 <template>

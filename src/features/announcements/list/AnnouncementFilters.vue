@@ -24,7 +24,11 @@ const toggle = (id: string) => (typeId.value = typeId.value === id ? undefined :
       label="Mostrar"
       @update:model-value="view = $event as AnnouncementView"
     />
-    <div role="group" aria-label="Filtrar por tipo" class="flex flex-wrap gap-2">
+    <div
+      role="group"
+      aria-label="Filtrar por tipo"
+      class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:px-0 [&>*]:shrink-0"
+    >
       <UiChip :pressed="!typeId" @click="typeId = undefined">Todos</UiChip>
       <UiChip v-for="t in ANNOUNCEMENT_TYPES" :key="t.id" :pressed="typeId === t.id" @click="toggle(t.id)">
         <TypeMark :type-id="t.id" size="xs" />{{ t.name }}

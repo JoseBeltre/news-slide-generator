@@ -25,7 +25,7 @@ function move(step: number) {
 }
 
 const GROUP = {
-  segmented: 'inline-flex flex-wrap gap-1 rounded-md border border-field-border bg-surface p-1',
+  segmented: 'inline-flex w-fit flex-wrap gap-1 rounded-md border border-field-border bg-surface p-1',
   cards: 'grid gap-2 sm:grid-cols-3',
 }
 const OPTION = {

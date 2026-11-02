@@ -29,11 +29,13 @@ const date = computed(() => {
       :to="{ name: 'editar', params: { id: announcement.id } }"
       class="min-w-0 flex-1 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
     >
-      <span data-title :class="['block truncate font-medium', title ? 'text-ink' : 'text-ink-muted']">{{ name }}</span>
+      <span data-title :class="['line-clamp-2 font-medium', title ? 'text-ink' : 'text-ink-muted']">{{ name }}</span>
       <span class="sr-only">, {{ typeVisual(announcement.typeId).name }}</span>
-      <span v-if="date" class="font-meta text-meta uppercase text-ink-muted">{{ date }}</span>
+      <span class="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+        <span v-if="date" class="font-meta text-meta whitespace-nowrap uppercase text-ink-muted">{{ date }}</span>
+        <StatusBadge :announcement="announcement" :today="today" />
+      </span>
     </RouterLink>
-    <StatusBadge :announcement="announcement" :today="today" />
     <UiIconButton :label="`Duplicar «${name}»`" :icon="Copy" @click="emit('duplicate')" />
     <UiIconButton :label="`Eliminar «${name}»`" :icon="Trash2" variant="danger" @click="emit('remove')" />
   </li>
