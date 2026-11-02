@@ -3,6 +3,7 @@ import type { SlideStatus } from '../slides/templates/contract'
 import type { AnnouncementTypeId } from '../slides/types/fields'
 import { getTypeDef } from '../slides/types/definitions'
 import type { Person } from '../slides/types/validation'
+import { plainCopy } from '../lib/plain'
 import type { NewRecord } from './local/repository'
 import type { Announcement, Settings } from './models'
 
@@ -61,7 +62,7 @@ export function draftFrom(typeId: AnnouncementTypeId, settings: Settings): NewRe
 
 /** Copia para reutilizar (RF-02): otro registro, en borrador, con sus propios valores. */
 export function duplicate(a: Announcement, now: string): NewRecord<Announcement> {
-  const { id: _id, updatedAt: _u, deletedAt: _d, ...rest } = structuredClone(a)
+  const { id: _id, updatedAt: _u, deletedAt: _d, ...rest } = plainCopy(a)
   return { ...rest, status: 'borrador', createdAt: now }
 }
 

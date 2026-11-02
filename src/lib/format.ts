@@ -16,6 +16,12 @@ export function parseLocalDate(iso: string): Date {
   return date
 }
 
+/** Fecha local → 'YYYY-MM-DD' (hoy, en la zona de la iglesia; `toISOString` daría el día UTC). */
+export function toIsoDate(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}
+
 /** "Sábado 7 de noviembre"; con año solo si no es el de `today`. */
 export function formatDate(iso: string, opts: { today?: Date } = {}): string {
   const date = parseLocalDate(iso)

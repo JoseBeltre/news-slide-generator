@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { reactive, readonly } from 'vue'
 import {
   displayTitle,
   draftFrom,
@@ -84,6 +85,12 @@ describe('borrador, duplicar y estado', () => {
     expect('deletedAt' in copy).toBe(false)
     ;(copy.values.queLlevar as string[]).push('Gorra')
     expect(original.values.queLlevar).toEqual(['Agua'])
+  })
+
+  it('duplicate acepta un anuncio dentro de un proxy de Vue (lo que da useLiveQuery)', () => {
+    const original = readonly(reactive(ann('a', 'salida', '2026-11-07', { queLlevar: ['Agua'] }))) as Announcement
+    const copy = duplicate(original, '2026-11-01T10:00:00Z')
+    expect(copy.values.queLlevar).toEqual(['Agua'])
   })
 
   it('statusFor: inválido → borrador; no_cabe → no_cabe; ok → listo; midiendo lanza', () => {

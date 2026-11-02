@@ -1,6 +1,6 @@
 // Repositorio genérico local-first: id en el cliente, updatedAt en cada escritura y borrado lógico (§8.4).
 import type { Table } from 'dexie'
-import { isProxy, toRaw } from 'vue'
+import { plainCopy } from '../../lib/plain'
 import type { SyncMeta } from '../models'
 
 export type NewRecord<T extends SyncMeta> = Omit<T, 'id' | 'updatedAt'> & { id?: string }
@@ -14,16 +14,6 @@ export interface Repository<T extends SyncMeta> {
   remove(id: string): Promise<void>
 }
 
-/** Quita los proxies de Vue en todos los niveles: IndexedDB no puede clonar un `reactive()`. */
-function deepRaw<V>(value: V): V {
-  const raw = isProxy(value) ? toRaw(value) : value
-  if (Array.isArray(raw)) return raw.map(deepRaw) as V
-  if (raw && typeof raw === 'object' && Object.getPrototypeOf(raw) === Object.prototype) {
-    return Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, deepRaw(v)])) as V
-  }
-  return raw
-}
-
 export function createRepository<T extends SyncMeta>(
   table: Table<T, string>,
   clock: () => Date = () => new Date(),
@@ -32,10 +22,10 @@ export function createRepository<T extends SyncMeta>(
   return {
     async put(record) {
       // Copia profunda: lo guardado no cambia si el llamador sigue editando su objeto.
-      const copy = structuredClone(deepRaw(record))
+      const copy = plainCopy(record)
       const saved = { ...copy, id: copy.id ?? crypto.randomUUID(), updatedAt: clock().toISOString() } as T
       await table.put(saved)
-      return structuredClone(saved)
+      return plainCopy(saved)
     },
     async get(id) {
       const r = await table.get(id)
