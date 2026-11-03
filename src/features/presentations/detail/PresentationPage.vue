@@ -4,7 +4,7 @@
 import { computed, shallowRef } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Presentation } from '../../../data/models'
-import { moveItem } from '../../../data/presentations'
+import { contentIssues, moveItem } from '../../../data/presentations'
 import { formatDate, toIsoDate } from '../../../lib/format'
 import UiButton from '../../../ui/UiButton.vue'
 import UiEmptyState from '../../../ui/UiEmptyState.vue'
@@ -17,6 +17,7 @@ import { useOfflineCheck } from '../shared/useOfflineCheck'
 import { usePresentationRecord } from '../shared/usePresentationRecord'
 import { usePresentationSlides } from '../shared/usePresentationSlides'
 import PreparePanel from './PreparePanel.vue'
+import PresentPanel from './PresentPanel.vue'
 import SlideThumbnails from '../shared/SlideThumbnails.vue'
 
 const route = useRoute()
@@ -25,6 +26,7 @@ const { base, ctx, slides, count } = usePresentationSlides(p, byId)
 const measured = shallowRef<ReadonlyMap<string, SlideStatus['status']>>(new Map())
 const check = computed(() => (p.value ? { presentation: p.value, byId: byId.value, ctx: base.value, measured: measured.value } : undefined))
 const { report, checking, prepare } = useOfflineCheck(check)
+const issues = computed(() => (p.value ? contentIssues(p.value, byId.value, measured.value) : []))
 const today = toIsoDate(new Date())
 const items = computed(() => p.value?.items ?? [])
 // Por id, sobre lo último guardado: un índice de la vista puede estar desfasado si hubo otro cambio.
@@ -62,6 +64,7 @@ const add = (announcementId: string) => update((p) => ({ items: [...p.items, { a
         />
       </div>
       <div class="flex flex-col gap-6 lg:sticky lg:top-6">
+        <PresentPanel :presentation-id="p.id" :issues="issues" />
         <PreparePanel :report="report" :checking="checking" @prepare="prepare" />
         <SlideThumbnails :slides="slides" :ctx="ctx" :count="count" @measured="(m) => (measured = m)" />
       </div>
