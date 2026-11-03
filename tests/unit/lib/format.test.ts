@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { formatDate, formatEventDate, formatMoney, formatTime, parseLocalDate, parseMoneyInput, toIsoDate, type DateStyle } from '../../../src/lib/format'
 
 const HOY = new Date(2026, 10, 1) // 1 de noviembre de 2026
@@ -37,6 +37,16 @@ describe('formatTime', () => {
     ['12:00', '12:00 p. m.'],
   ])('formatTime(%s) → %s', (h, esperado) => {
     expect(formatTime(h)).toBe(esperado)
+  })
+
+  it('no depende de la versión de ICU del entorno: "p. m." siempre con espacio sin corte', () => {
+    // Node en Linux (CI) da "p. m." con espacio normal; Windows y Chrome, con U+00A0.
+    const spy = vi.spyOn(Intl, 'DateTimeFormat').mockImplementation(function () { return { format: () => '7:00 p. m.' } as unknown as Intl.DateTimeFormat })
+    try {
+      expect(formatTime('19:00')).toBe('7:00 p. m.')
+    } finally {
+      spy.mockRestore()
+    }
   })
 
   it('formato 24 h', () => {

@@ -144,7 +144,10 @@ export function formatTime(hhmm: string, opts: { timeFormat?: '12h' | '24h' } = 
   if (!m) throw new RangeError(`Hora no válida: ${JSON.stringify(hhmm)}`)
   if (opts.timeFormat === '24h') return hhmm
   const date = new Date(2000, 0, 1, Number(m[1]), Number(m[2]))
-  return new Intl.DateTimeFormat('es-DO', { hour: 'numeric', minute: '2-digit', hour12: true }).format(date)
+  // Cada ICU separa "p. m." a su manera (espacio normal o U+00A0): siempre sin corte, igual en todo equipo.
+  return new Intl.DateTimeFormat('es-DO', { hour: 'numeric', minute: '2-digit', hour12: true })
+    .format(date)
+    .replace(/([ap]\.)\s(m\.)/i, '$1 $2')
 }
 
 /** "RD$500", "RD$1,500.50"; sin decimales si son ,00. Un precio de 0 es "Gratis". */
