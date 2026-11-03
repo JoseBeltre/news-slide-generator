@@ -230,3 +230,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-03 | Plan de P5 (presentaciones) escrito: `docs/superpowers/plans/2026-11-03-fase1-p5-presentaciones.md`, 7 tareas | por aprobar | ver `git log` |
 | 2026-11-03 | P5 · Tareas 0–7: tema y cursor, reglas de presentaciones, comprobación sin internet, lista ordenable, lista y crear, armar, miniaturas y preparar, E2E sin red; encabezado en dos filas en el celular | typecheck 0; `pnpm test` 752/752; `test:e2e` 34/34; build OK | ver `git log` |
 | 2026-11-03 | P5 unido a `master` (fast-forward) y subido a GitHub | verificado en `master`: typecheck 0, 757/757 | 33dd1d2 |
+| 2026-11-03 | Plan de P6 (presentar) escrito: `docs/superpowers/plans/2026-11-03-fase1-p6-presentar.md`, 6 tareas | por aprobar | ver `git log` |
