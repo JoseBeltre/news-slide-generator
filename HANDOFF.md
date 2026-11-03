@@ -222,3 +222,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-02 | Logos de 6 ministerios IASD vectorizados a SVG y precargados | typecheck 0; `pnpm test` 711/711; `test:e2e` 33/33; build OK | ver `git log` |
 | 2026-11-03 | Logos: Mujer con blancos transparentes (isotipo = SVG del responsable) y Escuela Sabática con la franja del lomo en blanco | typecheck 0; `pnpm test` 711/711 | ver `git log` |
 | 2026-11-03 | Logo general de la IASD precargado (`iasd-general`: horizontal, vertical, símbolo y circular, en negro y blanco); el logo `iglesia` es el de la iglesia local. Configuración aplazada | `pnpm test` 712/712; `test:e2e` 33/33; build OK | ver `git log` |
+| 2026-11-03 | Plan de P5 (presentaciones) escrito: `docs/superpowers/plans/2026-11-03-fase1-p5-presentaciones.md`, 7 tareas | por aprobar | ver `git log` |
