@@ -104,6 +104,13 @@ describe('presentationSlides (RF-53, RF-54)', () => {
     expect(slides[2]!.announcementId).toBe(cumple.id)
   })
 
+  it('estilo de portada y cierre de la presentación (sin él → el de Configuración); los anuncios no cambian', () => {
+    const style = (slides: { spec: SlideSpec }[]) => slides.map((s) => ('slideStyle' in s.spec ? s.spec.slideStyle : undefined))
+    const p = pres({ items: [{ announcementId: culto.id }] })
+    expect(style(presentationSlides({ ...p, slideStyle: 'cartel' }, index(culto), ctx))).toEqual(['cartel', 'almanaque', 'cartel'])
+    expect(style(presentationSlides(p, index(culto), ctx))).toEqual(['almanaque', 'almanaque', 'almanaque'])
+  })
+
   it('sin portada empieza por un anuncio; los eliminados o inexistentes no dan slides', () => {
     const borrado = ann({ deletedAt: '2026-11-02T00:00:00.000Z' })
     const p = pres({ showCover: false, showClosing: false, items: [{ announcementId: 'nada' }, { announcementId: borrado.id }, { announcementId: culto.id }] })

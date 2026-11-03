@@ -6,7 +6,7 @@ import type { Announcement, Presentation } from '../../../data/models'
 import { useDb, useLiveQuery } from '../../../data/useDb'
 import { plainCopy } from '../../../lib/plain'
 
-type Patch = Partial<Pick<Presentation, 'items' | 'showCover' | 'showClosing' | 'coverTitle'>>
+type Patch = Partial<Pick<Presentation, 'items' | 'showCover' | 'showClosing' | 'coverTitle' | 'slideStyle'>>
 
 export function usePresentationRecord(id: Ref<string>) {
   const db = useDb()

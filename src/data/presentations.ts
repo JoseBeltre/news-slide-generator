@@ -67,7 +67,8 @@ export function presentationSlides(
     const a = liveAnnouncement(byId, announcementId)
     return a ? buildSlides(a, c).map((spec) => ({ spec, announcementId })) : []
   })
-  return [...(p.showCover ? [{ spec: frameSlide('cover', c) }] : []), ...body, ...(p.showClosing ? [{ spec: frameSlide('closing', c) }] : [])]
+  const frame = (kind: 'cover' | 'closing') => ({ spec: frameSlide(kind, c, p.slideStyle) })
+  return [...(p.showCover ? [frame('cover')] : []), ...body, ...(p.showClosing ? [frame('closing')] : [])]
 }
 
 /**

@@ -93,6 +93,8 @@ export interface Presentation extends SyncMeta {
   showClosing: boolean
   /** Título de la portada solo para esta presentación; vacío → el de Configuración (RF-53). */
   coverTitle?: string
+  /** Estilo de la portada y el cierre solo para esta presentación; sin él → el de Configuración (§9). */
+  slideStyle?: SlideStyleId
   published: boolean
   readingSlug?: string
 }

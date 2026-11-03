@@ -77,6 +77,16 @@ describe('Armar la presentación (RF-51, RF-53)', () => {
     await until(async () => (await saved()).showClosing === false)
   })
 
+  it('el estilo de portada y cierre se elige en la presentación (por defecto, el de Configuración)', async () => {
+    const { host, saved } = await setup()
+    const group = host.querySelector('[aria-label="Estilo de la portada y el cierre"]')!
+    const option = (name: string) => [...group.querySelectorAll('button')].find((b) => b.textContent!.includes(name))!
+    expect(option('Almanaque').getAttribute('aria-checked')).toBe('true')
+    option('Cartel').click()
+    await until(async () => (await saved()).slideStyle === 'cartel')
+    await until(() => option('Cartel').getAttribute('aria-checked') === 'true')
+  })
+
   it('cambios seguidos sin esperar a la base no se pisan (título y cierre; bajar y quitar)', async () => {
     const { host, a, saved } = await setup()
     const title = host.querySelector<HTMLInputElement>('#titulo-portada')!

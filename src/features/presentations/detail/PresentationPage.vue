@@ -55,12 +55,15 @@ const add = (announcementId: string) => update((p) => ({ items: [...p.items, { a
         <AddAnnouncements :presentation="p" :announcements="announcements" :today="today" @add="add" />
         <FrameOptions
           :default-title="base.settings.coverTitle"
+          :default-style="base.settings.slideStyle"
+          :slide-style="p.slideStyle"
           :show-cover="p.showCover"
           :show-closing="p.showClosing"
           :cover-title="p.coverTitle"
           @update:show-cover="(v) => update({ showCover: v })"
           @update:show-closing="(v) => update({ showClosing: v })"
           @update:cover-title="(v) => update({ coverTitle: v })"
+          @update:slide-style="(v) => update({ slideStyle: v })"
         />
       </div>
       <div class="flex flex-col gap-6 lg:sticky lg:top-6">

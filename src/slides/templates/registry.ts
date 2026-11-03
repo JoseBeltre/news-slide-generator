@@ -72,8 +72,8 @@ export const TEMPLATES: readonly TemplateDef[] = Object.freeze([
 ])
 
 /** Portada o cierre de la presentación: tema de la iglesia y estilo por defecto de Configuración. */
-export function frameSlide(kind: 'cover' | 'closing', ctx: SlideContext): SlideSpec {
-  return { kind, palette: paletteFor({}, undefined, ctx), slideStyle: ctx.settings.slideStyle }
+export function frameSlide(kind: 'cover' | 'closing', ctx: SlideContext, slideStyle = ctx.settings.slideStyle): SlideSpec {
+  return { kind, palette: paletteFor({}, undefined, ctx), slideStyle }
 }
 
 export function getTemplate(id: string): TemplateDef | undefined {

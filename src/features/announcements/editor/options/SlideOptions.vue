@@ -11,7 +11,7 @@ import UiChoiceGroup from '../../../../ui/UiChoiceGroup.vue'
 import DateFormatPicker from './DateFormatPicker.vue'
 import LogoPicker from './LogoPicker.vue'
 import OptionGroup from './OptionGroup.vue'
-import StylePicker from './StylePicker.vue'
+import StylePicker from '../../shared/StylePicker.vue'
 import ThemePicker from './ThemePicker.vue'
 
 const props = defineProps<{ typeDef: AnnouncementTypeDef; ctx: SlideContext }>()
@@ -33,7 +33,9 @@ const sampleDate = computed(() => {
     </OptionGroup>
     <!-- Un flyer se proyecta tal cual (RF-40): no tiene estilo, tema ni logo. -->
     <template v-if="typeDef.id !== 'imagen'">
-      <StylePicker v-model="draft.slideStyle" :default-style="ctx.settings.slideStyle" />
+      <OptionGroup title="Estilo">
+        <StylePicker v-model="draft.slideStyle" :default-style="ctx.settings.slideStyle" label="Estilo de la slide" />
+      </OptionGroup>
       <ThemePicker v-model:theme-id="draft.themeId" v-model:custom-color="draft.customPrimaryColor" :type-id="typeDef.id" />
       <LogoPicker v-model="draft.logo" :ministries="ctx.ministries" />
     </template>
