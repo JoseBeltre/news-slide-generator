@@ -62,7 +62,7 @@
 
 ## Próxima tarea
 
-**P6 (presentar): las 6 tareas hechas** en la rama `fase1/p6-presentar` (ejecución nativa; ledger `.superpowers/sdd/2026-11-03-fase1-p6-presentar/progress.md`). Verificado en la rama: typecheck 0, `pnpm test` 778/778, `test:e2e` 35/35 (cambio de slide entre ventanas: ~15–20 ms; RNF-04 < 100 ms), build OK. Pendiente: revisión final, unir a `master` y subir. **Validación manual pendiente del responsable:** probar en **Brave** y con la laptop en modo extendido (RNF-06, §10.1–2).
+**P6 (presentar): las 6 tareas hechas** en la rama `fase1/p6-presentar` (ejecución nativa; ledger `.superpowers/sdd/2026-11-03-fase1-p6-presentar/progress.md`). Revisión final hecha (revisor nuevo, Sonnet): 0 Critical; 4 Important arreglados con prueba; menores aplazados (ver "Problemas abiertos"). Verificado en la rama: typecheck 0, `pnpm test` 782/782, `test:e2e` 35/35 (cambio de slide entre ventanas: ~15–20 ms; RNF-04 < 100 ms), build OK. Pendiente: unir a `master` y subir. **Validación manual pendiente del responsable:** probar en **Brave** y con la laptop en modo extendido (RNF-06, §10.1–2).
 
 Después: **§11 paso 8**, Supabase y sincronización local-first. **Configuración (RF-110…113) aplazada** (2026-11-03, decisión del responsable): la app es solo para la iglesia local; se retoma si hace falta un ministerio no precargado o cambiar el mensaje de cumpleaños por defecto.
 
@@ -148,6 +148,8 @@ Gestor de paquetes: **pnpm** (fijado en `package.json` → `packageManager: pnpm
 Requisito de una sola vez: `pnpm exec playwright install chromium`.
 
 ## Problemas abiertos
+
+- **Menores aplazados de P6:** mantener una tecla pulsada repite el comando (falta `e.repeat`); el canal acepta un `command` mal formado de la misma origen (`goto` sin índice → NaN) y `isState` acepta índices no enteros; `keyPoints` puede dar un título vacío si el anuncio no tiene título ni tipo; abrir `/presentar` o `/una-ventana` por URL se salta el bloqueo de RF-10 y una id inexistente da pantalla negra o vacía; se montan todas las slides en la pública (memoria con 30+ slides con fotos); el logo aparece sin fundido (v-if); el tema oscuro forzado del presentador puede verse un instante en claro (`onMounted` → `onBeforeMount`); "Reabrir" tarda hasta 1 s en aparecer. Nota: el menor de P5 sobre `light-dark()` y Safari 17.5 no aplica (Lightning CSS lo traduce a variables).
 
 - **Menores aplazados de P5:** la comprobación sin internet se repite en cada medición o tecla (falta un debounce) y deshabilita "Preparar" mientras corre; si `useOfflineCheck` falla, queda "comprobando" para siempre (falta try/finally); una comprobación automática puede borrar el aviso de persistencia de "Preparar"; el título de portada local no sigue cambios desde otra pestaña; Subir/Bajar deshabilitados se ven activos (`UiIconButton` sin estilos `disabled:`); `light-dark()` exige Safari 17.5+ / Chrome 123+ (RNF-06 menciona Safari iOS); "hoy" se fija al abrir (pasada la medianoche hay que recargar). Además, "✓ Lista…" repite el ✓ con el ícono del aviso.
 

@@ -30,7 +30,7 @@ function openPublic() {
       <CurrentAndNext :current="current" :next="slides[state.index + 1]" :ctx="ctx" :black="state.black" :logo="state.logo" />
       <KeyPoints :points="points" />
     </div>
-    <PresenterBar :state="state" :total="total" :public-open="publicWindow.isOpen.value" :opened="opened" @command="run" @open-public="openPublic" />
+    <PresenterBar :state="state" :total="total" :public-open="publicWindow.isOpen.value" :blocked="publicWindow.blocked.value" :opened="opened" @command="run" @open-public="openPublic" />
     <Filmstrip :slides="slides" :ctx="ctx" :current="state.index" @go="(index) => run({ type: 'goto', index })" />
   </div>
 </template>

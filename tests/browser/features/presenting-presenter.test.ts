@@ -9,10 +9,11 @@ import { byLabel, cleanupDbs, mountApp, seed, testDb, until } from '../helpers/a
 
 afterEach(async () => {
   cleanupMounted()
+  sessionStorage.clear()
   await cleanupDbs()
 })
 
-async function openPresenter() {
+async function openPresenter(opts: { blocked?: boolean; startAt?: number; expect?: string } = {}) {
   const db = testDb()
   const a = await seed(db, { typeId: 'culto', values: { ...NORMAL.culto }, presenterNotes: 'Invitar a los jóvenes' })
   const b = await seed(db, { typeId: 'culto', values: { ...NORMAL.culto, titulo: 'Ayuno' } })
@@ -24,13 +25,14 @@ async function openPresenter() {
     published: false,
   })
   const channel = fakeChannel()
+  if (opts.startAt !== undefined) sessionStorage.setItem(`presentar:${p.id}`, JSON.stringify({ index: opts.startAt, black: false, logo: true }))
   const win = { closed: false, close: vi.fn(() => (win.closed = true)) }
-  const opener = vi.fn(() => ((win.closed = false), win as unknown as Window))
+  const opener = vi.fn(() => (opts.blocked ? null : ((win.closed = false), win as unknown as Window)))
   const mounted = await mountApp(`/presentaciones/${p.id}/presentar`, db, { width: 1280, height: 800 }, {
     ...channel.provide,
     [PUBLIC_WINDOW_OPENER as symbol]: opener,
   })
-  await until(() => mounted.host.textContent!.includes('1 de 4'))
+  await until(() => mounted.host.textContent!.includes(opts.expect ?? '1 de 4'))
   const lastState = () => [...channel.sent].reverse().find((m) => m.type === 'state')
   return { ...mounted, channel, opener, win, p, lastState }
 }
@@ -87,5 +89,39 @@ describe('Vista del presentador (RF-62, RF-63, RF-65, RF-67)', () => {
     expect(win.close).toHaveBeenCalled()
     // Al salir, el tema vuelve al que tenía la app (aquí, el del sistema).
     await until(() => document.documentElement.dataset.theme === undefined)
+  })
+
+  it('al recargar el presentador vuelve a su slide y se la envía a la pública', async () => {
+    const { lastState } = await openPresenter({ startAt: 2, expect: '3 de 4' })
+    expect(lastState()).toEqual({ type: 'state', state: { index: 2, black: false, logo: true } })
+  })
+
+  it('otro presentador de la misma presentación cambió el estado → este lo adopta sin reenviarlo', async () => {
+    const { host, channel } = await openPresenter()
+    channel.sent.length = 0
+    channel.receive({ type: 'state', state: { index: 2, black: true, logo: false } })
+    await until(() => host.textContent!.includes('3 de 4'))
+    expect(channel.sent).toEqual([])
+    channel.receive({ type: 'command', command: { type: 'next' } })
+    await until(() => host.textContent!.includes('4 de 4'))
+  })
+
+  it('Espacio en un botón enfocado lo pulsa una vez, no avanza dos', async () => {
+    const { host } = await openPresenter()
+    const next = byLabel(host, 'Siguiente')!
+    next.focus()
+    const space = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true })
+    next.dispatchEvent(space)
+    expect(space.defaultPrevented).toBe(false)
+    next.click()
+    await until(() => host.textContent!.includes('2 de 4'))
+    await new Promise((r) => setTimeout(r, 100))
+    expect(host.textContent).toContain('2 de 4')
+  })
+
+  it('si el navegador bloquea la ventana, lo dice', async () => {
+    const { host } = await openPresenter({ blocked: true })
+    byLabel(host, 'Abrir pantalla pública')!.click()
+    await until(() => host.textContent!.includes('El navegador bloqueó la pantalla pública'))
   })
 })
