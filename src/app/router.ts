@@ -16,6 +16,8 @@ export const routes: RouteRecordRaw[] = [
     beforeEnter: (to) => (isKnownType(to.params.typeId) ? true : { name: 'nuevo' }),
   },
   { path: '/anuncios/:id', name: 'editar', component: () => import('../features/announcements/editor/EditorPage.vue') },
+  { path: '/presentaciones', name: 'presentaciones', component: () => import('../features/presentations/list/PresentationsPage.vue') },
+  { path: '/presentaciones/:id', name: 'presentacion', component: () => import('../features/presentations/detail/PresentationPage.vue') },
   { path: '/:pathMatch(.*)*', redirect: { name: 'inicio' } },
 ]
 

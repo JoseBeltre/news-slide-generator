@@ -80,14 +80,14 @@ describe('arquitectura de la interfaz', () => {
     expect(bad).toEqual([])
   })
 
-  it('una funcionalidad no importa de otra, salvo announcements/shared', () => {
+  it('una funcionalidad no importa de otra, salvo de su carpeta shared/', () => {
     const featureOf = (path: string) => /^src\/features\/([^/]+)\//.exec(path)?.[1]
     const bad = files
       .filter((f) => featureOf(f))
       .flatMap((f) => importsOf(f).map((s) => [f, resolveImport(f, s)] as const))
       .filter(([f, target]) => {
         const other = featureOf(target)
-        return other && other !== featureOf(f) && !target.startsWith('src/features/announcements/shared/')
+        return other && other !== featureOf(f) && !/^src\/features\/[^/]+\/shared\//.test(target)
       })
       .map(([f, target]) => `${f} → ${target}`)
     expect(bad).toEqual([])

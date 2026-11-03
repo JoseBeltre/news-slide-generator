@@ -6,6 +6,7 @@ import UiThemeToggle from '../ui/UiThemeToggle.vue'
 const LINKS = [
   { to: { name: 'inicio' }, label: 'Inicio' },
   { to: { name: 'anuncios' }, label: 'Anuncios' },
+  { to: { name: 'presentaciones' }, label: 'Presentaciones' },
 ] as const
 
 const linkClass =
