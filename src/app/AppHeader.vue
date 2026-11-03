@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Encabezado de la app: nombre (lleva a Inicio) y navegación principal.
 import { RouterLink } from 'vue-router'
+import UiThemeToggle from '../ui/UiThemeToggle.vue'
 
 const LINKS = [
   { to: { name: 'inicio' }, label: 'Inicio' },
@@ -13,9 +14,9 @@ const linkClass =
 
 <template>
   <header class="border-b border-hairline">
-    <div class="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-4 md:px-8">
+    <div class="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 md:px-8">
       <RouterLink :to="{ name: 'inicio' }" class="inline-flex min-h-11 items-center font-display text-heading-sm text-ink">Anuncios del Sábado</RouterLink>
-      <nav aria-label="Principal" class="flex gap-1">
+      <nav aria-label="Principal" class="ml-auto flex items-center gap-1">
         <RouterLink
           v-for="link in LINKS"
           :key="link.label"
@@ -26,6 +27,7 @@ const linkClass =
           {{ link.label }}
         </RouterLink>
       </nav>
+      <UiThemeToggle />
     </div>
   </header>
 </template>

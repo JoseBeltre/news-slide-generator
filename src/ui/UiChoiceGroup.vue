@@ -57,7 +57,7 @@ const OPTION = {
       :tabindex="i === selectedIndex() ? 0 : -1"
       :class="[
         OPTION[variant],
-        'text-ink hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
+        'cursor-pointer text-ink hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
       ]"
       @click="emit('update:modelValue', option.value)"
     >

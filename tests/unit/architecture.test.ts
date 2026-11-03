@@ -46,8 +46,19 @@ describe('arquitectura de la interfaz', () => {
   it('styles.css solo declara tokens: ninguna regla para elementos o clases', () => {
     const css = read(STYLESHEET).replace(/\/\*[\s\S]*?\*\//g, '')
     const selectors = [...css.matchAll(/([^{};]+)\{/g)].map((m) => m[1]!.trim())
-    const allowed = /^(@theme|@layer theme|@media \(prefers-color-scheme: dark\)|:root(:not\(\[data-theme="light"\]\))?|\[data-theme="dark"\])$/
+    const allowed = /^(@theme|@layer theme|:root|:root\[data-theme="(light|dark)"\])$/
     expect(selectors.filter((s) => !allowed.test(s))).toEqual([])
+  })
+
+  it('todo <button> de la interfaz muestra la mano (cursor-pointer): el preflight de Tailwind la quita', () => {
+    const offenders = files.filter((f) => f.endsWith('.vue') && /<button[\s>]/.test(read(f)) && !read(f).includes('cursor-pointer'))
+    expect(offenders).toEqual([])
+  })
+
+  it('los colores del tema oscuro se declaran una sola vez (light-dark), sin bloque @media aparte', () => {
+    const css = read(STYLESHEET)
+    expect(css).not.toContain('prefers-color-scheme')
+    expect(css).toMatch(/--color-background:\s*light-dark\(/)
   })
 
   it('páginas ≤ 80 líneas, componentes ≤ 150, módulos .ts ≤ 200', () => {

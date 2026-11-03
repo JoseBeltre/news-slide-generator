@@ -25,9 +25,9 @@ const VARIANTS: Record<ButtonVariant, string> = {
 }
 
 const classes = computed(() => [
-  'inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-sm px-4 text-sm font-medium transition-colors md:h-10',
+  'inline-flex h-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-sm px-4 text-sm font-medium transition-colors md:h-10',
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:pointer-events-none disabled:opacity-50',
-  props.as === 'label' && 'cursor-pointer has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ink',
+  props.as === 'label' && 'has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ink',
   VARIANTS[props.variant],
 ])
 </script>

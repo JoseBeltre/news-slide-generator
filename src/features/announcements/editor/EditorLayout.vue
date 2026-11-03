@@ -14,7 +14,7 @@ const previewOpen = ref(true)
       <section aria-label="Vista previa" class="order-1 flex flex-col gap-3">
         <button
           type="button"
-          class="inline-flex h-11 items-center gap-2 self-start text-sm font-medium text-ink-muted hover:text-ink lg:hidden"
+          class="inline-flex h-11 cursor-pointer items-center gap-2 self-start text-sm font-medium text-ink-muted hover:text-ink lg:hidden"
           :aria-expanded="previewOpen"
           aria-controls="vista-previa"
           @click="previewOpen = !previewOpen"

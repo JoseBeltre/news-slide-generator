@@ -11,7 +11,7 @@ withDefaults(defineProps<{ label: string; icon: Component; variant?: 'ghost' | '
     :aria-label="label"
     :title="label"
     :class="[
-      'inline-flex size-11 shrink-0 items-center justify-center rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink md:size-10',
+      'inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink md:size-10',
       variant === 'danger' ? 'text-danger hover:bg-danger-bg' : 'text-ink-muted hover:bg-muted hover:text-ink',
     ]"
   >
