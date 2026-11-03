@@ -47,9 +47,19 @@ describe('ministerios precargados (RF-35)', () => {
 
   it('iglesia primero y luego los ministerios de la IASD, con id único', () => {
     expect(PRELOADED_MINISTRIES.map((m) => m.id)).toEqual([
-      CHURCH_MINISTRY_ID, 'aventureros', 'conquistadores', 'escuela-sabatica', 'guias-mayores', 'jovenes-adventistas', 'ministerio-mujer',
+      CHURCH_MINISTRY_ID, 'iasd-general', 'aventureros', 'conquistadores', 'escuela-sabatica', 'guias-mayores', 'jovenes-adventistas', 'ministerio-mujer',
     ])
     expect(PRELOADED_MINISTRIES.filter((m) => m.isChurch)).toHaveLength(1)
+  })
+
+  it('logo general de la IASD: 4 formas, cada una en negro y blanco', () => {
+    expect(byId('iasd-general')?.name).toBe('IASD (logo general)')
+    expect(shape('iasd-general')).toEqual([
+      ['negro', 'horizontal'], ['blanco', 'horizontal'],
+      ['negro', 'vertical'], ['blanco', 'vertical'],
+      ['negro', 'cuadrado'], ['blanco', 'cuadrado'],
+      ['negro', 'cuadrado'], ['blanco', 'cuadrado'],
+    ])
   })
 
   it('variantes: JA en tres colores, la Mujer con isotipo, las insignias cuadradas', () => {
@@ -61,7 +71,7 @@ describe('ministerios precargados (RF-35)', () => {
   it('todo logo a color declara su color dominante; todos son assets SVG', () => {
     for (const l of PRELOADED_MINISTRIES.flatMap((m) => m.logos)) {
       if (l.color === 'color') expect(l.dominantColor).toMatch(/^#[0-9a-f]{6}$/i)
-      expect(l.source.kind === 'asset' && l.source.src).toMatch(/\.svg/)
+      expect(l.source.kind === 'asset' && l.source.src).toMatch(/\.svg|^data:image\/svg\+xml/)
     }
   })
 })

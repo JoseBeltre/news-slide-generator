@@ -64,7 +64,7 @@
 
 **P4 (formularios y vista previa): las 7 tareas hechas** en la rama `fase1/p4-formularios-y-vista-previa`. Revisión final hecha (revisor nuevo): 0 Critical; 5 Important + 3 Minor re-graduados, todos arreglados con prueba. Verificado en la rama: typecheck 0, `pnpm test` 708/708, `test:e2e` 33/33, build OK. **Unido a `master` (fast-forward) y subido a GitHub**; rama borrada. Verificado en `master`: typecheck 0, 708/708.
 
-Después: **P5** (presentación del sábado, miniaturas, "Preparar sin internet"). Propuesta: empezar P5 con la **pantalla de Configuración** (RF-110…113, ministerios y logos subidos), que no tiene bloque asignado.
+Después: **P5** (presentación del sábado, miniaturas, "Preparar sin internet"). **Configuración (RF-110…113) aplazada** (2026-11-03, decisión del responsable): la app es solo para la iglesia local; nombre, moneda (RD$) y hora (12 h) son fijos, y estilo, tema, logo y formato de fecha ya se eligen en cada anuncio. Se retoma si el equipo necesita un ministerio que no está precargado, o cambiar los textos por defecto (portada, cumpleaños).
 
 ### Estructura de la interfaz (`src/`)
 
@@ -221,3 +221,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-02 | P4 unido a `master` (fast-forward) y subido a GitHub | verificado en `master`: typecheck 0, 708/708 | 4b9d8d9 |
 | 2026-11-02 | Logos de 6 ministerios IASD vectorizados a SVG y precargados | typecheck 0; `pnpm test` 711/711; `test:e2e` 33/33; build OK | ver `git log` |
 | 2026-11-03 | Logos: Mujer con blancos transparentes (isotipo = SVG del responsable) y Escuela Sabática con la franja del lomo en blanco | typecheck 0; `pnpm test` 711/711 | ver `git log` |
+| 2026-11-03 | Logo general de la IASD precargado (`iasd-general`: horizontal, vertical, símbolo y circular, en negro y blanco); el logo `iglesia` es el de la iglesia local. Configuración aplazada | `pnpm test` 712/712; `test:e2e` 33/33; build OK | ver `git log` |

@@ -12,6 +12,14 @@ import jaColor from '../assets/logos/ministerios/ja-color.svg'
 import jaNegro from '../assets/logos/ministerios/ja-negro.svg'
 import mujerColor from '../assets/logos/ministerios/mujer-color.svg'
 import mujerIsotipo from '../assets/logos/ministerios/mujer-isotipo.svg'
+import generalCircularBlanco from '../assets/logos/iasd-general/circular-blanco.svg'
+import generalCircularNegro from '../assets/logos/iasd-general/circular-negro.svg'
+import generalHorizontalBlanco from '../assets/logos/iasd-general/horizontal-blanco.svg'
+import generalHorizontalNegro from '../assets/logos/iasd-general/horizontal-negro.svg'
+import generalSimboloBlanco from '../assets/logos/iasd-general/simbolo-blanco.svg'
+import generalSimboloNegro from '../assets/logos/iasd-general/simbolo-negro.svg'
+import generalVerticalBlanco from '../assets/logos/iasd-general/vertical-blanco.svg'
+import generalVerticalNegro from '../assets/logos/iasd-general/vertical-negro.svg'
 import type { LogoCandidate } from '../slides/engine'
 import type { AppDb } from './local/db'
 import type { Announcement, LogoSource, LogoVariant, Ministry } from './models'
@@ -27,7 +35,7 @@ const PRELOADED_AT = '2026-11-01T00:00:00.000Z'
 const ministry = (id: string, name: string, logos: LogoVariant[]): Ministry => ({ id, updatedAt: PRELOADED_AT, name, isChurch: false, logos })
 const asset = (src: string) => ({ kind: 'asset', src }) as const
 
-/** Logo oficial IASD: solo monocromo (negro/blanco), sin variante a color (§13.2-A). */
+/** Logo de la iglesia local (Mansedumbre II): solo monocromo (negro/blanco), sin variante a color (§13.2-A). */
 export const PRELOADED_MINISTRIES: readonly Ministry[] = [
   {
     id: CHURCH_MINISTRY_ID,
@@ -41,6 +49,17 @@ export const PRELOADED_MINISTRIES: readonly Ministry[] = [
       { source: { kind: 'asset', src: verticalBlanco }, color: 'blanco', orientation: 'vertical' },
     ],
   },
+  // Logo general de la IASD (el de la iglesia es el local): símbolo solo y circular como isotipos.
+  ministry('iasd-general', 'IASD (logo general)', [
+    { source: asset(generalHorizontalNegro), color: 'negro', orientation: 'horizontal' },
+    { source: asset(generalHorizontalBlanco), color: 'blanco', orientation: 'horizontal' },
+    { source: asset(generalVerticalNegro), color: 'negro', orientation: 'vertical' },
+    { source: asset(generalVerticalBlanco), color: 'blanco', orientation: 'vertical' },
+    { source: asset(generalSimboloNegro), color: 'negro', orientation: 'cuadrado' },
+    { source: asset(generalSimboloBlanco), color: 'blanco', orientation: 'cuadrado' },
+    { source: asset(generalCircularNegro), color: 'negro', orientation: 'cuadrado' },
+    { source: asset(generalCircularBlanco), color: 'blanco', orientation: 'cuadrado' },
+  ]),
   ministry('aventureros', 'Club de Aventureros', [
     { source: asset(aventureros), color: 'color', dominantColor: '#1f5faa', orientation: 'cuadrado' },
   ]),
