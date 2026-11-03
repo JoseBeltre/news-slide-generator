@@ -45,11 +45,16 @@ export async function seed(db: AppDb, partial: Partial<NewRecord<Announcement>> 
   })
 }
 
-export async function mountApp(path: string, db: AppDb, size = { width: 1280, height: 900 }) {
+export async function mountApp(
+  path: string,
+  db: AppDb,
+  size = { width: 1280, height: 900 },
+  provide: Record<string | symbol, unknown> = {},
+) {
   const router = createAppRouter(createMemoryHistory())
   await router.push(path)
   await router.isReady()
-  const mounted = mountInHost(App, size.width, size.height, { global: { plugins: [router, dbPlugin(db)] } })
+  const mounted = mountInHost(App, size.width, size.height, { global: { plugins: [router, dbPlugin(db)], provide } })
   await frame()
   return { ...mounted, router }
 }

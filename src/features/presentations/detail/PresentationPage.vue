@@ -1,9 +1,9 @@
 <script setup lang="ts">
-// Presentación del día (SRS §6.4): ordenar, agregar y quitar anuncios, portada y cierre.
-import { computed } from 'vue'
+// Presentación del día (SRS §6.4): ordenar, agregar y quitar anuncios, portada y cierre;
+// miniaturas con el conteo y "Preparar sin internet".
+import { computed, shallowRef } from 'vue'
 import { useRoute } from 'vue-router'
 import { moveItem } from '../../../data/presentations'
-import { useSlideContext } from '../../../data/useSlideContext'
 import { formatDate, toIsoDate } from '../../../lib/format'
 import UiButton from '../../../ui/UiButton.vue'
 import UiEmptyState from '../../../ui/UiEmptyState.vue'
@@ -11,11 +11,19 @@ import UiPageHeader from '../../../ui/UiPageHeader.vue'
 import AddAnnouncements from './AddAnnouncements.vue'
 import FrameOptions from './FrameOptions.vue'
 import PresentationItems from './PresentationItems.vue'
-import { usePresentationRecord } from './usePresentationRecord'
+import type { SlideStatus } from '../../../slides/templates/contract'
+import { useOfflineCheck } from '../shared/useOfflineCheck'
+import { usePresentationRecord } from '../shared/usePresentationRecord'
+import { usePresentationSlides } from '../shared/usePresentationSlides'
+import PreparePanel from './PreparePanel.vue'
+import SlideThumbnails from './SlideThumbnails.vue'
 
 const route = useRoute()
 const { presentation: p, missing, byId, announcements, update } = usePresentationRecord(computed(() => String(route.params.id)))
-const ctx = useSlideContext(computed(() => p.value?.date))
+const { base, ctx, slides, count } = usePresentationSlides(p, byId)
+const measured = shallowRef<ReadonlyMap<string, SlideStatus['status']>>(new Map())
+const check = computed(() => (p.value ? { presentation: p.value, byId: byId.value, ctx: base.value, measured: measured.value } : undefined))
+const { report, checking, prepare } = useOfflineCheck(check)
 const today = toIsoDate(new Date())
 const items = computed(() => p.value?.items ?? [])
 const move = (from: number, to: number) => update({ items: moveItem(items.value, from, to) })
@@ -34,7 +42,7 @@ const add = (announcementId: string) => update({ items: [...items.value, { annou
         <PresentationItems :items="items" :by-id="byId" :today="today" @move="move" @remove="removeAt" />
         <AddAnnouncements :presentation="p" :announcements="announcements" :today="today" @add="add" />
         <FrameOptions
-          :default-title="ctx.settings.coverTitle"
+          :default-title="base.settings.coverTitle"
           :show-cover="p.showCover"
           :show-closing="p.showClosing"
           :cover-title="p.coverTitle"
@@ -42,6 +50,10 @@ const add = (announcementId: string) => update({ items: [...items.value, { annou
           @update:show-closing="(v) => update({ showClosing: v })"
           @update:cover-title="(v) => update({ coverTitle: v })"
         />
+      </div>
+      <div class="flex flex-col gap-6 lg:sticky lg:top-6">
+        <PreparePanel :report="report" :checking="checking" @prepare="prepare" />
+        <SlideThumbnails :slides="slides" :ctx="ctx" :count="count" @measured="(m) => (measured = m)" />
       </div>
     </div>
   </template>
