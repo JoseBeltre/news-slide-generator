@@ -62,7 +62,7 @@
 
 ## Próxima tarea
 
-**P5 (presentaciones): las 7 tareas hechas** en la rama `fase1/p5-presentaciones` (ejecución nativa; ledger `.superpowers/sdd/2026-11-03-fase1-p5-presentaciones/progress.md`). Además, por pedido del responsable: selector de tema (sistema/claro/oscuro) en el encabezado y cursor de mano en todos los botones. Revisión final hecha (revisor nuevo): 0 Critical; 5 Important arreglados con prueba; 7 Minor aplazados (ver "Problemas abiertos"). Verificado en la rama: typecheck 0, `pnpm test` 757/757, `test:e2e` 34/34, build OK. Pendiente: unir a `master` y subir.
+**P5 (presentaciones): las 7 tareas hechas** en la rama `fase1/p5-presentaciones` (ejecución nativa; ledger `.superpowers/sdd/2026-11-03-fase1-p5-presentaciones/progress.md`). Además, por pedido del responsable: selector de tema (sistema/claro/oscuro) en el encabezado y cursor de mano en todos los botones. Revisión final hecha (revisor nuevo): 0 Critical; 5 Important arreglados con prueba; 7 Minor aplazados (ver "Problemas abiertos"). Verificado en la rama: typecheck 0, `pnpm test` 757/757, `test:e2e` 34/34, build OK. **Unido a `master` (fast-forward) y subido a GitHub**; rama borrada. Verificado en `master`: typecheck 0, 757/757.
 
 Después: **P6** (vista del presentador y ventana pública). **Configuración (RF-110…113) aplazada** (2026-11-03, decisión del responsable): la app es solo para la iglesia local; nombre, moneda (RD$) y hora (12 h) son fijos, y estilo, tema, logo y formato de fecha ya se eligen en cada anuncio. El título de la portada se cambia en cada presentación. Se retoma si el equipo necesita un ministerio que no está precargado o cambiar el mensaje de cumpleaños por defecto.
 
@@ -229,3 +229,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-03 | Logo general de la IASD precargado (`iasd-general`: horizontal, vertical, símbolo y circular, en negro y blanco); el logo `iglesia` es el de la iglesia local. Configuración aplazada | `pnpm test` 712/712; `test:e2e` 33/33; build OK | ver `git log` |
 | 2026-11-03 | Plan de P5 (presentaciones) escrito: `docs/superpowers/plans/2026-11-03-fase1-p5-presentaciones.md`, 7 tareas | por aprobar | ver `git log` |
 | 2026-11-03 | P5 · Tareas 0–7: tema y cursor, reglas de presentaciones, comprobación sin internet, lista ordenable, lista y crear, armar, miniaturas y preparar, E2E sin red; encabezado en dos filas en el celular | typecheck 0; `pnpm test` 752/752; `test:e2e` 34/34; build OK | ver `git log` |
+| 2026-11-03 | P5 unido a `master` (fast-forward) y subido a GitHub | verificado en `master`: typecheck 0, 757/757 | 33dd1d2 |
