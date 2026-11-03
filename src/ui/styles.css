@@ -7,6 +7,7 @@
      claro y oscuro (light-dark): los colores de estado se aclaran en oscuro para mantener ≥ 4.5:1. */
   --color-*: initial;
   --color-white: #ffffff;
+  --color-black: #000000;
   --color-background: light-dark(#f3f0d6, #0a0a0a);
   --color-surface: light-dark(#ffffff, #141414);
   --color-muted: light-dark(#e8e5d0, #1f1f1f);
@@ -46,7 +47,8 @@
 }
 
 /* Tema: el del sistema, o el que se elige en el encabezado (data-theme en <html>, ui/useTheme.ts).
-   La vista del presentador (P6), siempre en oscuro, puede forzarlo con color-scheme: dark. */
+   Lightning CSS traduce light-dark() a variables que se resuelven en <html>: un tema forzado va
+   ahí (useForcedTheme, vista del presentador), no con color-scheme en un elemento. */
 @layer theme {
   :root {
     color-scheme: light dark;

@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import '../../../src/ui/styles.css'
 import { createRepository } from '../../../src/data/local/repository'
 import { PUBLIC_WINDOW_OPENER } from '../../../src/features/presenting/presenter/usePublicWindow'
 import { NORMAL } from '../../fixtures/announcements'
@@ -37,7 +38,8 @@ async function openPresenter() {
 describe('Vista del presentador (RF-62, RF-63, RF-65, RF-67)', () => {
   it('siempre en oscuro; Siguiente envía el estado y muestra "2 de 4" con los puntos clave y las notas', async () => {
     const { host, lastState } = await openPresenter()
-    expect(host.querySelector('[data-presenter]')!.classList).toContain('scheme-dark')
+    expect(document.documentElement.dataset.theme).toBe('dark')
+    expect(getComputedStyle(host.querySelector('[data-presenter]')!).backgroundColor).toBe('rgb(10, 10, 10)')
     expect(host.querySelector('header')).toBeNull()
     byLabel(host, 'Siguiente')!.click()
     await until(() => host.textContent!.includes('2 de 4'))
@@ -83,5 +85,7 @@ describe('Vista del presentador (RF-62, RF-63, RF-65, RF-67)', () => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
     await until(() => router.currentRoute.value.name === 'presentacion')
     expect(win.close).toHaveBeenCalled()
+    // Al salir, el tema vuelve al que tenía la app (aquí, el del sistema).
+    await until(() => document.documentElement.dataset.theme === undefined)
   })
 })

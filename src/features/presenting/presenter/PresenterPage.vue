@@ -4,12 +4,14 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { keyPoints } from '../../../data/presenting'
+import { useForcedTheme } from '../../../ui/useTheme'
 import CurrentAndNext from './CurrentAndNext.vue'
 import Filmstrip from './Filmstrip.vue'
 import KeyPoints from './KeyPoints.vue'
 import PresenterBar from './PresenterBar.vue'
 import { usePresenter } from './usePresenter'
 
+useForcedTheme('oscuro')
 const route = useRoute()
 const { slides, ctx, byId, total, state, run, publicWindow } = usePresenter(computed(() => String(route.params.id)))
 const opened = ref(false)
@@ -23,7 +25,7 @@ function openPublic() {
 </script>
 
 <template>
-  <div data-presenter class="fixed inset-0 flex flex-col gap-6 overflow-auto bg-background p-6 text-ink scheme-dark">
+  <div data-presenter class="fixed inset-0 flex flex-col gap-6 overflow-auto bg-background p-6 text-ink">
     <div class="grid flex-1 gap-6 lg:grid-cols-[3fr_2fr]">
       <CurrentAndNext :current="current" :next="slides[state.index + 1]" :ctx="ctx" :black="state.black" :logo="state.logo" />
       <KeyPoints :points="points" />

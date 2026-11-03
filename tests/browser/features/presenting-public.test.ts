@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
+import '../../../src/ui/styles.css'
 import { createRepository } from '../../../src/data/local/repository'
 import { NORMAL } from '../../fixtures/announcements'
 import { fakeChannel } from '../helpers/channel'
@@ -43,6 +44,8 @@ describe('Ventana pública (RF-61, RF-68)', () => {
     expect(stage()!.hasAttribute('data-black')).toBe(true)
     const root = host.querySelector<HTMLElement>('[data-public]')!
     expect(root.classList).toContain('cursor-none')
+    expect(getComputedStyle(root).backgroundColor).toBe('rgb(0, 0, 0)')
+    expect(getComputedStyle(stage()!).backgroundColor).toBe('rgb(0, 0, 0)')
     const buttons = [...host.querySelectorAll('button')].filter((b) => !b.closest('[data-fullscreen-hint]'))
     expect(buttons).toEqual([])
   })

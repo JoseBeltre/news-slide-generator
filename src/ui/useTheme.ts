@@ -1,6 +1,6 @@
 // Tema de la interfaz: el del sistema (por defecto), claro u oscuro. Se guarda en este navegador
 // y se aplica como data-theme en <html>; los tokens de styles.css hacen el resto. No toca las slides.
-import { readonly, ref } from 'vue'
+import { onBeforeUnmount, onMounted, readonly, ref } from 'vue'
 
 export type ThemeMode = 'sistema' | 'claro' | 'oscuro'
 export const THEME_STORAGE_KEY = 'tema'
@@ -41,4 +41,14 @@ export function useTheme() {
     }
   }
   return { mode: readonly(mode), set }
+}
+
+/**
+ * Una pantalla que va siempre en un tema (la vista del presentador, siempre oscura): lo fuerza en
+ * <html> mientras está montada y al salir deja el que eligió la persona, sin guardarlo.
+ * Va en <html> porque los colores light-dark() se resuelven ahí, no en cada elemento.
+ */
+export function useForcedTheme(forced: Exclude<ThemeMode, 'sistema'>) {
+  onMounted(() => apply(forced))
+  onBeforeUnmount(() => apply(mode.value))
 }
