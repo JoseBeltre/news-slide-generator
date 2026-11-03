@@ -1,0 +1,39 @@
+<!doctype html>
+<!-- Imagen para compartir el enlace (1200×630), con los colores y letras de la interfaz (DESIGN.md):
+     el nombre a la izquierda y la pantalla de inicio a la derecha. La captura scripts/marca.mjs;
+     las letras las inyecta el script desde node_modules. -->
+<html lang="es-DO">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      /* @font-face: lo añade marca.mjs */
+      * { box-sizing: border-box; margin: 0; }
+      body { width: 1200px; height: 630px; background: #f3f0d6; color: #1a1a1a; font-family: 'Inter Variable', sans-serif; display: flex; align-items: center; padding: 0 84px; gap: 72px; }
+      .meta { font-family: ui-monospace, Consolas, monospace; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #55513f; }
+      .name { flex: 1; }
+      .name .meta { font-size: 26px; margin-bottom: 28px; }
+      h1 { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 116px; line-height: 0.98; }
+      .card { width: 480px; background: #fff; border: 2px solid #cfcaae; border-radius: 14px; padding: 34px 36px 30px; }
+      .card h2 { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 46px; }
+      .card .meta { font-size: 16px; margin: 10px 0 22px; }
+      .row { display: flex; gap: 16px; padding: 18px 0; border-top: 2px solid #cfcaae; }
+      .row i { width: 10px; border-radius: 3px; }
+      .row b { display: block; font-weight: 500; font-size: 24px; }
+      .row span { font-size: 17px; color: #55513f; }
+      .row .button { margin-top: 6px; display: inline-block; background: #1a1a1a; color: #f3f0d6; font-weight: 500; font-size: 18px; padding: 10px 26px; border-radius: 7px; }
+    </style>
+  </head>
+  <body>
+    <div class="name">
+      <p class="meta">Mansedumbre II</p>
+      <h1>Anuncios<br />del Sábado</h1>
+    </div>
+    <div class="card">
+      <h2>Próximos anuncios</h2>
+      <p class="meta">Sábado 7 de noviembre</p>
+      <div class="row"><i style="background: #f2b632"></i><div><b>Reunión de Junta</b><span>Martes 3 · 7:00 p. m.</span></div></div>
+      <div class="row"><i style="background: #e0569b"></i><div><b>¡Feliz cumpleaños!</b><span>José Luis Beltre · 8 de noviembre</span></div></div>
+      <div class="row"><span class="button">Presentar</span></div>
+    </div>
+  </body>
+</html>

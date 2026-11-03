@@ -1,4 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#0b1f3a"/>
-  <path d="M256 104 384 408h-62l-26-66H216l-26 66h-62zm0 92-30 92h60z" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="72 64 368 368">
+  <!-- Icono de la app (escritorio y pestaña): la hoja del Almanaque sin fondo, en tinta y blanco (DESIGN.md). -->
+  <rect x="128" y="112" width="256" height="296" rx="22" fill="#e6e1c3" stroke="#1a1a1a" stroke-width="12" transform="rotate(-6 256 112)"/>
+  <rect x="128" y="112" width="256" height="296" rx="22" fill="#ffffff" stroke="#1a1a1a" stroke-width="14"/>
+  <path d="M128 178H384" stroke="#1a1a1a" stroke-width="12"/>
+  <rect x="166" y="165" width="32" height="26" rx="5" fill="#1a1a1a"/>
+  <rect x="314" y="165" width="32" height="26" rx="5" fill="#1a1a1a"/>
+  <path d="M237.3 371Q233.9 371 235 367.9L281.4 236.8Q282.5 233.5 279.1 233.5H232.9Q229.6 233.5 227.9 234.8Q226.2 236 225.2 237.4Q224.1 238.7 222.5 238.7Q220.8 238.7 220.5 237.4Q220.2 236 220.6 234.3L223.7 223.5Q224.3 221 226.8 221H288.7Q291.6 221 291.6 223.5Q291.6 225.2 290 230.4L245.4 368.7Q244.8 371 242.5 371Z" fill="#1a1a1a"/>
 </svg>
