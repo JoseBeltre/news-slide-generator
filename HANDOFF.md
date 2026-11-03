@@ -220,3 +220,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-01 | P4 · revisión final (revisor nuevo) y arreglos: estado al guardar tras cambiar de estilo, errores por persona, aviso entre anuncios, atajos con el diálogo abierto, zonas táctiles 44 px, teclas durante el guardado, "Guardado como borrador", regla de fecha única, tokens oscuros sin duplicar | typecheck 0; `pnpm test` 708/708; `test:e2e` 33/33; build OK | ver `git log` |
 | 2026-11-02 | P4 unido a `master` (fast-forward) y subido a GitHub | verificado en `master`: typecheck 0, 708/708 | 4b9d8d9 |
 | 2026-11-02 | Logos de 6 ministerios IASD vectorizados a SVG y precargados | typecheck 0; `pnpm test` 711/711; `test:e2e` 33/33; build OK | ver `git log` |
+| 2026-11-03 | Logos: Mujer con blancos transparentes (isotipo = SVG del responsable) y Escuela Sabática con la franja del lomo en blanco | typecheck 0; `pnpm test` 711/711 | ver `git log` |
