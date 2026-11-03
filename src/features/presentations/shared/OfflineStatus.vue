@@ -8,6 +8,8 @@ import UiBanner from '../../../ui/UiBanner.vue'
 
 const props = defineProps<{ report?: OfflineReport; checking: boolean; compact?: boolean }>()
 
+/** Sin resultado, o solo faltan mediciones de slides: aún no se sabe si está lista. */
+const measuring = computed(() => !props.report || (props.report.issues.length > 0 && props.report.issues.every((i) => i.kind === 'midiendo')))
 const issues = computed(() =>
   (props.report?.issues ?? []).map((issue) => ({
     text: issueMessage(issue),
@@ -17,10 +19,10 @@ const issues = computed(() =>
 </script>
 
 <template>
-  <p v-if="!report" class="text-sm text-ink-muted">Comprobando…</p>
-  <UiBanner v-else-if="report.ready" tone="success">
+  <p v-if="measuring" class="text-sm text-ink-muted">Comprobando…</p>
+  <UiBanner v-else-if="report?.ready" tone="success">
     ✓ Lista para usar sin internet
-    <template v-if="!report.persistent && !compact">
+    <template v-if="!report?.persistent && !compact">
       <br />El navegador podría borrar los datos si se queda sin espacio.
     </template>
   </UiBanner>

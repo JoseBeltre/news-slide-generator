@@ -21,7 +21,7 @@ function setup() {
         h(
           UiSortableList<string>,
           { items: items.value, itemKey: (s: string) => s, itemLabel: (s: string) => s, label: 'Orden de los anuncios', onMove },
-          { default: ({ item }: { item: string }) => h('span', item) },
+          { default: ({ item }: { item: string }) => h('span', [item, h('button', { type: 'button', 'aria-label': `Quitar «${item}»` }, 'x')]) },
         )
     },
   })
@@ -42,6 +42,15 @@ describe('UiSortableList (RF-51)', () => {
     expect(moves).toEqual([[0, 1]])
     expect(rows()[1]).toContain('Culto joven')
     expect(document.activeElement).toBe(button('Bajar «Culto joven»'))
+  })
+
+  it('subir hasta la primera fila deja el foco en "Bajar" de esa fila, nunca en otro botón', async () => {
+    const { button } = setup()
+    button('Subir «Excursión»').focus()
+    button('Subir «Excursión»').click()
+    await nextTick()
+    await nextTick()
+    expect(document.activeElement).toBe(button('Bajar «Excursión»'))
   })
 
   it('primera fila no sube, última no baja; zonas táctiles de 44 px', () => {

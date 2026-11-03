@@ -105,5 +105,7 @@ export function issueMessage(issue: OfflineIssue): string {
       return `«${issue.title}» está incompleto.`
     case 'no_cabe':
       return `«${issue.title}» no cabe en su slide.`
+    case 'midiendo':
+      return `Comprobando la slide de «${issue.title}»…`
   }
 }

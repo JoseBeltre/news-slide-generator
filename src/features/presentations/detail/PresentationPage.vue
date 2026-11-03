@@ -3,6 +3,7 @@
 // miniaturas con el conteo y "Preparar sin internet".
 import { computed, shallowRef } from 'vue'
 import { useRoute } from 'vue-router'
+import type { Presentation } from '../../../data/models'
 import { moveItem } from '../../../data/presentations'
 import { formatDate, toIsoDate } from '../../../lib/format'
 import UiButton from '../../../ui/UiButton.vue'
@@ -16,7 +17,7 @@ import { useOfflineCheck } from '../shared/useOfflineCheck'
 import { usePresentationRecord } from '../shared/usePresentationRecord'
 import { usePresentationSlides } from '../shared/usePresentationSlides'
 import PreparePanel from './PreparePanel.vue'
-import SlideThumbnails from './SlideThumbnails.vue'
+import SlideThumbnails from '../shared/SlideThumbnails.vue'
 
 const route = useRoute()
 const { presentation: p, missing, byId, announcements, update } = usePresentationRecord(computed(() => String(route.params.id)))
@@ -26,9 +27,18 @@ const check = computed(() => (p.value ? { presentation: p.value, byId: byId.valu
 const { report, checking, prepare } = useOfflineCheck(check)
 const today = toIsoDate(new Date())
 const items = computed(() => p.value?.items ?? [])
-const move = (from: number, to: number) => update({ items: moveItem(items.value, from, to) })
-const removeAt = (index: number) => update({ items: items.value.filter((_, i) => i !== index) })
-const add = (announcementId: string) => update({ items: [...items.value, { announcementId }] })
+// Por id, sobre lo último guardado: un índice de la vista puede estar desfasado si hubo otro cambio.
+const idAt = (index: number) => items.value[index]?.announcementId
+const indexIn = (list: Presentation['items'], id?: string) => list.findIndex((i) => i.announcementId === id)
+const move = (from: number, to: number) => {
+  const [moved, target] = [idAt(from), idAt(to)]
+  return update((p) => ({ items: moveItem(p.items, indexIn(p.items, moved), indexIn(p.items, target)) }))
+}
+const removeAt = (index: number) => {
+  const gone = idAt(index)
+  return update((p) => ({ items: p.items.filter((i) => i.announcementId !== gone) }))
+}
+const add = (announcementId: string) => update((p) => ({ items: [...p.items, { announcementId }] }))
 </script>
 
 <template>

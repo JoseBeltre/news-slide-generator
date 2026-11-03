@@ -62,7 +62,7 @@
 
 ## Próxima tarea
 
-**P5 (presentaciones): las 7 tareas hechas** en la rama `fase1/p5-presentaciones` (ejecución nativa; ledger `.superpowers/sdd/2026-11-03-fase1-p5-presentaciones/progress.md`). Además, por pedido del responsable: selector de tema (sistema/claro/oscuro) en el encabezado y cursor de mano en todos los botones. Verificado en la rama: typecheck 0, `pnpm test` 752/752, `test:e2e` 34/34, build OK. Pendiente: revisión final de la rama, unir a `master` y subir.
+**P5 (presentaciones): las 7 tareas hechas** en la rama `fase1/p5-presentaciones` (ejecución nativa; ledger `.superpowers/sdd/2026-11-03-fase1-p5-presentaciones/progress.md`). Además, por pedido del responsable: selector de tema (sistema/claro/oscuro) en el encabezado y cursor de mano en todos los botones. Revisión final hecha (revisor nuevo): 0 Critical; 5 Important arreglados con prueba; 7 Minor aplazados (ver "Problemas abiertos"). Verificado en la rama: typecheck 0, `pnpm test` 757/757, `test:e2e` 34/34, build OK. Pendiente: unir a `master` y subir.
 
 Después: **P6** (vista del presentador y ventana pública). **Configuración (RF-110…113) aplazada** (2026-11-03, decisión del responsable): la app es solo para la iglesia local; nombre, moneda (RD$) y hora (12 h) son fijos, y estilo, tema, logo y formato de fecha ya se eligen en cada anuncio. El título de la portada se cambia en cada presentación. Se retoma si el equipo necesita un ministerio que no está precargado o cambiar el mensaje de cumpleaños por defecto.
 
@@ -146,6 +146,8 @@ Gestor de paquetes: **pnpm** (fijado en `package.json` → `packageManager: pnpm
 Requisito de una sola vez: `pnpm exec playwright install chromium`.
 
 ## Problemas abiertos
+
+- **Menores aplazados de P5:** la comprobación sin internet se repite en cada medición o tecla (falta un debounce) y deshabilita "Preparar" mientras corre; si `useOfflineCheck` falla, queda "comprobando" para siempre (falta try/finally); una comprobación automática puede borrar el aviso de persistencia de "Preparar"; el título de portada local no sigue cambios desde otra pestaña; Subir/Bajar deshabilitados se ven activos (`UiIconButton` sin estilos `disabled:`); `light-dark()` exige Safari 17.5+ / Chrome 123+ (RNF-06 menciona Safari iOS); "hoy" se fija al abrir (pasada la medianoche hay que recargar). Además, "✓ Lista…" repite el ✓ con el ícono del aviso.
 
 - Menores diferidos de la revisión final P4: `slides` del editor atrapa errores sin registrarlos y 0 slides válidas cuentan como `ok`; banda/mensaje "No cabe" parpadean al teclear; Ctrl+S no agrega lo escrito en el campo de chips; `dirty` verdadero tras escribir y borrar un opcional; cadena de foco visible repetida (constante `FOCUS_RING`); la prueba de la hoja de la interfaz no cubre las clases del body ni el oscuro; duplicar con doble clic crea dos copias.
 

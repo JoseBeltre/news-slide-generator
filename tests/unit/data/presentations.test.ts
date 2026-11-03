@@ -121,6 +121,17 @@ describe('presentationSlides (RF-53, RF-54)', () => {
 })
 
 describe('contentIssues (RF-55, RNF-10)', () => {
+  it('con mediciones: un anuncio aún sin medir o midiendo no deja la presentación lista', () => {
+    const a = ann({ values: { ...NORMAL.culto, titulo: 'Vigilia' } })
+    const b = ann({ values: { ...NORMAL.culto, titulo: 'Ayuno' } })
+    const p = pres({ items: [{ announcementId: a.id }, { announcementId: b.id }] })
+    expect(contentIssues(p, index(a, b), new Map([[a.id, 'midiendo' as const]]))).toEqual([
+      { kind: 'midiendo', announcementId: a.id, title: 'Vigilia' },
+      { kind: 'midiendo', announcementId: b.id, title: 'Ayuno' },
+    ])
+    expect(contentIssues(p, index(a, b), new Map([[a.id, 'ok' as const], [b.id, 'ok' as const]]))).toEqual([])
+  })
+
   it('vacía, eliminado, borrador, no cabe guardado o medido', () => {
     expect(contentIssues(pres(), index())).toEqual([{ kind: 'vacia' }])
     const ok = ann()
@@ -128,7 +139,7 @@ describe('contentIssues (RF-55, RNF-10)', () => {
     const sinTitulo = ann({ status: 'no_cabe', typeId: 'aviso', values: {} })
     const medido = ann({ values: { ...NORMAL.culto, titulo: 'Campaña' } })
     const p = pres({ items: [ok, { id: 'x' }, borrador, sinTitulo, medido].map((a) => ({ announcementId: a.id! })) })
-    expect(contentIssues(p, index(ok, borrador, sinTitulo, medido), new Map([[medido.id, 'no_cabe' as const]]))).toEqual([
+    expect(contentIssues(p, index(ok, borrador, sinTitulo, medido), new Map([[ok.id, 'ok' as const], [medido.id, 'no_cabe' as const]]))).toEqual([
       { kind: 'eliminado', index: 1 },
       { kind: 'borrador', announcementId: borrador.id, title: 'Ensayo' },
       { kind: 'no_cabe', announcementId: sinTitulo.id, title: 'Sin título' },

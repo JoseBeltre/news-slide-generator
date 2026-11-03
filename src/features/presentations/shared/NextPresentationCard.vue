@@ -1,12 +1,15 @@
 <script setup lang="ts">
 // Inicio (§6.1): la presentación del próximo sábado con su conteo y si está lista sin internet;
-// si aún no existe, el botón para crearla con los anuncios sugeridos.
-import { computed } from 'vue'
+// si aún no existe, el botón para crearla con los anuncios sugeridos. Las slides se miden fuera de la
+// vista con la fecha del sábado: un anuncio guardado como "listo" puede no caber ese día.
+import { computed, shallowRef } from 'vue'
 import { RouterLink } from 'vue-router'
 import { nextSaturday } from '../../../data/presentations'
 import { formatDate } from '../../../lib/format'
 import UiButton from '../../../ui/UiButton.vue'
+import type { SlideStatus } from '../../../slides/templates/contract'
 import OfflineStatus from './OfflineStatus.vue'
+import SlideThumbnails from './SlideThumbnails.vue'
 import { useOfflineCheck } from './useOfflineCheck'
 import { usePresentationRecord } from './usePresentationRecord'
 import { usePresentationSlides } from './usePresentationSlides'
@@ -16,9 +19,10 @@ const { upcoming, loaded, today, openOrCreate } = usePresentations()
 const saturday = nextSaturday(today)
 const id = computed(() => upcoming.value.find((p) => p.date === saturday)?.id ?? '')
 const { presentation, byId } = usePresentationRecord(id)
-const { ctx, count } = usePresentationSlides(presentation, byId)
+const { base, ctx, slides, count } = usePresentationSlides(presentation, byId)
+const measured = shallowRef<ReadonlyMap<string, SlideStatus['status']>>(new Map())
 const { report, checking } = useOfflineCheck(
-  computed(() => (presentation.value ? { presentation: presentation.value, byId: byId.value, ctx: ctx.value } : undefined)),
+  computed(() => (presentation.value ? { presentation: presentation.value, byId: byId.value, ctx: base.value, measured: measured.value } : undefined)),
 )
 </script>
 
@@ -30,6 +34,9 @@ const { report, checking } = useOfflineCheck(
         <span class="font-meta text-meta uppercase text-ink-muted">{{ count }}</span>
       </RouterLink>
       <OfflineStatus :report="report" :checking="checking" compact />
+      <div aria-hidden="true" inert class="pointer-events-none fixed top-0 -left-[200vw] w-160">
+        <SlideThumbnails :slides="slides" :ctx="ctx" :count="count" @measured="(m) => (measured = m)" />
+      </div>
     </template>
     <div v-else class="flex flex-wrap items-center justify-between gap-3">
       <span class="text-ink">Aún no hay presentación para el {{ formatDate(saturday).toLowerCase() }}.</span>

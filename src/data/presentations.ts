@@ -15,7 +15,7 @@ export type PresentationSlide = { spec: SlideSpec; announcementId?: string }
 export type ContentIssue =
   | { kind: 'vacia' }
   | { kind: 'eliminado'; index: number }
-  | { kind: 'borrador' | 'no_cabe'; announcementId: string; title: string }
+  | { kind: 'borrador' | 'no_cabe' | 'midiendo'; announcementId: string; title: string }
 
 /** El próximo sábado (RF-50); hoy, si hoy es sábado. */
 export function nextSaturday(today: string): string {
@@ -70,7 +70,10 @@ export function presentationSlides(
   return [...(p.showCover ? [{ spec: frameSlide('cover', c) }] : []), ...body, ...(p.showClosing ? [{ spec: frameSlide('closing', c) }] : [])]
 }
 
-/** Lo que impide presentar: lista vacía, anuncios eliminados, incompletos o que no caben (guardado o medido). */
+/**
+ * Lo que impide presentar: lista vacía, anuncios eliminados, incompletos o que no caben (guardado o
+ * medido). Con `measured`, un anuncio aún sin medir o midiendo tampoco deja la presentación lista.
+ */
 export function contentIssues(
   p: Presentation,
   byId: ReadonlyMap<string, Announcement>,
@@ -82,7 +85,9 @@ export function contentIssues(
     if (!a) return [{ kind: 'eliminado', index }]
     const title = displayTitle(a) ?? 'Sin título'
     if (a.status === 'borrador') return [{ kind: 'borrador', announcementId, title }]
-    if (a.status === 'no_cabe' || measured?.get(announcementId) === 'no_cabe') return [{ kind: 'no_cabe', announcementId, title }]
+    const m = measured?.get(announcementId)
+    if (a.status === 'no_cabe' || m === 'no_cabe') return [{ kind: 'no_cabe', announcementId, title }]
+    if (measured && m !== 'ok') return [{ kind: 'midiendo', announcementId, title }]
     return []
   })
 }

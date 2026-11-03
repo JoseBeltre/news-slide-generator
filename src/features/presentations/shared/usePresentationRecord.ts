@@ -19,9 +19,17 @@ export function usePresentationRecord(id: Ref<string>) {
   /** Todos, también los borrados: la lista los muestra como "Anuncio eliminado". */
   const byId = computed<ReadonlyMap<string, Announcement>>(() => new Map(announcements.value.map((a) => [a.id, a])))
 
-  async function update(patch: Patch): Promise<void> {
-    const current = presentation.value
-    if (current) await repo.put({ ...plainCopy(current), ...plainCopy(patch) })
+  /**
+   * Aplica el cambio sobre lo último guardado, dentro de una transacción: dos cambios seguidos (escribir
+   * el título y marcar "Cierre", bajar y quitar) no se pisan aunque la lectura en vivo aún no llegó.
+   */
+  async function update(change: Patch | ((current: Presentation) => Patch)): Promise<void> {
+    await db.transaction('rw', db.presentations, async () => {
+      const current = await repo.get(id.value)
+      if (!current) return
+      const patch = typeof change === 'function' ? change(current) : change
+      await repo.put({ ...current, ...plainCopy(patch) })
+    })
   }
 
   return { presentation, missing, byId, announcements, update }

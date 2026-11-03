@@ -31,8 +31,10 @@ watch(
     refocus = undefined
     await nextTick()
     const row = list.value?.querySelector(`[data-key="${CSS.escape(key)}"]`)
-    const target = [...(row?.querySelectorAll('button') ?? [])].filter((b) => !b.disabled)
-    ;(target.find((b) => b.getAttribute('aria-label')?.startsWith(dir)) ?? target[0])?.focus()
+    // Si la flecha quedó deshabilitada (primera o última fila), el foco va a la otra flecha: nunca a
+    // otro botón de la fila, que podría ser una acción destructiva como "Quitar".
+    const arrows = [...(row?.querySelectorAll<HTMLButtonElement>('[data-arrow]') ?? [])].filter((b) => !b.disabled)
+    ;(arrows.find((b) => b.dataset.arrow === dir) ?? arrows[0])?.focus()
   },
 )
 
@@ -60,8 +62,8 @@ function drop(index: number) {
     >
       <GripVertical :size="18" aria-hidden="true" class="shrink-0 cursor-grab text-ink-muted" />
       <div class="min-w-0 flex-1"><slot :item="item" :index="i" /></div>
-      <UiIconButton :label="`Subir «${itemLabel(item)}»`" :icon="ChevronUp" :disabled="i === 0" @click="step(i, 'Subir')" />
-      <UiIconButton :label="`Bajar «${itemLabel(item)}»`" :icon="ChevronDown" :disabled="i === items.length - 1" @click="step(i, 'Bajar')" />
+      <UiIconButton :label="`Subir «${itemLabel(item)}»`" :icon="ChevronUp" data-arrow="Subir" :disabled="i === 0" @click="step(i, 'Subir')" />
+      <UiIconButton :label="`Bajar «${itemLabel(item)}»`" :icon="ChevronDown" data-arrow="Bajar" :disabled="i === items.length - 1" @click="step(i, 'Bajar')" />
     </li>
   </ol>
 </template>

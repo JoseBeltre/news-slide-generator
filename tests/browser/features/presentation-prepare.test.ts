@@ -82,6 +82,14 @@ describe('Inicio: la presentación del sábado (§6.1)', () => {
     expect(await db.presentations.count()).toBe(1)
   })
 
+  it('un anuncio guardado como listo que no cabe con la fecha del sábado no da "✓ Lista" en Inicio', async () => {
+    const db = testDb()
+    await withPresentation(db, [LONG])
+    const { host } = await mountApp('/', db, undefined, { [OFFLINE_ENV]: fakeEnv() })
+    await until(() => host.textContent!.includes('Falta algo para usar sin internet'), 10000)
+    expect(host.textContent).not.toContain('✓ Lista para usar sin internet')
+  })
+
   it('con presentación lista → su fecha, "N slides" y "✓ Lista"', async () => {
     const db = testDb()
     await withPresentation(db, ['Vigilia'])

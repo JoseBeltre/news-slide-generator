@@ -42,6 +42,17 @@ describe('Presentaciones (RF-50, RF-52)', () => {
     expect(await db.presentations.count()).toBe(1)
   })
 
+  it('doble clic en "Crear presentación" crea una sola', async () => {
+    const db = testDb()
+    const { host, router } = await mountApp('/presentaciones', db)
+    await until(() => !!byLabel(host, 'Crear presentación'))
+    byLabel(host, 'Crear presentación')!.click()
+    byLabel(host, 'Crear presentación')!.click()
+    await until(() => router.currentRoute.value.name === 'presentacion')
+    await new Promise((r) => setTimeout(r, 300))
+    expect(await db.presentations.count()).toBe(1)
+  })
+
   it('próximas y pasadas por separado; eliminar pide confirmación y no borra anuncios', async () => {
     const db = testDb()
     const a = await seed(db, { typeId: 'culto', values: { titulo: 'Vigilia' }, eventDate: saturday })

@@ -77,6 +77,19 @@ describe('Armar la presentación (RF-51, RF-53)', () => {
     await until(async () => (await saved()).showClosing === false)
   })
 
+  it('cambios seguidos sin esperar a la base no se pisan (título y cierre; bajar y quitar)', async () => {
+    const { host, a, saved } = await setup()
+    const title = host.querySelector<HTMLInputElement>('#titulo-portada')!
+    title.value = 'Avisos'
+    title.dispatchEvent(new Event('input'))
+    ;[...host.querySelectorAll('label')].find((l) => l.textContent!.trim() === 'Cierre')!.querySelector('input')!.click()
+    byLabel(host, 'Bajar «Vigilia»')!.click()
+    byLabel(host, 'Quitar «Ayuno»')!.click()
+    await until(async () => (await saved()).showClosing === false)
+    await new Promise((r) => setTimeout(r, 300))
+    expect(await saved()).toMatchObject({ coverTitle: 'Avisos', showClosing: false, items: [{ announcementId: a.id }] })
+  })
+
   it('una id inexistente muestra el estado vacío', async () => {
     const { host } = await mountApp('/presentaciones/no-existe', testDb())
     await until(() => host.textContent!.includes('Esta presentación ya no existe.'))
