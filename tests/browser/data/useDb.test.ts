@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, ref } from 'vue'
 import { createDb, type AppDb } from '../../../src/data/local/db'
 import { createRepository } from '../../../src/data/local/repository'
 import { DEFAULT_SETTINGS, SETTINGS_ID } from '../../../src/data/settings'
@@ -32,6 +32,25 @@ describe('useLiveQuery', () => {
     await until(() => host.textContent === '0')
     await createRepository(db.settings).put({ ...DEFAULT_SETTINGS, id: SETTINGS_ID })
     await until(() => host.textContent === '1')
+  })
+
+  it('con deps: vuelve a consultar cuando cambia el valor que lee la consulta', async () => {
+    const db = createDb(`usedb-${crypto.randomUUID()}`)
+    dbs.push(db)
+    await createRepository(db.settings).put({ ...DEFAULT_SETTINGS, id: SETTINGS_ID, churchName: 'Uno' })
+    await createRepository(db.settings).put({ ...DEFAULT_SETTINGS, id: 'otra', churchName: 'Dos' })
+    const id = ref(SETTINGS_ID)
+    const Comp = defineComponent({
+      setup() {
+        const db = useDb()
+        const name = useLiveQuery(async () => (await db.settings.get(id.value))?.churchName ?? '', '', id)
+        return () => h('output', name.value)
+      },
+    })
+    const { host } = mountInHost(Comp, 100, 50, { global: { plugins: [dbPlugin(db)] } })
+    await until(() => host.textContent === 'Uno')
+    id.value = 'otra'
+    await until(() => host.textContent === 'Dos')
   })
 
   it('sin dbPlugin, useDb explica qué falta', () => {

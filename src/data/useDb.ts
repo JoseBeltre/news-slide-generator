@@ -1,7 +1,7 @@
 // Acceso a la base de datos desde la interfaz: una AppDb por app (plugin + inject) y consultas
 // vivas de Dexie como refs de Vue.
 import { liveQuery } from 'dexie'
-import { inject, onScopeDispose, readonly, shallowRef, type InjectionKey, type Plugin, type Ref } from 'vue'
+import { inject, onScopeDispose, readonly, shallowRef, watch, type InjectionKey, type Plugin, type Ref, type WatchSource } from 'vue'
 import type { AppDb } from './local/db'
 
 const DB_KEY: InjectionKey<AppDb> = Symbol('AppDb')
@@ -17,13 +17,22 @@ export function useDb(): AppDb {
   return db
 }
 
-/** Resultado de `query`, actualizado cada vez que cambian las tablas que lee. Se cancela al desmontar. */
-export function useLiveQuery<T>(query: () => Promise<T>, initial: T): Readonly<Ref<T>> {
+/**
+ * Resultado de `query`, actualizado cada vez que cambian las tablas que lee. Con `deps`, también se
+ * vuelve a consultar cuando cambia ese valor (p. ej. la id de la ruta). Se cancela al desmontar.
+ */
+export function useLiveQuery<T>(query: () => Promise<T>, initial: T, deps?: WatchSource): Readonly<Ref<T>> {
   const result = shallowRef(initial) as Ref<T>
-  const subscription = liveQuery(query).subscribe({
-    next: (value) => (result.value = value),
-    error: (e) => console.error('Consulta de la base de datos falló', e),
-  })
-  onScopeDispose(() => subscription.unsubscribe())
+  let subscription: { unsubscribe(): void } | undefined
+  const subscribe = () => {
+    subscription?.unsubscribe()
+    subscription = liveQuery(query).subscribe({
+      next: (value) => (result.value = value),
+      error: (e) => console.error('Consulta de la base de datos falló', e),
+    })
+  }
+  subscribe()
+  if (deps) watch(deps, subscribe)
+  onScopeDispose(() => subscription?.unsubscribe())
   return readonly(result) as Readonly<Ref<T>>
 }

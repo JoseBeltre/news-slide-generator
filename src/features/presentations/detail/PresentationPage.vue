@@ -1,8 +1,48 @@
 <script setup lang="ts">
-// Presentación del día (SRS §6.4). Se completa en la Tarea 5 del plan P5.
+// Presentación del día (SRS §6.4): ordenar, agregar y quitar anuncios, portada y cierre.
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { moveItem } from '../../../data/presentations'
+import { useSlideContext } from '../../../data/useSlideContext'
+import { formatDate, toIsoDate } from '../../../lib/format'
+import UiButton from '../../../ui/UiButton.vue'
+import UiEmptyState from '../../../ui/UiEmptyState.vue'
 import UiPageHeader from '../../../ui/UiPageHeader.vue'
+import AddAnnouncements from './AddAnnouncements.vue'
+import FrameOptions from './FrameOptions.vue'
+import PresentationItems from './PresentationItems.vue'
+import { usePresentationRecord } from './usePresentationRecord'
+
+const route = useRoute()
+const { presentation: p, missing, byId, announcements, update } = usePresentationRecord(computed(() => String(route.params.id)))
+const ctx = useSlideContext(computed(() => p.value?.date))
+const today = toIsoDate(new Date())
+const items = computed(() => p.value?.items ?? [])
+const move = (from: number, to: number) => update({ items: moveItem(items.value, from, to) })
+const removeAt = (index: number) => update({ items: items.value.filter((_, i) => i !== index) })
+const add = (announcementId: string) => update({ items: [...items.value, { announcementId }] })
 </script>
 
 <template>
-  <UiPageHeader title="Presentación" />
+  <UiEmptyState v-if="missing" message="Esta presentación ya no existe.">
+    <UiButton :to="{ name: 'presentaciones' }">Ver presentaciones</UiButton>
+  </UiEmptyState>
+  <template v-else-if="p">
+    <UiPageHeader :title="formatDate(p.date)" />
+    <div class="grid gap-8 lg:grid-cols-[2fr_3fr] lg:items-start">
+      <div class="flex flex-col gap-8">
+        <PresentationItems :items="items" :by-id="byId" :today="today" @move="move" @remove="removeAt" />
+        <AddAnnouncements :presentation="p" :announcements="announcements" :today="today" @add="add" />
+        <FrameOptions
+          :default-title="ctx.settings.coverTitle"
+          :show-cover="p.showCover"
+          :show-closing="p.showClosing"
+          :cover-title="p.coverTitle"
+          @update:show-cover="(v) => update({ showCover: v })"
+          @update:show-closing="(v) => update({ showClosing: v })"
+          @update:cover-title="(v) => update({ coverTitle: v })"
+        />
+      </div>
+    </div>
+  </template>
 </template>

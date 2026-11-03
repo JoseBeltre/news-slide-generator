@@ -5,9 +5,9 @@ import SlideView from '../../../src/slides/templates/SlideView.vue'
 import type { SlideContext, SlideSpec, SlideStatus } from '../../../src/slides/templates/contract'
 import { frame, mountInHost } from './mount'
 
-export async function until(check: () => boolean, ms = 5000) {
+export async function until(check: () => boolean | Promise<boolean>, ms = 5000) {
   const end = performance.now() + ms
-  while (!check()) {
+  while (!(await check())) {
     if (performance.now() > end) throw new Error('tiempo agotado')
     await frame()
   }
