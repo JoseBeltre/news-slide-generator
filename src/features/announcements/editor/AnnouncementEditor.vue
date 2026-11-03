@@ -17,7 +17,7 @@ import SlideOptions from './options/SlideOptions.vue'
 import FitStatusBanner from './preview/FitStatusBanner.vue'
 import PreviewPanel from './preview/PreviewPanel.vue'
 import { useAnnouncementDraft } from './useAnnouncementDraft'
-import { useSlideContext } from './useSlideContext'
+import { useSlideContext } from '../../../data/useSlideContext'
 import { useUnsavedGuard } from './useUnsavedGuard'
 
 const props = defineProps<{ initial: NewRecord<Announcement> }>()

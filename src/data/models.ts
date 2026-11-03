@@ -91,6 +91,8 @@ export interface Presentation extends SyncMeta {
   items: { announcementId: string }[]
   showCover: boolean
   showClosing: boolean
+  /** Título de la portada solo para esta presentación; vacío → el de Configuración (RF-53). */
+  coverTitle?: string
   published: boolean
   readingSlug?: string
 }
