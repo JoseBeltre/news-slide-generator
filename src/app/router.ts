@@ -19,6 +19,7 @@ export const routes: RouteRecordRaw[] = [
   { path: '/presentaciones', name: 'presentaciones', component: () => import('../features/presentations/list/PresentationsPage.vue') },
   { path: '/presentaciones/:id', name: 'presentacion', component: () => import('../features/presentations/detail/PresentationPage.vue') },
   // Presentar (P6): sin el marco de la app (meta.bare).
+  { path: '/presentaciones/:id/presentar', name: 'presentar', component: () => import('../features/presenting/presenter/PresenterPage.vue'), meta: { bare: true } },
   { path: '/publica/:id', name: 'publica', component: () => import('../features/presenting/public/PublicPage.vue'), meta: { bare: true } },
   { path: '/:pathMatch(.*)*', redirect: { name: 'inicio' } },
 ]
