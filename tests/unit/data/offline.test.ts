@@ -62,7 +62,7 @@ describe('checkOffline (RF-55, RF-102)', () => {
     expect(r.issues).toEqual([{ kind: 'app' }, { kind: 'fuente' }])
   })
 
-  it('logo precargado sin caché → logo con el nombre del ministerio; logo subido sin blob → igual', async () => {
+  it('logo precargado sin caché → app (viene con la app); logo subido sin blob → logo del ministerio', async () => {
     const jovenes: Ministry = {
       id: 'propio',
       updatedAt: '2026-11-01T00:00:00.000Z',
@@ -75,10 +75,12 @@ describe('checkOffline (RF-55, RF-102)', () => {
       input({ byId: new Map([[a.id, a]]), ctx: makeCtx({ ministries: [...PRELOADED_MINISTRIES, jovenes] }), hasImage: async () => false }),
       env({ assetCached: async () => false }),
     )
-    expect(r.issues).toEqual([
-      { kind: 'logo', ministry: 'Iglesia' },
-      { kind: 'logo', ministry: 'Sociedad propia' },
-    ])
+    expect(r.issues).toEqual([{ kind: 'logo', ministry: 'Sociedad propia' }, { kind: 'app' }])
+  })
+
+  it('sin Service Worker y sin logos precargados → un solo aviso de app', async () => {
+    const r = await checkOffline(input(), env({ appInstalled: async () => false, assetCached: async () => false }))
+    expect(r.issues).toEqual([{ kind: 'app' }])
   })
 
   it('con persist: lo pide; si el navegador lo niega, sigue lista pero no persistente', async () => {
@@ -96,7 +98,7 @@ describe('checkOffline (RF-55, RF-102)', () => {
 describe('issueMessage', () => {
   it('un texto para cada problema', () => {
     const cases: [OfflineIssue, string][] = [
-      [{ kind: 'app' }, 'La app aún no está guardada en este equipo: ábrela una vez con internet.'],
+      [{ kind: 'app' }, 'La app aún no está guardada en este equipo. Recarga la página con internet y vuelve a comprobar.'],
       [{ kind: 'fuente' }, 'Falta la letra de las slides en este equipo.'],
       [{ kind: 'imagen', announcementId: 'a', title: 'Culto' }, 'Falta una imagen de «Culto». Ábrelo y vuelve a subirla.'],
       [{ kind: 'logo', ministry: 'Jóvenes' }, 'Falta el logo de Jóvenes.'],

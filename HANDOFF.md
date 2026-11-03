@@ -62,7 +62,7 @@
 
 ## Próxima tarea
 
-**P6 (presentar): las 6 tareas hechas** en la rama `fase1/p6-presentar` (ejecución nativa; ledger `.superpowers/sdd/2026-11-03-fase1-p6-presentar/progress.md`). Revisión final hecha (revisor nuevo, Sonnet): 0 Critical; 4 Important arreglados con prueba; menores aplazados (ver "Problemas abiertos"). Verificado en la rama: typecheck 0, `pnpm test` 782/782, `test:e2e` 35/35 (cambio de slide entre ventanas: ~15–20 ms; RNF-04 < 100 ms), build OK. Pendiente: unir a `master` y subir. **Validación manual pendiente del responsable:** probar en **Brave** y con la laptop en modo extendido (RNF-06, §10.1–2).
+**P6 (presentar): las 6 tareas hechas** en la rama `fase1/p6-presentar` (ejecución nativa; ledger `.superpowers/sdd/2026-11-03-fase1-p6-presentar/progress.md`). Revisión final hecha (revisor nuevo, Sonnet): 0 Critical; 4 Important arreglados con prueba; menores aplazados (ver "Problemas abiertos"). Verificado en la rama: typecheck 0, `pnpm test` 783/783, `test:e2e` 36/36 (cambio de slide entre ventanas: ~15–20 ms; RNF-04 < 100 ms), build OK. Pendiente: unir a `master` y subir. **Validación manual pendiente del responsable:** probar en **Brave** y con la laptop en modo extendido (RNF-06, §10.1–2). Ojo: con `pnpm dev` no hay Service Worker y "Preparar sin internet" siempre avisa que la app no está guardada; para probar sin internet usar `pnpm build` + `pnpm preview`.
 
 Después: **§11 paso 8**, Supabase y sincronización local-first. **Configuración (RF-110…113) aplazada** (2026-11-03, decisión del responsable): la app es solo para la iglesia local; se retoma si hace falta un ministerio no precargado o cambiar el mensaje de cumpleaños por defecto.
 
@@ -236,3 +236,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-03 | P5 unido a `master` (fast-forward) y subido a GitHub | verificado en `master`: typecheck 0, 757/757 | 33dd1d2 |
 | 2026-11-03 | Plan de P6 (presentar) escrito: `docs/superpowers/plans/2026-11-03-fase1-p6-presentar.md`, 6 tareas | por aprobar | ver `git log` |
 | 2026-11-03 | P6 · Tareas 1–6: reglas para presentar, canal, ventana pública, presentador, una sola ventana y botón Presentar, E2E con dos ventanas sin red; `--color-black` y tema oscuro forzado en el presentador (`useForcedTheme`) | typecheck 0; `pnpm test` 778/778; `test:e2e` 35/35; build OK | ver `git log` |
+| 2026-11-03 | Comprobación sin internet (pedido del responsable en Brave): un logo precargado que falta ya no sale como "Falta el logo de Iglesia" (no se puede arreglar a mano) sino como el aviso de la app; el aviso dice recargar; `clientsClaim` para que la primera visita ya quede controlada por el Service Worker | typecheck 0; `pnpm test` 783/783; `test:e2e` 36/36 | ver `git log` |

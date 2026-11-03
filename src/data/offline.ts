@@ -4,7 +4,7 @@ import { DEFAULT_FONT_FAMILY } from '../slides/fonts-family'
 import type { SlideContext, SlideStatus } from '../slides/templates/contract'
 import { displayTitle } from './announcements'
 import { logoCandidatesFor } from './ministries'
-import type { Announcement, LogoSource, Presentation } from './models'
+import type { Announcement, Presentation } from './models'
 import { contentIssues, type ContentIssue } from './presentations'
 
 export interface OfflineEnv {
@@ -57,16 +57,29 @@ async function imageIssues(input: OfflineInput): Promise<OfflineIssue[]> {
   return list.flat()
 }
 
-/** Un problema por ministerio cuyo logo elegido no está entero en el equipo. */
-async function logoIssues(input: OfflineInput, env: OfflineEnv): Promise<OfflineIssue[]> {
+/** Los logos usados: los que vienen con la app (precargados) y, por ministerio, los subidos. */
+function usedLogos(input: OfflineInput): { assets: string[]; uploaded: { ministry: string; imageIds: string[] }[] } {
   const ids = new Set(liveAnnouncements(input).flatMap((a) => logoCandidatesFor(a.logo, input.ctx.ministries).map((c) => c.id)))
-  const available = (s: LogoSource) => (s.kind === 'asset' ? env.assetCached(s.src) : input.hasImage(s.imageId))
-  const idOf = (s: LogoSource) => (s.kind === 'asset' ? s.src : s.imageId)
-  const checks = input.ctx.ministries.map(async (m) => {
-    const used = m.logos.filter((l) => ids.has(idOf(l.source)))
-    return used.length > 0 && !(await every(used, (l) => available(l.source))) ? [{ kind: 'logo' as const, ministry: m.name }] : []
+  const assets: string[] = []
+  const uploaded = input.ctx.ministries.map((m) => {
+    const imageIds: string[] = []
+    for (const { source: s } of m.logos) {
+      if (s.kind === 'asset' && ids.has(s.src)) assets.push(s.src)
+      else if (s.kind === 'image' && ids.has(s.imageId)) imageIds.push(s.imageId)
+    }
+    return { ministry: m.name, imageIds }
   })
-  return (await Promise.all(checks)).flat()
+  return { assets, uploaded }
+}
+
+/** Un problema por ministerio cuyo logo subido falta. Un logo precargado que falta es parte de la app. */
+async function logoIssues(input: OfflineInput, env: OfflineEnv): Promise<{ issues: OfflineIssue[]; assetsCached: boolean }> {
+  const { assets, uploaded } = usedLogos(input)
+  const checks = uploaded.map(async ({ ministry, imageIds }) =>
+    imageIds.length > 0 && !(await every(imageIds, input.hasImage)) ? [{ kind: 'logo' as const, ministry }] : [],
+  )
+  const [lists, assetsCached] = await Promise.all([Promise.all(checks), every(assets, env.assetCached)])
+  return { issues: lists.flat(), assetsCached }
 }
 
 export async function checkOffline(input: OfflineInput, env: OfflineEnv, opts: { persist?: boolean } = {}): Promise<OfflineReport> {
@@ -80,8 +93,8 @@ export async function checkOffline(input: OfflineInput, env: OfflineEnv, opts: {
   const issues: OfflineIssue[] = [
     ...contentIssues(input.presentation, input.byId, input.measured),
     ...images,
-    ...logos,
-    ...(app ? [] : [{ kind: 'app' as const }]),
+    ...logos.issues,
+    ...(app && logos.assetsCached ? [] : [{ kind: 'app' as const }]),
     ...(font ? [] : [{ kind: 'fuente' as const }]),
   ]
   return { ready: issues.length === 0, issues, persistent }
@@ -90,7 +103,7 @@ export async function checkOffline(input: OfflineInput, env: OfflineEnv, opts: {
 export function issueMessage(issue: OfflineIssue): string {
   switch (issue.kind) {
     case 'app':
-      return 'La app aún no está guardada en este equipo: ábrela una vez con internet.'
+      return 'La app aún no está guardada en este equipo. Recarga la página con internet y vuelve a comprobar.'
     case 'fuente':
       return 'Falta la letra de las slides en este equipo.'
     case 'imagen':

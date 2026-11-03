@@ -28,6 +28,9 @@ export default defineConfig({
         // la instalación del Service Worker (add-to-cache-list-conflicting-entries).
         globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2,ico}'],
         navigateFallback: 'index.html',
+        // La primera visita queda controlada sin recargar. Una versión nueva sigue esperando
+        // (sin skipWaiting), así que no cambia nada en medio de una presentación.
+        clientsClaim: true,
       },
     }),
   ],

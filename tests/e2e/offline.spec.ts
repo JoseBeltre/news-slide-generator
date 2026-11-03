@@ -32,3 +32,11 @@ test('funciona sin red después de la primera carga, también en rutas profundas
   })
   expect(caras.every((n) => n > 0)).toBe(true)
 })
+
+test('la primera visita ya queda guardada para usarse sin red, sin recargar', async ({ page }) => {
+  await page.goto('/')
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready
+  })
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)), { timeout: 5_000 }).toBe(true)
+})
