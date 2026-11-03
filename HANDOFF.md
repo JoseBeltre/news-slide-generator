@@ -62,9 +62,9 @@
 
 ## Próxima tarea
 
-**P4 (formularios y vista previa): las 7 tareas hechas** en la rama `fase1/p4-formularios-y-vista-previa`. Revisión final hecha (revisor nuevo): 0 Critical; 5 Important + 3 Minor re-graduados, todos arreglados con prueba. Verificado en la rama: typecheck 0, `pnpm test` 708/708, `test:e2e` 33/33, build OK. **Unido a `master` (fast-forward) y subido a GitHub**; rama borrada. Verificado en `master`: typecheck 0, 708/708.
+**P5 (presentaciones): las 7 tareas hechas** en la rama `fase1/p5-presentaciones` (ejecución nativa; ledger `.superpowers/sdd/2026-11-03-fase1-p5-presentaciones/progress.md`). Además, por pedido del responsable: selector de tema (sistema/claro/oscuro) en el encabezado y cursor de mano en todos los botones. Verificado en la rama: typecheck 0, `pnpm test` 752/752, `test:e2e` 34/34, build OK. Pendiente: revisión final de la rama, unir a `master` y subir.
 
-Después: **P5** (presentación del sábado, miniaturas, "Preparar sin internet"). **Configuración (RF-110…113) aplazada** (2026-11-03, decisión del responsable): la app es solo para la iglesia local; nombre, moneda (RD$) y hora (12 h) son fijos, y estilo, tema, logo y formato de fecha ya se eligen en cada anuncio. Se retoma si el equipo necesita un ministerio que no está precargado, o cambiar los textos por defecto (portada, cumpleaños).
+Después: **P6** (vista del presentador y ventana pública). **Configuración (RF-110…113) aplazada** (2026-11-03, decisión del responsable): la app es solo para la iglesia local; nombre, moneda (RD$) y hora (12 h) son fijos, y estilo, tema, logo y formato de fecha ya se eligen en cada anuncio. El título de la portada se cambia en cada presentación. Se retoma si el equipo necesita un ministerio que no está precargado o cambiar el mensaje de cumpleaños por defecto.
 
 ### Estructura de la interfaz (`src/`)
 
@@ -79,9 +79,12 @@ Después: **P5** (presentación del sábado, miniaturas, "Preparar sin internet"
 | `features/announcements/list/` | `AnnouncementsPage`, `AnnouncementFilters` |
 | `features/announcements/new/` | `NewAnnouncementPage`, `TypeCard`, `typeDescriptions.ts` |
 | `features/announcements/editor/` | `EditorPage` → `useEditorRecord` + `AnnouncementEditor`; `EditorLayout`; `useAnnouncementDraft`, `useSlideContext`, `useUnsavedGuard`, `fitMessages.ts`; `form/` (`AnnouncementForm`, `FieldControl` = único mapa FieldKind → control, `fields/*`, `PresenterNotes`, `useListModel`); `preview/` (`PreviewPanel`, `FitStatusBanner`); `options/` (`SlideOptions`, `StylePicker`, `ThemePicker`, `LogoPicker`, `DateFormatPicker`, `OptionGroup`) |
+| `data/` (P5) | `presentations.ts` (próximo sábado, sugerencias, mover, slides, problemas), `offline.ts` + `offlineEnv.ts` (comprobación sin internet, RF-55/RF-102), `useSlideContext.ts` (movido desde el editor; acepta la fecha de la presentación) |
+| `features/presentations/` | `shared/` (`usePresentations`, `usePresentationRecord`, `usePresentationSlides`, `useOfflineCheck` + `OFFLINE_ENV`, `OfflineStatus`, `NextPresentationCard` para Inicio); `list/` (`PresentationsPage`, `NewPresentationForm`, `PresentationGroup`, `PresentationRow`); `detail/` (`PresentationPage`, `PresentationItems`, `AddAnnouncements`, `FrameOptions`, `PreparePanel`, `SlideThumbnails`, `SlideThumb`) |
+| `ui/` (P5) | `UiSortableList` (arrastrar + subir/bajar), `UiThemeToggle` + `useTheme` (data-theme en `<html>`; colores con `light-dark()`) |
 | `lib/` | `format.ts` (+ `toIsoDate`, `parseMoneyInput`), `plain.ts` (`plainCopy`: copia sin proxies de Vue) |
 
-Reglas que hace cumplir `tests/unit/architecture.test.ts`: sin `<style>`, `style="…"` a mano ni `@apply` en `app/ui/features`; único CSS `ui/styles.css` y solo tokens; páginas ≤ 80 líneas, componentes ≤ 150, `.ts` ≤ 200; el router solo carga `*Page.vue`; `ui/` no importa de `app/features/data/slides`; una funcionalidad no importa de otra salvo `announcements/shared`. Pruebas de pantallas: `tests/browser/helpers/app.ts` (`mountApp(ruta, db)`, `testDb`, `seed`, `byLabel`, `daysFromToday`).
+Reglas que hace cumplir `tests/unit/architecture.test.ts`: sin `<style>`, `style="…"` a mano ni `@apply` en `app/ui/features`; único CSS `ui/styles.css` y solo tokens; páginas ≤ 80 líneas, componentes ≤ 150, `.ts` ≤ 200; el router solo carga `*Page.vue`; `ui/` no importa de `app/features/data/slides`; una funcionalidad no importa de otra salvo de su carpeta `shared/`; todo `<button>` lleva `cursor-pointer`; colores del tema oscuro solo con `light-dark()`. Pruebas de pantallas: `tests/browser/helpers/app.ts` (`mountApp(ruta, db)`, `testDb`, `seed`, `byLabel`, `daysFromToday`).
 
 ## Decisiones tomadas
 
@@ -223,3 +226,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-03 | Logos: Mujer con blancos transparentes (isotipo = SVG del responsable) y Escuela Sabática con la franja del lomo en blanco | typecheck 0; `pnpm test` 711/711 | ver `git log` |
 | 2026-11-03 | Logo general de la IASD precargado (`iasd-general`: horizontal, vertical, símbolo y circular, en negro y blanco); el logo `iglesia` es el de la iglesia local. Configuración aplazada | `pnpm test` 712/712; `test:e2e` 33/33; build OK | ver `git log` |
 | 2026-11-03 | Plan de P5 (presentaciones) escrito: `docs/superpowers/plans/2026-11-03-fase1-p5-presentaciones.md`, 7 tareas | por aprobar | ver `git log` |
+| 2026-11-03 | P5 · Tareas 0–7: tema y cursor, reglas de presentaciones, comprobación sin internet, lista ordenable, lista y crear, armar, miniaturas y preparar, E2E sin red; encabezado en dos filas en el celular | typecheck 0; `pnpm test` 752/752; `test:e2e` 34/34; build OK | ver `git log` |

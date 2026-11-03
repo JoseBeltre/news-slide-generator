@@ -1,21 +1,6 @@
 // Flujo completo de P4 contra el build, sin red: crear, ver en Inicio, duplicar, recargar y eliminar.
-import { devices, expect, test, type Page } from '@playwright/test'
-
-const isoInDays = (n: number) => {
-  const d = new Date()
-  d.setDate(d.getDate() + n)
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
-
-/** Carga una vez con red, deja la página controlada por el Service Worker y corta la red. */
-async function goOffline(page: Page, context: import('@playwright/test').BrowserContext) {
-  await page.goto('/')
-  await page.evaluate(async () => {
-    await navigator.serviceWorker.ready
-  })
-  await page.reload()
-  await context.setOffline(true)
-}
+import { devices, expect, test } from '@playwright/test'
+import { goOffline, isoInDays } from './helpers'
 
 test('crear, duplicar, recargar y eliminar anuncios sin red (RF-01…RF-10, RNF-01, RNF-03)', async ({ page, context, baseURL }) => {
   const origin = new URL(baseURL!).origin
@@ -82,10 +67,19 @@ test.describe('en el celular', () => {
   })
 
   test('lista y paso 1 sin scroll horizontal', async ({ page }) => {
-    for (const path of ['/', '/anuncios', '/anuncios/nuevo']) {
+    for (const path of ['/', '/anuncios', '/anuncios/nuevo', '/presentaciones']) {
       await page.goto(path)
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), path).toBe(true)
+      // El nombre de la app cabe en una línea y nada del encabezado se sale de él.
+      const header = await page.evaluate(() => {
+        const appHeader = document.querySelector('header')!
+        const h = appHeader.getBoundingClientRect()
+        const title = [...appHeader.querySelectorAll('a')].find((a) => a.textContent?.includes('Anuncios del Sábado'))!
+        const inside = [...appHeader.querySelectorAll('a, button')].every((el) => el.getBoundingClientRect().bottom <= h.bottom + 0.5)
+        return { titleLines: Math.round(title.getBoundingClientRect().height / 30), inside }
+      })
+      expect(header, path).toEqual({ titleLines: 1, inside: true })
       // Zonas táctiles ≥ 44 px en el celular (DESIGN.md, RNF-03).
       const small = await page.evaluate(() =>
         [...document.querySelectorAll<HTMLElement>('button, a, [role="radio"]')]

@@ -15,9 +15,9 @@ const linkClass =
 
 <template>
   <header class="border-b border-hairline">
-    <div class="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 md:px-8">
-      <RouterLink :to="{ name: 'inicio' }" class="inline-flex min-h-11 items-center font-display text-heading-sm text-ink">Anuncios del Sábado</RouterLink>
-      <nav aria-label="Principal" class="ml-auto flex items-center gap-1">
+    <div class="mx-auto flex min-h-14 max-w-7xl flex-wrap items-center gap-x-4 px-4 md:px-8">
+      <RouterLink :to="{ name: 'inicio' }" class="inline-flex min-h-11 items-center font-display text-heading-sm whitespace-nowrap text-ink">Anuncios del Sábado</RouterLink>
+      <nav aria-label="Principal" class="order-last -mx-3 flex w-full items-center gap-1 overflow-x-auto md:order-none md:mx-0 md:ml-auto md:w-auto">
         <RouterLink
           v-for="link in LINKS"
           :key="link.label"
@@ -28,7 +28,7 @@ const linkClass =
           {{ link.label }}
         </RouterLink>
       </nav>
-      <UiThemeToggle />
+      <UiThemeToggle class="ml-auto md:ml-0" />
     </div>
   </header>
 </template>
