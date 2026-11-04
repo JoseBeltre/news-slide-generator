@@ -6,6 +6,7 @@ playwright-report
 .vitest/
 __screenshots__
 .env*
+!.env.example
 .superpowers
 
 # Capturas de la galería de slides: solo locales (se regeneran con pnpm dev → /galeria.html)

@@ -62,11 +62,30 @@
 
 ## Próxima tarea
 
-**Despliegue (§11 paso 11, adelantado a pedido del responsable):** sitio `anunciosm2.jose-web.com` creado en Hostinger (orden 200467928, usuario `u455533687`, raíz `/home/u455533687/domains/anunciosm2.jose-web.com/public_html`). El responsable pidió que el primer despliegue lo haga GitHub Actions, no Claude: `.github/workflows/deploy.yml` (push a `master` o a mano: typecheck → test → build → E2E sin red → FTPS de `dist/`) y `ci.yml` (otras ramas y PR). **Publicada:** https://anunciosm2.jose-web.com (despliegue por Actions verde; rutas profundas 200, `.htaccess` 403, Service Worker controla desde la primera visita, 66 archivos precargados con logos y letras). Siguiente: prueba real en la iglesia (laptop sin internet + pantallas en modo extendido) y después §11 paso 8 (Supabase).
+**P8 (§11 paso 8, Supabase y sincronización local-first) implementado en la rama `fase1-p8-sync`** (ejecución nativa; ledger `.superpowers/sdd/2026-11-03-fase1-p8-sincronizacion/progress.md`). Diseño: `docs/superpowers/specs/2026-11-03-p8-sincronizacion-design.md`; plan: `docs/superpowers/plans/2026-11-03-fase1-p8-sincronizacion.md`. Falta: revisión final de la rama, unirla a `master`, crear el proyecto Supabase (con confirmación del responsable), aplicar `supabase/migrations/`, insertar el primer editor con SQL directo (nunca en una migración) y los **pasos manuales del responsable**:
 
-P6 (presentar) unido a `master` y subido. **Validación manual pendiente del responsable:** modo extendido y sin internet (Brave ya presenta bien). Con `pnpm dev` no hay Service Worker: "Preparar sin internet" siempre avisa que la app no está guardada; probar con `pnpm build` + `pnpm preview` o el sitio publicado.
+1. SMTP propio en Supabase (buzón de Hostinger, p. ej. `no-responder@jose-web.com`): sin él, el código solo llega a miembros de la organización de Supabase.
+2. Plantilla de correo "Magic Link" con `{{ .Token }}` (el código), en español.
+3. Activar el hook `public.before_user_created` en Authentication → Hooks.
+4. Variables (no secretos) de GitHub Actions `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` (las usan `deploy.yml` y `keep-alive.yml`).
+5. Prueba del criterio 10 del SRS: un anuncio creado en el celular aparece en la laptop; lo editado sin red se sube al volver.
 
-Después: **§11 paso 8**, Supabase y sincronización local-first. **Configuración (RF-110…113) aplazada** (2026-11-03, decisión del responsable): la app es solo para la iglesia local; se retoma si hace falta un ministerio no precargado o cambiar el mensaje de cumpleaños por defecto.
+Sigue pendiente la prueba real en la iglesia (laptop sin internet + pantallas en modo extendido). Después: §11 paso 9 (página de lectura pública + OG "A").
+
+**Configuración (RF-110…113) aplazada** (2026-11-03, decisión del responsable): la app es solo para la iglesia local; se retoma si hace falta un ministerio no precargado o cambiar el mensaje de cumpleaños por defecto.
+
+### Sincronización (P8)
+
+| Módulo | Qué ofrece |
+|---|---|
+| `src/data/local/db.ts` v3 | `outbox` (`[table+id]`), `syncState` (`cursor:<tabla>`, `lastSyncAt`); `images.hash` ya no es único |
+| `src/data/local/repository.ts` | `put`/`remove` escriben en `outbox` en la misma transacción. **Toda transacción que envuelva un repositorio debe incluir `db.outbox`** |
+| `src/data/sync/` | `runSync` (subir → bajar si no se presenta → descargar imágenes), `pushAll`, `pullAll`, `downloadMissingImages`, `createSyncService` (estado, 2 s tras cambios, 5 min, reintentos 30 s→15 min, una pestaña), `deriveStatus`, `createSupabaseRemote` + `classify`, `createAuth` (código por correo, equipo), `supabaseConfig`/`getClient` (import diferido), `locks.ts` (`anuncios-sync`, `anuncios-presentando`), `useSync`/`syncPlugin`/`createSyncContext` |
+| `src/features/sync/` | `SyncIndicator` + `SyncPanel` (encabezado), `signin/` (Entrar: correo → código), `team/` (Equipo) |
+| `supabase/migrations/` | Tablas jsonb con `updated_at` (decide) y `synced_at` (cursor), `editors`, RLS, `sync_push`, `ping`, `can_sign_in`, `before_user_created`, bucket privado `images` |
+| `tests/unit/db/` | Pruebas SQL con PGlite (Postgres WASM) sobre `supabase/tests/stub.sql`, sin Docker |
+
+Sin `VITE_SUPABASE_URL`/`VITE_SUPABASE_PUBLISHABLE_KEY` nada de esto se carga: `/entrar` y `/equipo` llevan a Inicio y el indicador no aparece.
 
 ### Estructura de la interfaz (`src/`)
 
@@ -246,3 +265,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-03 | Primer despliegue por Actions falló en `pnpm test`: el ICU de Node en Linux separa "p. m." con espacio normal y Windows/Chrome con U+00A0. `formatTime` ahora siempre da U+00A0 (no se corta en la slide) | `pnpm test` 786/786 | ver `git log` |
 | 2026-11-03 | Primer despliegue por GitHub Actions a https://anunciosm2.jose-web.com | run 41688449111 verde; sitio comprobado | ver `git log` |
 | 2026-11-03 | Identidad del sitio: icono de la hoja del Almanaque (sin fondo en escritorio y pestaña; con fondo tinta en el móvil), manifiesto completo con accesos directos, `noindex` + `robots.txt`, `theme-color`, OG con imagen C (`pnpm marca` la genera con Playwright y las letras locales); fuera `@vite-pwa/assets-generator`; README ampliado | typecheck 0; `pnpm test` 790/790; `test:e2e` 38/38 | ver `git log` |
+| 2026-11-03 | P8: Supabase y sincronización local-first (rama `fase1-p8-sync`): outbox en Dexie v3, motor de subida/bajada (gana la última edición), servicio con estado y reintentos, indicador, pausa al presentar, Entrar con código y Equipo, migración con RLS probada en PGlite, keep-alive y build con variables | typecheck 0; `pnpm test` ver ledger; E2E sin cambios | ver `git log` |

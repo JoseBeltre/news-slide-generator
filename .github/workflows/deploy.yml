@@ -29,6 +29,14 @@ jobs:
       - run: pnpm build
       - run: pnpm test:e2e --project chromium
 
+      # El build que se publica lleva la nube (§8.5). Las E2E de arriba corren sin ella, como antes.
+      # Son variables (no secretos) de Actions: públicas por diseño, la protección está en RLS.
+      - name: Build con la sincronización
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: pnpm build
+
       - name: Comprobar los secretos de FTP
         env:
           FTP_HOST: ${{ secrets.FTP_HOST }}
