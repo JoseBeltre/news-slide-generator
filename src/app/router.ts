@@ -1,9 +1,12 @@
 // Rutas de la app (SRS §6). Inicio se carga con la app; el resto, al entrar.
 import { createRouter, createWebHistory, type RouteRecordRaw, type RouterHistory } from 'vue-router'
+import { supabaseConfig } from '../data/sync/supabase'
 import HomePage from '../features/home/HomePage.vue'
 import { ANNOUNCEMENT_TYPES } from '../slides/types/definitions'
 
 const isKnownType = (id: unknown) => ANNOUNCEMENT_TYPES.some((t) => t.id === id)
+/** Entrar y Equipo solo existen si este build tiene nube (P8). */
+const needsCloud = () => (supabaseConfig() ? true : { name: 'inicio' })
 
 export const routes: RouteRecordRaw[] = [
   { path: '/', name: 'inicio', component: HomePage },
@@ -22,6 +25,9 @@ export const routes: RouteRecordRaw[] = [
   { path: '/presentaciones/:id/presentar', name: 'presentar', component: () => import('../features/presenting/presenter/PresenterPage.vue'), meta: { bare: true } },
   { path: '/presentaciones/:id/una-ventana', name: 'una-ventana', component: () => import('../features/presenting/single/SingleWindowPage.vue'), meta: { bare: true } },
   { path: '/publica/:id', name: 'publica', component: () => import('../features/presenting/public/PublicPage.vue'), meta: { bare: true } },
+  // Sincronización (P8).
+  { path: '/entrar', name: 'entrar', component: () => import('../features/sync/signin/SignInPage.vue'), beforeEnter: needsCloud },
+  { path: '/equipo', name: 'equipo', component: () => import('../features/sync/team/TeamPage.vue'), beforeEnter: needsCloud },
   { path: '/:pathMatch(.*)*', redirect: { name: 'inicio' } },
 ]
 

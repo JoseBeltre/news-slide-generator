@@ -33,4 +33,11 @@ describe('rutas de la app', () => {
     expect((await go('/anuncios')).name).toBe('anuncios')
     expect((await go('/presentacion/cualquier-cosa')).name).toBe('inicio')
   })
+
+  it('sin nube configurada, /entrar y /equipo vuelven a inicio', async () => {
+    expect(resolve('/entrar').name).toBe('entrar')
+    expect(resolve('/equipo').name).toBe('equipo')
+    expect((await go('/entrar')).name).toBe('inicio')
+    expect((await go('/equipo')).name).toBe('inicio')
+  })
 })
