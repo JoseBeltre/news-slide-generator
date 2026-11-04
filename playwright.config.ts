@@ -21,6 +21,8 @@ export default defineConfig({
   webServer: [
     {
       command: 'pnpm build && pnpm preview',
+      // E2E sin nube aunque haya .env.local: las variables del proceso ganan a los archivos .env.
+      env: { VITE_SUPABASE_URL: '', VITE_SUPABASE_PUBLISHABLE_KEY: '' },
       url: 'http://localhost:4173',
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,

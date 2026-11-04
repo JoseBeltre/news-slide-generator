@@ -5,6 +5,8 @@ import viteConfig from './vite.config'
 export default mergeConfig(
   viteConfig,
   defineConfig({
+    // Las pruebas no leen .env.local: sin nube, como en CI (las de la nube usan configuraciones propias).
+    envDir: false,
     test: {
       projects: [
         {
