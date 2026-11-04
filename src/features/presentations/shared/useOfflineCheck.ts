@@ -6,7 +6,9 @@ import { getImageBlob } from '../../../data/local/images'
 import type { Announcement, Presentation } from '../../../data/models'
 import { checkOffline, type OfflineEnv, type OfflineReport } from '../../../data/offline'
 import { browserOfflineEnv } from '../../../data/offlineEnv'
+import { downloadMissingImages } from '../../../data/sync/images'
 import { useDb } from '../../../data/useDb'
+import { useSync } from '../../../data/sync/useSync'
 import type { SlideContext, SlideStatus } from '../../../slides/templates/contract'
 
 export const OFFLINE_ENV: InjectionKey<OfflineEnv> = Symbol('OfflineEnv')
@@ -20,7 +22,17 @@ export interface CheckInput {
 
 export function useOfflineCheck(input: Ref<CheckInput | undefined>) {
   const db = useDb()
-  const env = inject(OFFLINE_ENV, undefined) ?? browserOfflineEnv()
+  const sync = useSync()
+  const base = inject(OFFLINE_ENV, undefined) ?? browserOfflineEnv()
+  /** Con la nube, las imágenes que bajaron sin su archivo se descargan antes de comprobar (P8). */
+  const env = {
+    ...base,
+    downloadMissing: async () => {
+      const remote = sync.value?.remote
+      if (remote) await downloadMissingImages(db, remote)
+      await base.downloadMissing?.()
+    },
+  }
   const report = shallowRef<OfflineReport>()
   const checking = ref(false)
   let run = 0

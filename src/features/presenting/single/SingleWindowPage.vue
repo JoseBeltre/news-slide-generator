@@ -8,8 +8,10 @@ import FullscreenHint from '../public/FullscreenHint.vue'
 import SlideStage from '../shared/SlideStage.vue'
 import { useCommandKeys } from '../shared/useCommandKeys'
 import { usePresentingData } from '../shared/usePresentingData'
+import { usePresentingLock } from '../shared/usePresentingLock'
 
 const route = useRoute()
+usePresentingLock()
 const router = useRouter()
 const id = computed(() => String(route.params.id))
 const { slides, ctx, total } = usePresentingData(id)

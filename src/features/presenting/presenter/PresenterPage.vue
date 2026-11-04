@@ -10,9 +10,11 @@ import Filmstrip from './Filmstrip.vue'
 import KeyPoints from './KeyPoints.vue'
 import PresenterBar from './PresenterBar.vue'
 import { usePresenter } from './usePresenter'
+import { usePresentingLock } from '../shared/usePresentingLock'
 
 useForcedTheme('oscuro')
 const route = useRoute()
+usePresentingLock()
 const { slides, ctx, byId, total, state, run, publicWindow } = usePresenter(computed(() => String(route.params.id)))
 const opened = ref(false)
 const current = computed(() => slides.value[state.value.index])

@@ -89,6 +89,19 @@ describe('checkOffline (RF-55, RF-102)', () => {
     expect(e.requestPersist).toHaveBeenCalledOnce()
   })
 
+  it('con nube: antes de comprobar descarga las imágenes que faltan (P8)', async () => {
+    const present = new Set<string>()
+    const downloadMissing = vi.fn(async () => void present.add('foto-1'))
+    const r = await checkOffline(input({ hasImage: async (id) => present.has(id) }), env({ downloadMissing }))
+    expect(downloadMissing).toHaveBeenCalledOnce()
+    expect(r.ready).toBe(true)
+  })
+
+  it('si la descarga falla (sin red), igual comprueba y avisa', async () => {
+    const r = await checkOffline(input({ hasImage: async () => false }), env({ downloadMissing: async () => { throw new Error('offline') } }))
+    expect(r.issues).toContainEqual({ kind: 'imagen', announcementId: 'a1', title: 'Semana de oración' })
+  })
+
   it('los problemas de contenido también cuentan', async () => {
     const r = await checkOffline(input({ presentation: { ...presentation, items: [] } }), env())
     expect(r).toMatchObject({ ready: false, issues: [{ kind: 'vacia' }] })

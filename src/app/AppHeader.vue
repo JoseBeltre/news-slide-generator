@@ -1,6 +1,7 @@
 <script setup lang="ts">
-// Encabezado de la app: nombre (lleva a Inicio) y navegación principal.
+// Encabezado de la app: nombre (lleva a Inicio), navegación principal y estado de la sincronización.
 import { RouterLink } from 'vue-router'
+import SyncIndicator from '../features/sync/SyncIndicator.vue'
 import UiThemeToggle from '../ui/UiThemeToggle.vue'
 
 const LINKS = [
@@ -28,7 +29,10 @@ const linkClass =
           {{ link.label }}
         </RouterLink>
       </nav>
-      <UiThemeToggle class="ml-auto md:ml-0" />
+      <div class="ml-auto flex items-center gap-1 md:ml-0">
+        <SyncIndicator />
+        <UiThemeToggle />
+      </div>
     </div>
   </header>
 </template>

@@ -15,6 +15,8 @@ export interface OfflineEnv {
   fontReady(family: string): Promise<boolean>
   /** Un logo precargado está en la caché del Service Worker (data: siempre). */
   assetCached(url: string): Promise<boolean>
+  /** Con la nube (P8): descarga las imágenes que faltan antes de comprobar. Si falla, se comprueba igual. */
+  downloadMissing?(): Promise<void>
 }
 
 export type OfflineIssue =
@@ -83,6 +85,7 @@ async function logoIssues(input: OfflineInput, env: OfflineEnv): Promise<{ issue
 }
 
 export async function checkOffline(input: OfflineInput, env: OfflineEnv, opts: { persist?: boolean } = {}): Promise<OfflineReport> {
+  await env.downloadMissing?.().catch(() => {})
   const [persistent, images, logos, app, font] = await Promise.all([
     opts.persist ? env.requestPersist() : Promise.resolve(true),
     imageIssues(input),
