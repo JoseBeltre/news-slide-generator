@@ -13,8 +13,8 @@ jobs:
     steps:
       - name: Llamar a ping() en Supabase
         env:
-          URL: ${{ vars.VITE_SUPABASE_URL }}
-          KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          URL: ${{ vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL }}
+          KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY || secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
         run: |
           if [ -z "$URL" ] || [ -z "$KEY" ]; then
             echo "::notice::Supabase no está configurado (variables de Actions); nada que mantener."

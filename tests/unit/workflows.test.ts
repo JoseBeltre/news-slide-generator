@@ -15,8 +15,8 @@ describe('keep-alive.yml', () => {
 
   it('llama a ping() con la clave pública guardada como variable', () => {
     expect(yml).toContain('/rest/v1/rpc/ping')
-    expect(yml).toContain('${{ vars.VITE_SUPABASE_URL }}')
-    expect(yml).toContain('${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}')
+    expect(yml).toContain('${{ vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL }}')
+    expect(yml).toContain('${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY || secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}')
   })
 })
 
@@ -25,9 +25,9 @@ describe('deploy.yml', () => {
 
   it('el build que se sube lleva las dos variables, después de las E2E', () => {
     const e2e = yml.indexOf('pnpm test:e2e')
-    const cloudBuild = yml.indexOf('VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}')
+    const cloudBuild = yml.indexOf('VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL }}')
     expect(cloudBuild).toBeGreaterThan(e2e)
-    expect(yml).toContain('VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}')
+    expect(yml).toContain('VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY || secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}')
     expect(cloudBuild).toBeLessThan(yml.indexOf('FTP-Deploy-Action'))
   })
 })
