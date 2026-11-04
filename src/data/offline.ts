@@ -92,6 +92,8 @@ export async function checkOffline(
   env: OfflineEnv,
   opts: { persist?: boolean; downloadTimeoutMs?: number } = {},
 ): Promise<OfflineReport> {
+  // Se pide al momento (con el clic de "Preparar"), sin esperar la descarga.
+  const persist = opts.persist ? env.requestPersist() : Promise.resolve(true)
   if (env.downloadMissing) {
     let timer: ReturnType<typeof setTimeout> | undefined
     const timeout = new Promise<void>((r) => (timer = setTimeout(r, opts.downloadTimeoutMs ?? DOWNLOAD_TIMEOUT_MS)))
@@ -99,7 +101,7 @@ export async function checkOffline(
     clearTimeout(timer)
   }
   const [persistent, images, logos, app, font] = await Promise.all([
-    opts.persist ? env.requestPersist() : Promise.resolve(true),
+    persist,
     imageIssues(input),
     logoIssues(input, env),
     env.appInstalled(),

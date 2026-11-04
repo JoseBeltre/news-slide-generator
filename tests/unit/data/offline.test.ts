@@ -102,6 +102,12 @@ describe('checkOffline (RF-55, RF-102)', () => {
     expect(r.issues).toContainEqual({ kind: 'imagen', announcementId: 'a1', title: 'Semana de oración' })
   })
 
+  it('con persist pide guardar los datos al momento, antes de esperar la descarga', async () => {
+    const e = env({ downloadMissing: () => new Promise<void>(() => {}) })
+    void checkOffline(input(), e, { persist: true, downloadTimeoutMs: 1_000 })
+    expect(e.requestPersist).toHaveBeenCalledOnce()
+  })
+
   it('si la descarga se cuelga, comprueba igual tras el tiempo límite (revisión)', async () => {
     const hang = () => new Promise<void>(() => {})
     const r = await checkOffline(input({ hasImage: async () => false }), env({ downloadMissing: hang }), { downloadTimeoutMs: 20 })
