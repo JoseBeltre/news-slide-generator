@@ -12,28 +12,45 @@ export const cursorKey = (table: SyncTable) => `cursor:${table}`
 
 const iso = (t: string) => new Date(t).toISOString()
 
-/** Baja y aplica todas las tablas. Devuelve cuántos registros cambiaron en este equipo. */
-export async function pullAll(db: AppDb, remote: SyncRemote): Promise<number> {
+/**
+ * Baja y aplica todas las tablas. Devuelve cuántos registros cambiaron en este equipo. Antes de aplicar
+ * cada página vuelve a mirar si empezó una presentación: si es así, se detiene sin avanzar el cursor.
+ */
+export async function pullAll(db: AppDb, remote: SyncRemote, isPresenting: () => Promise<boolean> = async () => false): Promise<number> {
   let applied = 0
-  for (const table of SYNC_TABLES) applied += await pullTable(db, remote, table)
+  for (const table of SYNC_TABLES) {
+    const result = await pullTable(db, remote, table, isPresenting)
+    applied += result.applied
+    if (result.stopped) break
+  }
   return applied
 }
 
-async function pullTable(db: AppDb, remote: SyncRemote, table: SyncTable): Promise<number> {
+async function pullTable(
+  db: AppDb,
+  remote: SyncRemote,
+  table: SyncTable,
+  isPresenting: () => Promise<boolean>,
+): Promise<{ applied: number; stopped: boolean }> {
   const cursor = (await db.syncState.get(cursorKey(table)))?.value ?? null
   let since = cursor === null ? null : new Date(Date.parse(cursor) - CURSOR_OVERLAP_MS).toISOString()
   let latest = cursor
   let applied = 0
+  let stopped = false
   for (;;) {
     const rows = await remote.pull(table, since, PULL_PAGE)
     if (rows.length === 0) break
+    if (await isPresenting()) {
+      stopped = true
+      break
+    }
     applied += await applyRows(db, table, rows)
     since = rows.at(-1)!.synced_at!
     if (latest === null || Date.parse(since) > Date.parse(latest)) latest = iso(since)
     if (rows.length < PULL_PAGE) break
   }
   if (latest !== null && latest !== cursor) await db.syncState.put({ key: cursorKey(table), value: latest })
-  return applied
+  return { applied, stopped }
 }
 
 async function applyRows(db: AppDb, table: SyncTable, rows: RemoteRow[]): Promise<number> {

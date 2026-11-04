@@ -16,7 +16,7 @@ export async function runSync(db: AppDb, remote: SyncRemote, opts: RunSyncOption
   const pushed = await pushAll(db, remote)
   let pulled = 0
   if (!(await opts.isPresenting())) {
-    pulled = await pullAll(db, remote)
+    pulled = await pullAll(db, remote, opts.isPresenting)
     await downloadMissingImages(db, remote)
   }
   await db.syncState.put({ key: 'lastSyncAt', value: (opts.now?.() ?? new Date()).toISOString() })

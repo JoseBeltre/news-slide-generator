@@ -102,6 +102,12 @@ describe('checkOffline (RF-55, RF-102)', () => {
     expect(r.issues).toContainEqual({ kind: 'imagen', announcementId: 'a1', title: 'Semana de oración' })
   })
 
+  it('si la descarga se cuelga, comprueba igual tras el tiempo límite (revisión)', async () => {
+    const hang = () => new Promise<void>(() => {})
+    const r = await checkOffline(input({ hasImage: async () => false }), env({ downloadMissing: hang }), { downloadTimeoutMs: 20 })
+    expect(r.issues).toContainEqual({ kind: 'imagen', announcementId: 'a1', title: 'Semana de oración' })
+  })
+
   it('los problemas de contenido también cuentan', async () => {
     const r = await checkOffline(input({ presentation: { ...presentation, items: [] } }), env())
     expect(r).toMatchObject({ ready: false, issues: [{ kind: 'vacia' }] })

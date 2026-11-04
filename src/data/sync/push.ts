@@ -42,17 +42,34 @@ async function pushTable(db: AppDb, remote: SyncRemote, table: SyncTable, ids: s
 
   let pushed = 0
   for (let start = 0; start < ready.length; start += PUSH_BATCH) {
-    const batch = ready.slice(start, start + PUSH_BATCH)
-    await remote.push(table, batch.map(toRemoteRow))
-    await db.transaction('rw', store, db.outbox, async () => {
-      for (const sent of batch) {
-        const current = await store.get(sent.id)
-        if (current?.updatedAt === sent.updatedAt) await db.outbox.delete([table, sent.id])
-      }
-    })
-    pushed += batch.length
+    pushed += await pushBatch(db, remote, store, table, ready.slice(start, start + PUSH_BATCH))
   }
   return pushed
+}
+
+/** Si el servidor rechaza el lote, se reintenta de uno en uno: un registro malo no frena a los demás. */
+async function pushBatch(db: AppDb, remote: SyncRemote, store: Table<SyncMeta, string>, table: SyncTable, batch: SyncMeta[]): Promise<number> {
+  try {
+    await remote.push(table, batch.map(toRemoteRow))
+  } catch (e) {
+    if (isFatal(e) || batch.length === 1) throw e
+    let pushed = 0
+    for (const one of batch) {
+      try {
+        pushed += await pushBatch(db, remote, store, table, [one])
+      } catch (inner) {
+        if (isFatal(inner)) throw inner // el rechazado se queda en la cola
+      }
+    }
+    return pushed
+  }
+  await db.transaction('rw', store, db.outbox, async () => {
+    for (const sent of batch) {
+      const current = await store.get(sent.id)
+      if (current?.updatedAt === sent.updatedAt) await db.outbox.delete([table, sent.id])
+    }
+  })
+  return batch.length
 }
 
 /** `false` si el archivo aún no está en este equipo o el servidor lo rechazó: el registro espera. */

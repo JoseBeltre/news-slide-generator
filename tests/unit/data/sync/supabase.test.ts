@@ -2,7 +2,7 @@
 // del sincronizador; Entrar y Equipo dan mensajes claros en español.
 import { describe, expect, it } from 'vitest'
 import { createAuth, normalizeEmail } from '../../../../src/data/sync/auth'
-import { supabaseConfig } from '../../../../src/data/sync/supabase'
+import { fetchWithTimeout, supabaseConfig } from '../../../../src/data/sync/supabase'
 import { classify, createSupabaseRemote } from '../../../../src/data/sync/supabaseRemote'
 
 type Result = { data?: unknown; error: { message: string; code?: string; statusCode?: string } | null; status?: number }
@@ -109,5 +109,13 @@ describe('createAuth', () => {
     const { client, calls } = fakeClient()
     await createAuth(client).sendCode(' Ana@X.com')
     expect(calls).toContainEqual(['otp', { email: 'ana@x.com', options: { shouldCreateUser: true } }])
+  })
+})
+
+describe('fetchWithTimeout (revisión)', () => {
+  it('corta una petición colgada para no retener el lock de sincronización', async () => {
+    const hanging = ((_: unknown, init?: RequestInit) =>
+      new Promise((_r, reject) => init?.signal?.addEventListener('abort', () => reject(init.signal!.reason)))) as typeof fetch
+    await expect(fetchWithTimeout(20, hanging)('https://x')).rejects.toThrow()
   })
 })

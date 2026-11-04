@@ -162,4 +162,27 @@ describe('runSync', () => {
     expect(await b.outbox.count()).toBe(0)
     expect((await b.syncState.get('cursor:announcements'))?.value).toBeTruthy()
   })
+
+  it('si empiezan a presentar a mitad de la bajada, no aplica nada más ni avanza el cursor (revisión)', async () => {
+    const remote = memoryRemote()
+    const [a, b] = [device(), device()]
+    await createRepository(a.presentations).put({ date: '2026-11-07', items: [], showCover: true, showClosing: true, published: false })
+    await runSync(a, remote, notPresenting)
+    let calls = 0
+    await runSync(b, remote, { isPresenting: async () => ++calls > 1 }) // libre al empezar, presentando después
+    expect(await b.presentations.count()).toBe(0)
+    expect(await b.syncState.get('cursor:presentations')).toBeUndefined()
+  })
+
+  it('un registro rechazado no frena a los demás de su lote (revisión)', async () => {
+    const remote = memoryRemote()
+    const a = device()
+    const repo = createRepository(a.announcements)
+    const bad = await repo.put(draft('Malo'))
+    const good = await repo.put(draft('Bueno'))
+    remote.rejectId(bad.id)
+    await runSync(a, remote, notPresenting)
+    expect(remote.rows.get('announcements')?.has(good.id)).toBe(true)
+    expect(await a.outbox.toArray()).toEqual([{ table: 'announcements', id: bad.id }])
+  })
 })

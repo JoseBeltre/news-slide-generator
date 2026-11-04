@@ -14,6 +14,16 @@ export function supabaseConfig(env: Record<string, string | undefined> = import.
   return url && key ? { url, key } : null
 }
 
+/** Lo más que espera una petición a la nube: una colgada no debe retener el lock de sincronización. */
+export const REQUEST_TIMEOUT_MS = 30_000
+
+export function fetchWithTimeout(ms: number = REQUEST_TIMEOUT_MS, base: typeof fetch = (...a) => fetch(...a)): typeof fetch {
+  return (input, init) => {
+    const timeout = AbortSignal.timeout(ms)
+    return base(input, { ...init, signal: init?.signal ? AbortSignal.any([init.signal, timeout]) : timeout })
+  }
+}
+
 let client: Promise<SupabaseClient> | undefined
 
 export function getClient(config: SupabaseConfig | null = supabaseConfig()): Promise<SupabaseClient | null> {
@@ -22,6 +32,7 @@ export function getClient(config: SupabaseConfig | null = supabaseConfig()): Pro
     createClient(config.url, config.key, {
       // La sesión vive en este navegador y se renueva sola: el código se pide una vez por equipo.
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+      global: { fetch: fetchWithTimeout() },
     }),
   )
   return client

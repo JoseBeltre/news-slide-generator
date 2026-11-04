@@ -84,8 +84,20 @@ async function logoIssues(input: OfflineInput, env: OfflineEnv): Promise<{ issue
   return { issues: lists.flat(), assetsCached }
 }
 
-export async function checkOffline(input: OfflineInput, env: OfflineEnv, opts: { persist?: boolean } = {}): Promise<OfflineReport> {
-  await env.downloadMissing?.().catch(() => {})
+/** Lo más que espera la comprobación a la descarga de imágenes: con mala red, comprueba igual. */
+export const DOWNLOAD_TIMEOUT_MS = 5_000
+
+export async function checkOffline(
+  input: OfflineInput,
+  env: OfflineEnv,
+  opts: { persist?: boolean; downloadTimeoutMs?: number } = {},
+): Promise<OfflineReport> {
+  if (env.downloadMissing) {
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const timeout = new Promise<void>((r) => (timer = setTimeout(r, opts.downloadTimeoutMs ?? DOWNLOAD_TIMEOUT_MS)))
+    await Promise.race([env.downloadMissing().catch(() => {}), timeout])
+    clearTimeout(timer)
+  }
   const [persistent, images, logos, app, font] = await Promise.all([
     opts.persist ? env.requestPersist() : Promise.resolve(true),
     imageIssues(input),

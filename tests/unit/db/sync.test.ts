@@ -51,6 +51,14 @@ describe('tablas sincronizadas', () => {
     await expect(as(db, null, 'select * from public.announcements')).rejects.toThrow(/permission denied/)
   })
 
+  it('nadie fuera del dueño puede vaciar tablas ni borrar filas a mano (revisión)', async () => {
+    const priv = async (table: string, p: string) =>
+      (await db.query<{ ok: boolean }>(`select has_table_privilege($1, $2, $3) as ok`, ['authenticated', table, p])).rows[0]!.ok
+    for (const t of ['public.announcements', 'public.editors', 'public.settings']) expect(await priv(t, 'TRUNCATE'), t).toBe(false)
+    expect(await priv('public.announcements', 'DELETE')).toBe(false)
+    expect((await db.query<{ ok: boolean }>(`select has_table_privilege('anon', 'public.editors', 'SELECT') as ok`)).rows[0]!.ok).toBe(false)
+  })
+
   it('rechaza una tabla que no se sincroniza', async () => {
     await expect(push(ANA, 'editors', [row('x', '2026-11-03T10:00:00Z')])).rejects.toThrow(/no sincronizable/)
   })

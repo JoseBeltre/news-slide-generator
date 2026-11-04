@@ -23,7 +23,8 @@ create policy editors_add on public.editors for insert to authenticated with che
 -- Nadie se quita a sí mismo: el equipo nunca queda vacío por accidente.
 create policy editors_remove on public.editors for delete to authenticated
   using (public.is_editor() and email <> lower(coalesce(auth.jwt() ->> 'email', '')));
-revoke all on public.editors from anon;
+-- Supabase da todos los privilegios por defecto y RLS no cubre TRUNCATE: se quitan y se da solo lo justo.
+revoke all on public.editors from public, anon, authenticated;
 grant select, insert, delete on public.editors to authenticated;
 
 -- ---------- Tablas sincronizadas ----------
@@ -45,7 +46,7 @@ begin
     execute format('create policy editors_insert on public.%I for insert to authenticated with check (public.is_editor())', t);
     execute format('create policy editors_update on public.%I for update to authenticated using (public.is_editor()) with check (public.is_editor())', t);
     -- Sin delete: los borrados son lógicos (deleted_at) para que se propaguen.
-    execute format('revoke all on public.%I from anon', t);
+    execute format('revoke all on public.%I from public, anon, authenticated', t);
     execute format('grant select, insert, update on public.%I to authenticated', t);
   end loop;
 end $$;

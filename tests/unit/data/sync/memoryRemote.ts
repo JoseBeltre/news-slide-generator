@@ -12,6 +12,8 @@ export interface MemoryRemote extends SyncRemote {
   fail(kind: SyncErrorKind | null): void
   /** Los `push` a esa tabla se rechazan (4xx). */
   reject(table: SyncTable): void
+  /** Un `push` que incluya ese id se rechaza entero (como una restricción de Postgres). */
+  rejectId(id: string): void
   /** Se ejecuta dentro de cada `push`, antes de guardar (simula ediciones durante la subida). */
   duringPush?: () => Promise<void>
 }
@@ -21,6 +23,7 @@ export function memoryRemote(): MemoryRemote {
   const files = new Map<string, Blob>()
   const log: string[] = []
   const rejected = new Set<SyncTable>()
+  const rejectedIds = new Set<string>()
   let failure: SyncErrorKind | null = null
   let seq = 0
   const nextSyncedAt = () => new Date(Date.UTC(2026, 10, 3, 12) + ++seq).toISOString()
@@ -35,10 +38,11 @@ export function memoryRemote(): MemoryRemote {
     log,
     fail: (kind) => void (failure = kind),
     reject: (t) => void rejected.add(t),
+    rejectId: (id) => void rejectedIds.add(id),
     async push(t, batch) {
       check()
       log.push(`push:${t}`)
-      if (rejected.has(t)) throw new SyncError('rejected', `rechazado: ${t}`)
+      if (rejected.has(t) || batch.some((r) => rejectedIds.has(r.id))) throw new SyncError('rejected', `rechazado: ${t}`)
       await remote.duringPush?.()
       for (const r of batch) {
         const current = table(t).get(r.id)

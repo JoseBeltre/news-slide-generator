@@ -143,4 +143,16 @@ describe('createSyncService', () => {
     await s.syncNow()
     expect(s.state.value.status).toBe(before)
   })
+
+  it('si tras subir quedan pendientes (editado durante la subida), vuelve a los 2 s (revisión)', async () => {
+    const t = manualTimers()
+    const db = device()
+    await db.outbox.put({ table: 'announcements', id: 'a1' })
+    const run = vi.fn().mockResolvedValue({ pushed: 1, pulled: 0 }) // la entrada sigue en la cola
+    const s = createSyncService({ ...deps(db), timers: t.timers, run })
+    await s.syncNow()
+    expect(run).toHaveBeenCalledTimes(1)
+    await t.advance(2_000)
+    expect(run).toHaveBeenCalledTimes(2)
+  })
 })

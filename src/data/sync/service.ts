@@ -82,6 +82,11 @@ export function createSyncService(deps: SyncServiceDeps): SyncService {
   }))
 
   const refreshPending = async () => void (pending.value = await deps.db.outbox.count())
+  /** Una vuelta 2 s después del último cambio. */
+  const schedule = () => {
+    if (debounce !== undefined) timers.clear(debounce)
+    debounce = timers.setTimeout(() => void syncNow(), DEBOUNCE_MS)
+  }
 
   async function syncNow(): Promise<void> {
     const remote = deps.remote
@@ -89,9 +94,11 @@ export function createSyncService(deps: SyncServiceDeps): SyncService {
     if (!remote || !deps.signedIn.value) return
     if (retry !== undefined) timers.clear(retry)
     retry = undefined
+    let pushedSome = false
     try {
       const done = await deps.withLock(() => run(deps.db, remote, { isPresenting: deps.isPresenting, now: deps.now }))
       if (done === undefined) return // otra pestaña está sincronizando
+      pushedSome = done.pushed > 0
       lastError.value = null
       failures = 0
       lastSyncAt.value = (await deps.db.syncState.get('lastSyncAt'))?.value ?? null
@@ -104,14 +111,13 @@ export function createSyncService(deps: SyncServiceDeps): SyncService {
     } finally {
       await refreshPending()
     }
+    // Se editó algo mientras se subía: queda en la cola sin que el conteo crezca. Si la vuelta subió algo
+    // (no es un registro rechazado una y otra vez), otra vuelta en 2 s.
+    if (pushedSome && pending.value > 0) schedule()
   }
 
   function start(): void {
     if (!deps.remote) return
-    const schedule = () => {
-      if (debounce !== undefined) timers.clear(debounce)
-      debounce = timers.setTimeout(() => void syncNow(), DEBOUNCE_MS)
-    }
     let first = true
     subscription = liveQuery(() => deps.db.outbox.count()).subscribe({
       next: (count) => {

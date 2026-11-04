@@ -5,6 +5,10 @@ create role anon nologin;
 create role authenticated nologin;
 create role supabase_auth_admin nologin;
 grant usage on schema public to anon, authenticated, supabase_auth_admin;
+-- Como Supabase: todo lo nuevo en public nace con todos los privilegios para anon y authenticated.
+-- Las migraciones deben quitarlos explícitamente (RLS no cubre TRUNCATE).
+alter default privileges in schema public grant all on tables to anon, authenticated;
+alter default privileges in schema public grant all on functions to anon, authenticated;
 
 create schema auth;
 grant usage on schema auth to anon, authenticated, supabase_auth_admin;
