@@ -26,7 +26,7 @@ export const routes: RouteRecordRaw[] = [
   { path: '/presentaciones/:id/una-ventana', name: 'una-ventana', component: () => import('../features/presenting/single/SingleWindowPage.vue'), meta: { bare: true } },
   { path: '/publica/:id', name: 'publica', component: () => import('../features/presenting/public/PublicPage.vue'), meta: { bare: true } },
   // Sincronización (P8).
-  { path: '/entrar', name: 'entrar', component: () => import('../features/sync/signin/SignInPage.vue'), beforeEnter: needsCloud },
+  { path: '/entrar', name: 'entrar', component: () => import('../features/sync/signin/SignInPage.vue'), beforeEnter: needsCloud, meta: { bare: true } },
   { path: '/equipo', name: 'equipo', component: () => import('../features/sync/team/TeamPage.vue'), beforeEnter: needsCloud },
   { path: '/:pathMatch(.*)*', redirect: { name: 'inicio' } },
 ]

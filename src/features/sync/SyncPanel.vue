@@ -19,7 +19,7 @@ const last = computed(() => {
 </script>
 
 <template>
-  <div role="dialog" aria-label="Sincronización" class="absolute right-0 top-full z-20 mt-2 w-72 rounded-md border border-hairline bg-canvas p-4 shadow-lg">
+  <div role="dialog" aria-label="Sincronización" class="absolute right-0 top-full z-20 mt-2 w-72 rounded-md border border-hairline bg-surface p-4 shadow-lg">
     <p class="text-sm text-ink">{{ statusDetail(state.status) }}</p>
     <p v-if="last" class="mt-2 font-meta text-meta text-ink-muted">Última vez: {{ last }}</p>
     <p v-if="email" class="mt-1 truncate font-meta text-meta text-ink-muted">{{ email }}</p>

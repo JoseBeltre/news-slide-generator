@@ -34,6 +34,11 @@ describe('rutas de la app', () => {
     expect((await go('/presentacion/cualquier-cosa')).name).toBe('inicio')
   })
 
+  it('Entrar va sin el marco de la app (sin encabezado)', () => {
+    expect(resolve('/entrar').meta.bare).toBe(true)
+    expect(resolve('/equipo').meta.bare).toBeFalsy()
+  })
+
   it('sin nube configurada, /entrar y /equipo vuelven a inicio', async () => {
     expect(resolve('/entrar').name).toBe('entrar')
     expect(resolve('/equipo').name).toBe('equipo')

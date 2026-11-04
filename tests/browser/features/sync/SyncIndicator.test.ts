@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { Auth } from '../../../../src/data/sync/auth'
 import type { SyncService, SyncState } from '../../../../src/data/sync/service'
 import type { SyncStatus } from '../../../../src/data/sync/status'
+import '../../../../src/ui/styles.css'
 import SyncIndicator from '../../../../src/features/sync/SyncIndicator.vue'
 import { syncPlugin, type SyncContext } from '../../../../src/data/sync/useSync'
 
@@ -52,6 +53,13 @@ describe('SyncIndicator', () => {
     expect(ctx.service.syncNow).toHaveBeenCalled()
     expect(w.text()).toContain('ana@iglesia.do')
     expect(w.find('a[href="/equipo"]').exists()).toBe(true)
+  })
+
+  it('el panel tiene fondo propio (no transparente)', async () => {
+    const w = render(context('sincronizado'))
+    await w.get('button').trigger('click')
+    const bg = getComputedStyle(w.get('[role="dialog"]').element).backgroundColor
+    expect(bg).not.toBe('rgba(0, 0, 0, 0)')
   })
 
   it('sin sesión, el panel ofrece "Entrar"', async () => {
