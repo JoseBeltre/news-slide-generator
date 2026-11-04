@@ -82,7 +82,7 @@ export async function saveImage(
   const hash = await sha256Hex(prepared.blob)
   const now = clock().toISOString()
 
-  return db.transaction('rw', db.images, db.imageBlobs, async () => {
+  return db.transaction('rw', db.images, db.imageBlobs, db.outbox, async () => {
     const existing = await db.images.where('hash').equals(hash).first()
     if (existing && !existing.deletedAt) return existing
     if (existing) {
@@ -90,6 +90,7 @@ export async function saveImage(
       const revived: ImageAsset = { ...existing, deletedAt: null, updatedAt: now }
       await db.images.put(revived)
       await db.imageBlobs.put({ id: existing.id, blob: prepared.blob })
+      await db.outbox.put({ table: 'images', id: existing.id })
       return revived
     }
     const ext = prepared.blob.type === SVG_TYPE ? 'svg' : 'webp'
@@ -104,6 +105,7 @@ export async function saveImage(
     }
     await db.images.add(asset)
     await db.imageBlobs.add({ id: asset.id, blob: prepared.blob })
+    await db.outbox.put({ table: 'images', id: asset.id })
     return asset
   })
 }

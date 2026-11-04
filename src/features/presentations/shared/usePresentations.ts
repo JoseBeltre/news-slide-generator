@@ -25,7 +25,7 @@ export function usePresentations() {
   /** Abre la presentación de esa fecha; si no hay, la crea con los anuncios sugeridos (RF-52). */
   /** Leer y crear en una sola transacción: un doble clic no deja dos presentaciones en la misma fecha. */
   async function openOrCreate(date: string): Promise<string> {
-    const id = await db.transaction('rw', db.presentations, db.announcements, async () => {
+    const id = await db.transaction('rw', db.presentations, db.announcements, db.outbox, async () => {
       const existing = (await db.presentations.where('date').equals(date).toArray()).find((p) => !p.deletedAt)
       return existing?.id ?? (await repo.put(newPresentation(date, await db.announcements.toArray()))).id
     })

@@ -24,7 +24,7 @@ export function usePresentationRecord(id: Ref<string>) {
    * el título y marcar "Cierre", bajar y quitar) no se pisan aunque la lectura en vivo aún no llegó.
    */
   async function update(change: Patch | ((current: Presentation) => Patch)): Promise<void> {
-    await db.transaction('rw', db.presentations, async () => {
+    await db.transaction('rw', db.presentations, db.outbox, async () => {
       const current = await repo.get(id.value)
       if (!current) return
       const patch = typeof change === 'function' ? change(current) : change

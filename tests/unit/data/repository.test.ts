@@ -91,14 +91,15 @@ describe('createRepository', () => {
 })
 
 describe('createDb', () => {
-  it('declara las 7 tablas con los índices de §7', async () => {
+  it('declara las 9 tablas con los índices de §7 y la cola de sincronización', async () => {
     const db = createDb(`app-test-${++n}`)
     opened.push(db)
     expect(db.tables.map((t) => t.name).sort()).toEqual(
-      ['announcements', 'imageBlobs', 'images', 'ministries', 'presentations', 'settings', 'themes'].sort(),
+      ['announcements', 'imageBlobs', 'images', 'ministries', 'outbox', 'presentations', 'settings', 'syncState', 'themes'].sort(),
     )
-    expect(db.verno).toBe(2)
+    expect(db.verno).toBe(3)
     expect(db.table('settings').schema.idxByName.updatedAt).toBeDefined()
-    expect(db.table('images').schema.idxByName.hash?.unique).toBe(true)
+    // P8: dos equipos pueden guardar la misma imagen con ids distintos.
+    expect(db.table('images').schema.idxByName.hash?.unique).toBeFalsy()
   })
 })

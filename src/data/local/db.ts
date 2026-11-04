@@ -5,8 +5,11 @@ import type {
   ImageAsset,
   ImageBlob,
   Ministry,
+  OutboxEntry,
   Presentation,
   Settings,
+  SyncStateEntry,
+  SyncTable,
   Theme,
 } from '../models'
 
@@ -18,6 +21,8 @@ export class AppDb extends Dexie {
   presentations!: Table<Presentation, string>
   themes!: Table<Theme, string>
   settings!: Table<Settings, string>
+  outbox!: Table<OutboxEntry, [SyncTable, string]>
+  syncState!: Table<SyncStateEntry, string>
 
   constructor(name: string) {
     super(name)
@@ -32,6 +37,13 @@ export class AppDb extends Dexie {
     })
     // v2 (P4): `settings` se lista por updatedAt como las demás tablas.
     this.version(2).stores({ settings: 'id, updatedAt' })
+    // v3 (P8): cola de cambios y estado del sincronizador. `hash` deja de ser único: dos equipos sin red
+    // pueden guardar la misma foto con ids distintos, y bajar la del otro no debe chocar.
+    this.version(3).stores({
+      images: 'id, hash, kind, updatedAt',
+      outbox: '[table+id], table',
+      syncState: 'key',
+    })
   }
 }
 

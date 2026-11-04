@@ -12,6 +12,22 @@ export interface SyncMeta {
   deletedAt?: string | null
 }
 
+/** Tablas que se sincronizan con la nube (§8.4), en el orden en que se suben y bajan. */
+export const SYNC_TABLES = ['announcements', 'ministries', 'images', 'presentations', 'themes', 'settings'] as const
+export type SyncTable = (typeof SYNC_TABLES)[number]
+
+/** Un registro cambiado localmente que falta subir. Solo dice qué; el contenido se lee al subir. */
+export interface OutboxEntry {
+  table: SyncTable
+  id: string
+}
+
+/** Estado del sincronizador: `cursor:<tabla>` (último `synced_at` bajado) y `lastSyncAt`. */
+export interface SyncStateEntry {
+  key: string
+  value: string
+}
+
 /** Logotipo (el logo completo) o isotipo (el símbolo solo, circular o cuadrado: variante `cuadrado`). */
 export type LogoForm = 'logotipo' | 'isotipo'
 
