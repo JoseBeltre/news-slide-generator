@@ -1,0 +1,54 @@
+<!doctype html>
+<!-- Correo del código para entrar (§8.5). Plantilla "Magic Link" de Supabase: Authentication → Emails →
+     Templates. Asunto: "Tu código para Anuncios del Sábado". Estilos en línea y tablas para que se vea
+     igual en Gmail, Outlook y el móvil. Colores y letras de la interfaz (DESIGN.md); si el cliente no
+     carga Instrument Serif, cae a Georgia. -->
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light only" />
+    <title>Tu código para Anuncios del Sábado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet" />
+  </head>
+  <body style="margin:0;padding:0;background:#f3f0d6;">
+    <!-- Texto de vista previa en la bandeja de entrada -->
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Tu código es {{ .Token }}. Caduca en una hora.</div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f0d6;">
+      <tr>
+        <td align="center" style="padding:40px 16px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;">
+            <!-- Encabezado -->
+            <tr>
+              <td style="padding:0 4px 20px;">
+                <p style="margin:0 0 10px;font-family:ui-monospace,Consolas,'Courier New',monospace;font-size:12px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:#55513f;">Mansedumbre II</p>
+                <h1 style="margin:0;font-family:'Instrument Serif',Georgia,'Times New Roman',serif;font-size:40px;line-height:1.05;font-weight:400;color:#1a1a1a;">Anuncios<br />del Sábado</h1>
+              </td>
+            </tr>
+            <!-- Tarjeta -->
+            <tr>
+              <td style="background:#ffffff;border:2px solid #cfcaae;border-radius:14px;padding:32px 32px 28px;">
+                <p style="margin:0 0 6px;font-family:'Instrument Serif',Georgia,'Times New Roman',serif;font-size:28px;line-height:1.15;color:#1a1a1a;">Tu código para entrar</p>
+                <p style="margin:0 0 24px;font-family:Inter,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5;color:#55513f;">Escríbelo en la app para sincronizar tus anuncios con el resto del equipo.</p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td align="center" style="background:#f3f0d6;border-radius:10px;padding:20px 12px;">
+                      <span style="font-family:ui-monospace,Consolas,'Courier New',monospace;font-size:36px;font-weight:600;letter-spacing:0.3em;padding-left:0.3em;color:#1a1a1a;">{{ .Token }}</span>
+                    </td>
+                  </tr>
+                </table>
+                <p style="margin:24px 0 0;padding-top:18px;border-top:2px solid #cfcaae;font-family:Inter,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.5;color:#55513f;">Caduca en una hora y sirve una sola vez. Si no lo pediste, ignora este correo: nadie puede entrar sin él.</p>
+              </td>
+            </tr>
+            <!-- Pie -->
+            <tr>
+              <td style="padding:20px 4px 0;font-family:Inter,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;color:#55513f;">
+                Iglesia Adventista Mansedumbre II<br /><a href="https://anunciosm2.jose-web.com" style="color:#1a1a1a;text-decoration:underline;">anunciosm2.jose-web.com</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
