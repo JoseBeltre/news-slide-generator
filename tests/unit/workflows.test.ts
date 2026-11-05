@@ -32,6 +32,29 @@ describe('deploy.yml', () => {
   })
 })
 
+describe('deploy.yml: migraciones de Supabase (spec P9 §6.4)', () => {
+  const yml = file('.github/workflows/deploy.yml')
+
+  it('aplica las migraciones después de las pruebas y antes de subir por FTP', () => {
+    const push = yml.indexOf('supabase db push')
+    expect(yml).toContain('uses: supabase/setup-cli@v1')
+    expect(push).toBeGreaterThan(yml.indexOf('pnpm test:e2e'))
+    expect(push).toBeGreaterThan(yml.indexOf('Comprobar los secretos de FTP'))
+    expect(push).toBeLessThan(yml.indexOf('FTP-Deploy-Action'))
+  })
+
+  it('nombra los dos secretos y falla con un mensaje si faltan', () => {
+    expect(yml).toContain('SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}')
+    expect(yml).toContain('SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}')
+    expect(yml).toMatch(/for name in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD/)
+  })
+
+  it('enlaza el proyecto de la iglesia y marca como aplicadas solo las dos migraciones hechas a mano', () => {
+    expect(yml).toContain('supabase link --project-ref "${SUPABASE_PROJECT_REF:-jyxhnqbqzqrbahorigxq}"')
+    expect(yml).toMatch(/supabase migration repair --status applied 20261103000000 20261105000000\r?$/m)
+  })
+})
+
 describe('.env.example', () => {
   it('nombra las variables sin valores', () => {
     const env = file('.env.example')

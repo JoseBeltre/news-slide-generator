@@ -85,6 +85,16 @@ pasa, sube `dist/` por FTPS a Hostinger. Necesita los secretos `FTP_HOST`, `FTP_
 para el build publicado. Las otras ramas y los PR pasan las mismas comprobaciones en
 `ci.yml`.
 
+Antes de subir, el mismo workflow aplica las migraciones nuevas de `supabase/migrations/` con la CLI
+de Supabase (`supabase db push`); si fallan, no se publica nada. Necesita dos secretos más, que crea
+el responsable con la cuenta de la iglesia:
+
+- `SUPABASE_ACCESS_TOKEN`: un token personal de supabase.com/dashboard/account/tokens.
+- `SUPABASE_DB_PASSWORD`: la contraseña de la base (Project Settings → Database; si nadie la tiene,
+  se puede restablecer ahí).
+
+La variable `SUPABASE_PROJECT_REF` es opcional (por defecto, el proyecto de la iglesia).
+
 ## Documentación
 
 - `SRS.md`: requisitos y plan por fases.
