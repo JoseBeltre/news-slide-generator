@@ -3,7 +3,9 @@
 # congregación) se abre a Google, Bing y a los robots que arman la vista previa al compartir el enlace.
 # Los bots de IA no entran a nada (además reciben 403 en el servidor).
 
+# Google-InspectionTool: la "Prueba de URL publicada" de Search Console (sin esta línea cae en `*`).
 User-agent: Googlebot
+User-agent: Google-InspectionTool
 User-agent: Bingbot
 Allow: /anuncios/publico
 Allow: /publico.html

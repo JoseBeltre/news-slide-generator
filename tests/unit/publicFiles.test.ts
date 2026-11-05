@@ -69,8 +69,9 @@ describe('.htaccess', () => {
 describe('robots.txt', () => {
   const g = groups(robots)
 
-  it('Googlebot y Bingbot: solo la página pública, sus archivos y la imagen', () => {
-    for (const bot of ['Googlebot', 'Bingbot']) {
+  // Google-InspectionTool es la "Prueba de URL publicada" de Search Console: sin su grupo cae en `*` y queda bloqueada.
+  it('Googlebot, Google-InspectionTool y Bingbot: solo la página pública, sus archivos y la imagen', () => {
+    for (const bot of ['Googlebot', 'Google-InspectionTool', 'Bingbot']) {
       expect(g.get(bot), bot).toEqual(
         expect.arrayContaining(['Allow: /anuncios/publico', 'Allow: /publico.html', 'Allow: /assets/', 'Allow: /og-publico.png', 'Disallow: /']),
       )
