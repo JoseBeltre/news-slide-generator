@@ -23,6 +23,11 @@ describe('rutas de la app', () => {
     expect((await go('/anuncios/nuevo/no-existe')).name).toBe('nuevo')
   })
 
+  it('/anuncios/publico no abre el editor', () => {
+    const r = resolve('/anuncios/publico')
+    expect(r.name).toBe('anuncios-publico')
+  })
+
   it('/anuncios/abc → editor del anuncio abc', async () => {
     const r = resolve('/anuncios/abc')
     expect(r.name).toBe('editar')

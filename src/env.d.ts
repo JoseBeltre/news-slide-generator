@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="vite-plugin-pwa/client" />
 
 // Nube (§8.5): públicas por diseño, la protección está en RLS. Sin ellas no se sincroniza.
 interface ImportMetaEnv {

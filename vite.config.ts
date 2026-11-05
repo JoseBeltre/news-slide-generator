@@ -1,7 +1,28 @@
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
+
+// /anuncios/publico es la página pública (publico.html, P9). En Hostinger la sirve el .htaccess;
+// en `pnpm dev` y `pnpm preview`, este plugin. Además le quita el manifiesto de la app: no se instala.
+const PUBLIC_PATH = /^\/anuncios\/publico\/?(\?.*)?$/
+function publicNoticesPage(): Plugin {
+  const rewrite = (req: { url?: string }, _res: unknown, next: () => void) => {
+    if (req.url && PUBLIC_PATH.test(req.url)) req.url = '/publico.html'
+    next()
+  }
+  return {
+    name: 'anuncios-publicos',
+    // Después de vite-plugin-pwa, que inyecta el manifiesto en todas las páginas.
+    enforce: 'post',
+    configureServer: (server) => void server.middlewares.use(rewrite),
+    configurePreviewServer: (server) => void server.middlewares.use(rewrite),
+    transformIndexHtml: {
+      order: 'post',
+      handler: (html, ctx) => (ctx.path.endsWith('/publico.html') ? html.replace(/\s*<link rel="manifest"[^>]*>/g, '') : html),
+    },
+  }
+}
 
 export default defineConfig({
   base: '/',
@@ -14,7 +35,8 @@ export default defineConfig({
       // 'prompt': una versión nueva nunca recarga la página en medio de una presentación;
       // se aplica al volver a abrir la app.
       registerType: 'prompt',
-      injectRegister: 'auto',
+      // Se registra en src/main.ts: así la página pública (publico.html) nunca instala la app.
+      injectRegister: false,
       manifest: {
         id: '/',
         start_url: '/',
@@ -47,10 +69,13 @@ export default defineConfig({
         // la instalación del Service Worker (add-to-cache-list-conflicting-entries).
         globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2,ico}'],
         navigateFallback: 'index.html',
+        // La página pública tiene su propio Service Worker (public/publico-sw.js).
+        navigateFallbackDenylist: [/^\/anuncios\/publico/, /^\/publico\.html/],
         // La primera visita queda controlada sin recargar. Una versión nueva sigue esperando
         // (sin skipWaiting), así que no cambia nada en medio de una presentación.
         clientsClaim: true,
       },
     }),
+    publicNoticesPage(),
   ],
 })

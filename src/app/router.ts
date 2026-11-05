@@ -18,6 +18,16 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('../features/announcements/editor/EditorPage.vue'),
     beforeEnter: (to) => (isKnownType(to.params.typeId) ? true : { name: 'nuevo' }),
   },
+  // La página pública (P9) vive fuera de la app (publico.html): nunca se abre el editor con el id "publico".
+  {
+    path: '/anuncios/publico',
+    name: 'anuncios-publico',
+    component: { render: () => null },
+    beforeEnter: () => {
+      window.location.assign('/anuncios/publico')
+      return false
+    },
+  },
   { path: '/anuncios/:id', name: 'editar', component: () => import('../features/announcements/editor/EditorPage.vue') },
   { path: '/presentaciones', name: 'presentaciones', component: () => import('../features/presentations/list/PresentationsPage.vue') },
   { path: '/presentaciones/:id', name: 'presentacion', component: () => import('../features/presentations/detail/PresentationPage.vue') },
