@@ -51,7 +51,13 @@ describe('deploy.yml: migraciones de Supabase (spec P9 §6.4)', () => {
 
   it('enlaza el proyecto de la iglesia y marca como aplicadas solo las dos migraciones hechas a mano', () => {
     expect(yml).toContain('supabase link --project-ref "${SUPABASE_PROJECT_REF:-jyxhnqbqzqrbahorigxq}"')
-    expect(yml).toMatch(/supabase migration repair --status applied 20261103000000 20261105000000\r?$/m)
+    expect(yml).toContain('supabase migration repair --status applied 20261103000000 20261105000000 --remote --password "$SUPABASE_DB_PASSWORD" --yes')
+  })
+
+  it('CLI fijada en 3.0.0, que exige --remote para el proyecto enlazado y --yes para cambios en la nube', () => {
+    expect(yml).toMatch(/uses: supabase\/setup-cli@v1\s+with:\s+version: 3\.0\.0/)
+    expect(yml).toContain('supabase db push --remote --password "$SUPABASE_DB_PASSWORD" --yes')
+    expect(yml.split(/\r?\n/).find((l) => l.includes('supabase link'))).not.toContain('--password')
   })
 })
 
