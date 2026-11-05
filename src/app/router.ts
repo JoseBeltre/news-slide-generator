@@ -30,6 +30,7 @@ export const routes: RouteRecordRaw[] = [
   // Configuración (P10); Equipo es una de sus secciones.
   { path: '/configuracion', name: 'configuracion', component: () => import('../features/settings/SettingsPage.vue') },
   { path: '/equipo', redirect: { path: '/configuracion', hash: '#equipo' } },
+  { path: '/importar', name: 'importar', component: () => import('../features/transfer/import/ImportPage.vue') },
   { path: '/:pathMatch(.*)*', redirect: { name: 'inicio' } },
 ]
 

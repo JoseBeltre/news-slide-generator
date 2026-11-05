@@ -28,6 +28,13 @@ funciona sin conexión después de abrirla una vez con internet.
   correos en **Equipo**. Los datos viven primero en el navegador (IndexedDB) y la nube solo sincroniza:
   sin internet se crea, edita y presenta igual. Si dos personas editan lo mismo, gana la edición más
   reciente.
+- **Configuración:** el estilo, el tema, la fecha, la hora y la moneda con que nacen los anuncios; el
+  título de la portada y el mensaje de cumpleaños por defecto; el **Equipo**; y el espacio usado en este
+  equipo y en la nube, con "Proteger los datos" para que el navegador no los borre.
+- **Exportar e importar:** un anuncio o una presentación se exporta a un `.zip` (con sus imágenes) para
+  pasarlo a otro equipo sin la nube. Al importar se revisa todo: lo que ya está en el equipo se importa
+  como copia (con "(2)", "(3)"…) o se sobrescribe, en una presentación se eligen sus anuncios, y si la
+  fecha ya tiene otra presentación se pide otra. Los ministerios no viajan: se usan los precargados.
 
 La página de lectura para la congregación está planificada (ver `SRS.md`, §11).
 
