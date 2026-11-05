@@ -53,7 +53,7 @@ const sampleDate = computed(() => {
       <UiCheckbox :model-value="draft.showPublic !== false" @update:model-value="(v) => (draft.showPublic = v ? undefined : false)">
         Mostrar al público
       </UiCheckbox>
-      <p class="-mt-1 pl-7 text-xs text-ink-muted">Sale en la página que se comparte con la congregación.</p>
+      <p class="-mt-1 pl-7 text-xs text-ink-muted">Sale en la página que se comparte con la congregación. No escribas nombres ni teléfonos de personas.</p>
     </OptionGroup>
   </div>
 </template>

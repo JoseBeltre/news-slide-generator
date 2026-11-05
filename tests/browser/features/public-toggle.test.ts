@@ -24,6 +24,12 @@ describe('Mostrar al público', () => {
     expect(toggle(host)!.checked).toBe(true)
   })
 
+  it('avisa que no se escriban nombres ni teléfonos', async () => {
+    const { host } = await mountApp('/anuncios/nuevo/aviso', testDb())
+    await until(() => !!toggle(host))
+    expect(host.textContent).toContain('Sale en la página que se comparte con la congregación. No escribas nombres ni teléfonos de personas.')
+  })
+
   it('desmarcarla y guardar deja showPublic false', async () => {
     const db = testDb()
     const { host, router } = await mountApp('/anuncios/nuevo/culto', db)
