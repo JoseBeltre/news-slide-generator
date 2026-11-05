@@ -57,7 +57,7 @@ Una **página pública fija**, `https://anunciosm2.jose-web.com/anuncios/publico
   - **Sin internet y sin caché:** "Ábrela una vez con internet para guardarla en este celular."
   - **Error del servidor, con caché:** igual que sin internet.
   - **Error del servidor, sin caché:** "No se pudieron cargar los anuncios. Prueba más tarde."
-- **Caché de datos:** la última respuesta buena va a `localStorage`, en la clave `anuncios-publicos:v1`. Las lecturas y escrituras van en `try/catch`.
+- **Caché de datos:** la última respuesta buena va a `localStorage`, en la clave `anuncios-publicos:v2` (la `v1` podía traer datos personales y se borra al cargar). Las lecturas y escrituras van en `try/catch`.
 
 ## 3. Sin internet, servidor e imagen "A"
 

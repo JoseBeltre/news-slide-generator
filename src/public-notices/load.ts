@@ -6,7 +6,9 @@ import { z } from 'zod'
 import { fetchWithTimeout, type SupabaseConfig } from '../data/sync/supabase'
 import type { LoadState, PublicNoticesData } from './types'
 
-export const CACHE_KEY = 'anuncios-publicos:v1'
+// v2: la v1 podía traer datos personales (antes de spec §6.1); se borra al cargar.
+export const CACHE_KEY = 'anuncios-publicos:v2'
+const LEGACY_KEYS = ['anuncios-publicos:v1']
 export const TEAM_CACHE_KEY = 'anuncios-equipo:v1'
 const TIMEOUT_MS = 15_000
 
@@ -41,31 +43,32 @@ export interface LoadDeps {
 }
 
 export async function loadNotices(deps: LoadDeps): Promise<LoadState> {
+  for (const key of LEGACY_KEYS) forget(deps.storage, key)
+  // Sin sesión del equipo, la copia del equipo no se queda en el celular (cerró sesión).
+  if (!deps.token) forget(deps.storage, TEAM_CACHE_KEY)
   if (!deps.config) return fromCache(deps.storage, CACHE_KEY, 'error')
   if (deps.token) {
     const team = await request(deps, 'team_notices', { Authorization: `Bearer ${deps.token}` })
+    // 401/403: ya no es del equipo o la sesión no vale; su copia se borra y sigue la vista pública.
+    if (team === 'denied') forget(deps.storage, TEAM_CACHE_KEY)
     if (team === 'offline') {
       const cached = fromCache(deps.storage, TEAM_CACHE_KEY, 'offline')
       return 'data' in cached ? { ...cached, team: true } : fromCache(deps.storage, CACHE_KEY, 'offline')
     }
-    if (team) return { ...save(deps, TEAM_CACHE_KEY, team), team: true }
+    if (team && team !== 'denied') return { ...save(deps, TEAM_CACHE_KEY, team), team: true }
   }
   const data = await request(deps, 'public_notices', {})
   if (data === 'offline') return fromCache(deps.storage, CACHE_KEY, 'offline')
-  if (!data) return fromCache(deps.storage, CACHE_KEY, 'error')
+  if (!data || data === 'denied') return fromCache(deps.storage, CACHE_KEY, 'error')
   if (data.enabled === false) {
-    try {
-      deps.storage?.removeItem(CACHE_KEY)
-    } catch {
-      // Almacenamiento bloqueado: no había nada que borrar.
-    }
+    forget(deps.storage, CACHE_KEY)
     return { kind: 'disabled' }
   }
   return save(deps, CACHE_KEY, data)
 }
 
-/** La respuesta válida, `null` si el servidor respondió mal o con otra forma, `'offline'` sin red. */
-async function request(deps: LoadDeps, fn: string, headers: Record<string, string>): Promise<Data | null | 'offline'> {
+/** La respuesta válida; `'denied'` con 401/403; `null` si respondió mal o con otra forma; `'offline'` sin red. */
+async function request(deps: LoadDeps, fn: string, headers: Record<string, string>): Promise<Data | null | 'offline' | 'denied'> {
   let response: Response
   try {
     response = await fetchWithTimeout(TIMEOUT_MS, deps.fetch)(`${deps.config!.url}/rest/v1/rpc/${fn}`, {
@@ -76,12 +79,21 @@ async function request(deps: LoadDeps, fn: string, headers: Record<string, strin
   } catch {
     return 'offline'
   }
+  if (response.status === 401 || response.status === 403) return 'denied'
   if (!response.ok) return null
   try {
     const parsed = dataSchema.safeParse(await response.json())
     return parsed.success ? (parsed.data as Data) : null
   } catch {
     return null
+  }
+}
+
+function forget(storage: Storage | null, key: string) {
+  try {
+    storage?.removeItem(key)
+  } catch {
+    // Almacenamiento bloqueado: no había nada que borrar.
   }
 }
 

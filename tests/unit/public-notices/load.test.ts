@@ -142,5 +142,28 @@ describe('loadNotices con sesión del equipo', () => {
     const state = await loadNotices({ config: CONFIG, fetch: offline, storage, now: () => NOW })
     expect(state).toEqual({ kind: 'offline' })
   })
+
+  it('403: borra la copia del equipo (ya no es del equipo) y sin red no la vuelve a mostrar', async () => {
+    const storage = memoryStorage({ [TEAM_CACHE_KEY]: JSON.stringify({ data: TEAM_DATA, savedAt: '2026-11-04T12:00:00.000Z' }) })
+    const denied = vi.fn(async (url: string) =>
+      url.endsWith('/team_notices') ? new Response('{}', { status: 403 }) : new Response(JSON.stringify(DATA), { status: 200 }),
+    ) as unknown as typeof fetch
+    await loadNotices({ config: CONFIG, fetch: denied, storage, now: () => NOW, token: 'tok' })
+    expect(storage.getItem(TEAM_CACHE_KEY)).toBeNull()
+  })
+
+  it('sin sesión borra la copia del equipo que hubiera', async () => {
+    const storage = memoryStorage({ [TEAM_CACHE_KEY]: JSON.stringify({ data: TEAM_DATA, savedAt: '2026-11-04T12:00:00.000Z' }) })
+    await loadNotices({ config: CONFIG, fetch: ok(DATA), storage, now: () => NOW })
+    expect(storage.getItem(TEAM_CACHE_KEY)).toBeNull()
+  })
 })
+
+  it('borra la copia de la versión anterior (anuncios-publicos:v1), que podía traer datos personales', async () => {
+    const storage = memoryStorage({ 'anuncios-publicos:v1': JSON.stringify({ data: DATA, savedAt: '2026-11-04T12:00:00.000Z' }) })
+    expect(CACHE_KEY).not.toBe('anuncios-publicos:v1')
+    const state = await loadNotices({ config: CONFIG, fetch: offline, storage, now: () => NOW })
+    expect(state).toEqual({ kind: 'offline' })
+    expect(storage.getItem('anuncios-publicos:v1')).toBeNull()
+  })
 })
