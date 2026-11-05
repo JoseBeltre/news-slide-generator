@@ -62,7 +62,7 @@ describe('loadNotices', () => {
   it.each([['HTML', '<html>proxy</html>'], ['null', 'null'], ['sin notices', JSON.stringify({ today: '2026-11-05', settings: {} })]])(
     '%s → error y no pisa la caché',
     async (_, body) => {
-      const fetch = vi.fn(async () => new Response(body, { status: 200 })) as unknown as typeof fetch
+      const fetch: typeof globalThis.fetch = vi.fn(async () => new Response(body, { status: 200 })) as unknown as typeof fetch
       const storage = cached()
       const before = storage.getItem(CACHE_KEY)
       expect((await loadNotices({ config: CONFIG, fetch, storage, now: () => NOW })).kind).toBe('cached')
