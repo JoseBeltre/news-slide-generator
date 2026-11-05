@@ -30,9 +30,10 @@ const date = computed(() => {
       :to="{ name: 'editar', params: { id: announcement.id } }"
       class="min-w-0 flex-1 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
     >
-      <span class="flex items-start gap-1.5">
-        <span data-title :class="['line-clamp-2 font-medium', title ? 'text-ink' : 'text-ink-muted']">{{ name }}</span>
-        <span v-if="announcement.showPublic === false" data-hidden-public class="mt-1 shrink-0 text-ink-muted">
+      <!-- El ojo tachado va pegado al final del nombre, también cuando el nombre se parte en dos líneas. -->
+      <span :class="['line-clamp-2 font-medium', title ? 'text-ink' : 'text-ink-muted']">
+        <span data-title>{{ name }}</span>
+        <span v-if="announcement.showPublic === false" data-hidden-public class="ml-1.5 inline-block align-[-2px] text-ink-muted">
           <EyeOff :size="16" aria-hidden="true" /><span class="sr-only">Oculto al público</span>
         </span>
       </span>
