@@ -6,13 +6,16 @@ import { supabaseConfig } from '../data/sync/supabase'
 import { noticeCards, stateLabel } from './cards'
 import { loadNotices } from './load'
 import NoticeCardView from './NoticeCardView.vue'
+import { teamToken } from './session'
+import TeamBanner from './TeamBanner.vue'
 import type { LoadState } from './types'
 
 /** `load` solo en pruebas; en la página real se pide a Supabase. */
 const props = defineProps<{ load?: () => Promise<LoadState> }>()
 
 const state = shallowRef<LoadState | null>(null)
-const cards = computed(() => (state.value && 'data' in state.value ? noticeCards(state.value.data) : []))
+const team = computed(() => !!state.value && 'team' in state.value && !!state.value.team)
+const cards = computed(() => (state.value && 'data' in state.value ? noticeCards(state.value.data, { team: team.value }) : []))
 const label = computed(() => (state.value ? stateLabel(state.value) : null))
 const message = computed(() => {
   if (state.value?.kind === 'offline') return 'Ábrela una vez con internet para guardarla en este celular.'
@@ -31,7 +34,13 @@ function safeStorage(): Storage | null {
 
 onMounted(async () => {
   const load =
-    props.load ?? (() => loadNotices({ config: supabaseConfig(), fetch: (...a) => fetch(...a), storage: safeStorage(), now: () => new Date() }))
+    props.load ??
+    (() => {
+      const config = supabaseConfig()
+      const storage = safeStorage()
+      const token = config ? teamToken(storage, config.url, Date.now()) : null
+      return loadNotices({ config, fetch: (...a) => fetch(...a), storage, now: () => new Date(), token })
+    })
   try {
     state.value = await load()
   } catch {
@@ -46,6 +55,7 @@ onMounted(async () => {
       <p class="font-meta text-meta uppercase text-ink-muted">Mansedumbre II · IASD</p>
       <h1 class="mt-1 font-display text-display-sm text-ink">Anuncios</h1>
       <p v-if="label" class="mt-1 text-sm text-ink-muted">{{ label }}</p>
+      <TeamBanner v-if="team" />
     </header>
     <div v-if="!state" aria-busy="true" aria-label="Cargando los anuncios" class="mt-4 flex flex-col gap-3">
       <div v-for="n in 3" :key="n" class="h-28 animate-pulse rounded-xl border border-hairline bg-surface" />

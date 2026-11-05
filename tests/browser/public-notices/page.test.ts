@@ -95,4 +95,16 @@ describe('página pública de anuncios', () => {
     await until(() => !!host.textContent?.includes('Los anuncios no están disponibles por ahora.'))
     expect(cards(host)).toHaveLength(0)
   })
+
+  it('la franja del equipo sale solo en la vista del equipo', async () => {
+    const TEXT = 'Incluye nombres y contactos privados. No compartas capturas de esta pantalla.'
+    const team = show({ kind: 'fresh', data: DATA, savedAt: SAVED, team: true })
+    await until(() => cards(team).length === 2)
+    expect(team.querySelector('[data-team-banner]')?.textContent).toContain('Vista del equipo.')
+    expect(team.querySelector('[data-team-banner]')?.textContent).toContain(TEXT)
+    cleanupMounted()
+    const pub = show({ kind: 'fresh', data: DATA, savedAt: SAVED })
+    await until(() => cards(pub).length === 2)
+    expect(pub.querySelector('[data-team-banner]')).toBeNull()
+  })
 })

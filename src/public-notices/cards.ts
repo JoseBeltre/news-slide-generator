@@ -15,27 +15,29 @@ function publicValues(fields: FieldDef[], values: Record<string, unknown>): Reco
   return Object.fromEntries(Object.entries(values).filter(([key]) => !hidden.has(key)))
 }
 
-export function noticeCards(data: PublicNoticesData): NoticeCard[] {
+/** `team`: la vista del equipo (spec §6.5) muestra también lo que solo va en las slides. */
+export function noticeCards(data: PublicNoticesData, opts: { team?: boolean } = {}): NoticeCard[] {
   const cards: NoticeCard[] = []
   for (const notice of data.notices) {
-    const card = toCard(notice, data)
+    const card = toCard(notice, data, opts.team ?? false)
     if (card) cards.push({ ...card, number: cards.length + 1 })
   }
   return cards
 }
 
-function toCard(notice: PublicNotice, data: PublicNoticesData): Omit<NoticeCard, 'number'> | null {
+function toCard(notice: PublicNotice, data: PublicNoticesData, team: boolean): Omit<NoticeCard, 'number'> | null {
   const def = ANNOUNCEMENT_TYPES.find((t) => t.id === notice.typeId)
   if (!def || NEVER_PUBLIC.has(def.id)) return null
   try {
     const { timeFormat, currency } = data.settings
-    const normalized = normalizeAnnouncement(def.id as AnnouncementTypeId, publicValues(def.fields, notice.values), {
+    const normalized = normalizeAnnouncement(def.id as AnnouncementTypeId, team ? notice.values : publicValues(def.fields, notice.values), {
       today: data.today,
       reference: data.today,
       dateStyle: 'largo',
       relativeDates: false,
       timeFormat,
       currency,
+      showFallbacks: team,
     })
     const rows = normalized.rows.flatMap((row) => {
       // La fecha principal y su hora vienen juntas ("Sábado 7 · 7:00 p. m."): aquí van en dos filas.

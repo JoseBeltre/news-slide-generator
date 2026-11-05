@@ -16,8 +16,9 @@ export interface PublicNoticesData {
 }
 
 export type LoadState =
-  | { kind: 'fresh'; data: PublicNoticesData; savedAt: string }
-  | { kind: 'cached'; data: PublicNoticesData; savedAt: string }
+  // `team`: la vista del equipo (spec §6.5), con nombres y contactos privados.
+  | { kind: 'fresh'; data: PublicNoticesData; savedAt: string; team?: true }
+  | { kind: 'cached'; data: PublicNoticesData; savedAt: string; team?: true }
   | { kind: 'offline' }
   /** "Solo el equipo" en Configuración: la página no muestra anuncios (spec P9 §6.3). */
   | { kind: 'disabled' }

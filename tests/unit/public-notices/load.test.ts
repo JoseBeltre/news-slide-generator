@@ -1,7 +1,7 @@
 // Carga de la página pública (P9, RF-73): pide `public_notices`, guarda la última respuesta buena y, sin
 // red o con error, muestra la guardada. Una respuesta con otra forma nunca pisa la caché.
 import { describe, expect, it, vi } from 'vitest'
-import { CACHE_KEY, loadNotices } from '../../../src/public-notices/load'
+import { CACHE_KEY, TEAM_CACHE_KEY, loadNotices } from '../../../src/public-notices/load'
 import type { PublicNoticesData } from '../../../src/public-notices/types'
 
 const CONFIG = { url: 'https://abc.supabase.co', key: 'sb_publishable_x' }
@@ -107,4 +107,40 @@ describe('loadNotices', () => {
     const state = await loadNotices({ config: CONFIG, fetch: ok({ ...DATA, enabled: true }), storage: memoryStorage(), now: () => NOW })
     expect(state.kind).toBe('fresh')
   })
+
+describe('loadNotices con sesión del equipo', () => {
+  const TEAM_DATA: PublicNoticesData = { ...DATA, notices: [{ ...DATA.notices[0]!, values: { titulo: 'Hola', contacto: 'María 809' } }] }
+
+  it('con token pide team_notices con la sesión y guarda aparte', async () => {
+    const fetch = ok(TEAM_DATA)
+    const storage = memoryStorage()
+    const state = await loadNotices({ config: CONFIG, fetch, storage, now: () => NOW, token: 'tok' })
+    expect(state).toEqual({ kind: 'fresh', data: TEAM_DATA, savedAt: NOW.toISOString(), team: true })
+    const [url, init] = (fetch as unknown as ReturnType<typeof vi.fn>).mock.calls[0]!
+    expect(url).toBe('https://abc.supabase.co/rest/v1/rpc/team_notices')
+    expect(new Headers(init.headers).get('Authorization')).toBe('Bearer tok')
+    expect(JSON.parse(storage.getItem(TEAM_CACHE_KEY)!).data).toEqual(TEAM_DATA)
+    expect(storage.getItem(CACHE_KEY)).toBeNull()
+  })
+
+  it('403 (no es del equipo o sesión inválida) → la vista pública', async () => {
+    const fetch: typeof globalThis.fetch = vi.fn(async (url: string) =>
+      url.endsWith('/team_notices') ? new Response('{}', { status: 403 }) : new Response(JSON.stringify(DATA), { status: 200 }),
+    ) as unknown as typeof fetch
+    const state = await loadNotices({ config: CONFIG, fetch, storage: memoryStorage(), now: () => NOW, token: 'tok' })
+    expect(state).toEqual({ kind: 'fresh', data: DATA, savedAt: NOW.toISOString() })
+  })
+
+  it('sin red → la copia del equipo', async () => {
+    const storage = memoryStorage({ [TEAM_CACHE_KEY]: JSON.stringify({ data: TEAM_DATA, savedAt: '2026-11-04T12:00:00.000Z' }) })
+    const state = await loadNotices({ config: CONFIG, fetch: offline, storage, now: () => NOW, token: 'tok' })
+    expect(state).toEqual({ kind: 'cached', data: TEAM_DATA, savedAt: '2026-11-04T12:00:00.000Z', team: true })
+  })
+
+  it('sin token nunca lee la copia del equipo', async () => {
+    const storage = memoryStorage({ [TEAM_CACHE_KEY]: JSON.stringify({ data: TEAM_DATA, savedAt: '2026-11-04T12:00:00.000Z' }) })
+    const state = await loadNotices({ config: CONFIG, fetch: offline, storage, now: () => NOW })
+    expect(state).toEqual({ kind: 'offline' })
+  })
+})
 })

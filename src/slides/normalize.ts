@@ -43,6 +43,8 @@ export interface NormalizeContext {
   relativeDates?: boolean
   timeFormat?: '12h' | '24h'
   currency?: string
+  /** Muestra también los campos de respaldo con su campo lleno (la vista del equipo, spec P9 §6.5). */
+  showFallbacks?: boolean
 }
 
 const SEPARATOR = ' · '
@@ -69,7 +71,7 @@ export function normalizeAnnouncement(
     return uppercase ? upper(t) : t
   }
   // Un campo de respaldo (fallbackFor) solo sale si el campo que respalda está vacío.
-  const filled = def.fields.filter((f) => isFilled(values[f.key]) && !(f.fallbackFor && isFilled(values[f.fallbackFor])))
+  const filled = def.fields.filter((f) => isFilled(values[f.key]) && (ctx.showFallbacks || !(f.fallbackFor && isFilled(values[f.fallbackFor]))))
   // La fecha principal se une con la primera hora del tipo en una sola fila.
   const mainDate = filled.find(isMainDate)
   const mainTime = mainDate ? filled.find((f) => f.kind === 'time') : undefined
