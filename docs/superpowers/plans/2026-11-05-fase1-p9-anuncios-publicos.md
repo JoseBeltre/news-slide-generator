@@ -43,7 +43,7 @@
 |---|---|
 | Título de la página y `og:title` | "Anuncios · Mansedumbre II" |
 | Casilla del editor | "Mostrar al público" |
-| Etiqueta de la fila | "Oculto al público" |
+| Fila de un anuncio oculto | ícono de ojo tachado (`EyeOff`) junto al nombre, con texto para lectores de pantalla "Oculto al público" |
 | Botón de Inicio | "Compartir los anuncios" |
 | Enlace al lado del botón | "Ver" |
 | Aviso tras copiar | "Enlace copiado" |
@@ -103,7 +103,7 @@ En `robots.txt` se agrega además `Google-Extended`.
   1. **`'la casilla Mostrar al público sale marcada en un anuncio nuevo'`:** en `/nuevo/aviso`, `byLabel(host,'Mostrar al público')` es un checkbox `checked`.
   2. **`'desmarcarla y guardar deja showPublic false'`:** se desmarca, se guarda con el botón de guardar del editor y `(await db.announcements.toArray())[0].showPublic` es `false`.
   3. **`'no sale en cumpleaños ni en imagen'`:** en `/nuevo/cumpleanos` y en `/nuevo/imagen`, `byLabel(host,'Mostrar al público')` es `null`.
-  4. **`'la fila de un anuncio oculto dice Oculto al público'`:** se siembra `seed(db,{typeId:'aviso',values:{titulo:'X'},showPublic:false})`; en `/anuncios` el texto contiene "Oculto al público". Con otro sin el campo, su fila no lo contiene.
+  4. **`'un anuncio oculto lleva el ojo tachado junto al nombre'`:** se siembra `seed(db,{typeId:'aviso',values:{titulo:'X'},showPublic:false})`; en `/anuncios` su fila tiene `[data-hidden-public]` con el texto accesible "Oculto al público". Otro sin el campo no lo tiene.
   5. **En `transfer.test.ts`: `'exportar e importar conserva showPublic false'`.**
 
 - [ ] **Step 2: Run them.** `pnpm vitest run --project browser tests/browser/features/public-toggle.test.ts tests/browser/data/transfer.test.ts`. Expected: FAIL en las cinco pruebas nuevas.
@@ -112,7 +112,7 @@ En `robots.txt` se agrega además `Google-Extended`.
   - **Modelo:** `showPublic?: boolean` en `Announcement`, con un comentario.
   - **Esquema del traspaso:** `showPublic: z.boolean().optional()` en `announcement`.
   - **Editor (`SlideOptions.vue`):** dentro del bloque `typeDef.id !== 'imagen'` y solo si `typeDef.id !== 'cumpleanos'`, un `OptionGroup title="Público"` con `UiCheckbox`. Su valor es `draft.showPublic !== false`; al cambiar hace `draft.showPublic = v ? undefined : false`.
-  - **Fila (`AnnouncementRow.vue`):** `UiBadge` "Oculto al público" junto a `StatusBadge` si `announcement.showPublic === false`.
+  - **Fila (`AnnouncementRow.vue`):** si `announcement.showPublic === false`, un ícono `EyeOff` (16 px, `text-ink-muted`, `aria-hidden`) junto al título, más un `sr-only` "Oculto al público", envueltos en `span data-hidden-public`. Sin etiqueta.
 
 - [ ] **Step 4: Run** el mismo comando. Expected: PASS.
 
@@ -247,7 +247,7 @@ En `robots.txt` se agrega además `Google-Extended`.
   - **`'error sin caché: No se pudieron cargar los anuncios. Prueba más tarde.'`.**
   - **`'cached: Sin conexión · guardado el … y las tarjetas'`.**
   - **`'el título de la página es un h1 Anuncios · Mansedumbre II'`.**
-  - **`'la letra base es de 18 px o más'`:** `getComputedStyle` de una fila de la tarjeta da `fontSize ≥ 18`.
+  - **`'datos a 15–16 px y títulos a 18 px'`:** `getComputedStyle`: las filas de datos dan `fontSize` 15 o 16 y el título de la tarjeta da 18.
   - **`'mientras carga hay esqueleto con aria-busy'`.**
 
 - [ ] **Step 2: Run** `pnpm vitest run --project browser tests/browser/public-notices`. Expected: FAIL.
@@ -264,7 +264,7 @@ En `robots.txt` se agrega además `Google-Extended`.
     - `body` con las clases `bg-background font-sans text-ink antialiased`, y `<script type="module" src="/src/public-notices/main.ts">`.
   - **Estructura:** `PublicNoticesApp` tiene el encabezado (`h1` en Instrument Serif más la etiqueta de estado) y una lista `ol` con las tarjetas.
   - **`NoticeCardView`:** el número en tipo `meta`, el título y las filas con su ícono `aria-hidden`.
-  - **Letra:** `text-lg` como mínimo en las filas y alto contraste con tokens.
+  - **Letra:** datos a 15 px y títulos de tarjeta a 18 px, con alto contraste usando los tokens. Sigue el mockup aprobado v2 (`.superpowers/sdd/…/mockup-p9.html`): el número en un recuadro con el color del tipo y el nombre del tipo arriba del título, a todo el ancho.
 
 - [ ] **Step 4: Run** el mismo comando, más `pnpm typecheck` y la prueba de arquitectura `pnpm vitest run --project unit tests/unit/architecture.test.ts`. Expected: PASS.
 

@@ -49,7 +49,7 @@ Una **página pública fija**, `https://anunciosm2.jose-web.com/anuncios/publico
 - **Contenido:**
   - **Encabezado:** "Anuncios · Mansedumbre II" y "Actualizado el …", con la fecha de la última respuesta buena.
   - **Tarjetas:** una por anuncio, numerada (1, 2, 3…). Lleva el título y, debajo, cada campo con contenido, con su ícono de `FieldDef.icon` y su etiqueta. Las fechas, horas y precios usan la configuración que devuelve la función.
-  - **Legibilidad (RF-71):** base de 18 px CSS o más, contraste AA alto y modo oscuro con `prefers-color-scheme`.
+  - **Legibilidad (RF-71, ajustado por el responsable):** datos a 15–16 px y títulos de tarjeta a 18 px como máximo; el encabezado "Anuncios" en serif más grande. Contraste AA alto y modo oscuro con `prefers-color-scheme`.
 - **Estados:**
   - **Cargando:** el esqueleto de las tarjetas.
   - **Vacío:** "No hay anuncios por ahora."
@@ -100,7 +100,7 @@ Una **página pública fija**, `https://anunciosm2.jose-web.com/anuncios/publico
 ## 4. En la app
 
 - **Editor:** casilla **"Mostrar al público"**, marcada por defecto. Va con las opciones de la slide. No sale en los cumpleaños ni en `imagen`.
-- **Lista de anuncios:** si el anuncio tiene `showPublic === false`, la fila muestra la etiqueta "Oculto al público".
+- **Lista de anuncios:** si el anuncio tiene `showPublic === false`, la fila muestra un ícono de ojo tachado junto al nombre (sin etiqueta).
 - **Inicio:** botón **"Compartir los anuncios"**, solo si hay nube. Usa `navigator.share` y, si no está, copia el enlace al portapapeles y avisa "Enlace copiado". Al lado, un enlace "Ver" que abre la página en otra pestaña.
 - **Traspaso (P10):** `showPublic` entra en `transferFileSchema` como opcional.
 
@@ -117,7 +117,7 @@ Una **página pública fija**, `https://anunciosm2.jose-web.com/anuncios/publico
 - **Browser:**
   - **La página:** tarjetas numeradas; vacío; sin red con caché y sin caché; error con caché; "Actualizado el …".
   - **El editor:** la casilla existe, no sale en cumpleaños e `imagen`, y al guardar queda `showPublic:false`.
-  - **La lista:** la etiqueta "Oculto al público".
+  - **La lista:** el ojo tachado en la fila del anuncio oculto.
   - **Inicio:** el botón llama a `share` y, sin `share`, copia el enlace.
 - **E2E:** `/anuncios/publico` con la llamada a Supabase simulada muestra los anuncios. El HTML servido trae `og:image` de `og-publico.png` y `robots index`. `/` trae `noindex`.
 - **Comprobación manual tras desplegar:**
