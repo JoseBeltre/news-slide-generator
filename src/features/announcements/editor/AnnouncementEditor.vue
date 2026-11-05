@@ -45,6 +45,7 @@ const { state: saveState, onSave } = useEditorSave({
   save,
   isNew: () => !draft.value.id,
   submitted,
+  version: () => JSON.stringify(draft.value),
   onFirstSave: async (saved) => {
     emit('saved', saved)
     await router.replace({ name: 'editar', params: { id: saved.id } })

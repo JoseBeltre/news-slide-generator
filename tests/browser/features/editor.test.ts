@@ -99,6 +99,30 @@ describe('editor con vista previa (RF-03, RNF-04)', () => {
     expect(snackbar()!.textContent).toContain('el texto no cabe en la slide')
   })
 
+  it('al salir del editor se descarta el aviso de error y Reintentar ya no guarda', async () => {
+    const { host, db, router } = await newCulto()
+    const put = vi.spyOn(db.announcements, 'put').mockRejectedValueOnce(new Error('sin espacio'))
+    clickSave(host)
+    await until(() => snackbar()?.dataset.tone === 'error')
+    void router.push('/configuracion')
+    await until(() => !!dialog())
+    byLabel(dialog()!, 'Salir sin guardar')!.click()
+    await until(() => router.currentRoute.value.name === 'configuracion')
+    await until(() => !snackbar())
+    expect(put).toHaveBeenCalledTimes(1)
+  })
+
+  it('Reintentar no guarda si el formulario cambió desde el fallo', async () => {
+    const { host, db } = await newCulto()
+    const put = vi.spyOn(db.announcements, 'put').mockRejectedValueOnce(new Error('sin espacio'))
+    clickSave(host)
+    await until(() => snackbar()?.dataset.tone === 'error')
+    type(input(host, 'titulo'), 'Otro título')
+    byLabel(snackbar()!, 'Reintentar')!.click()
+    await new Promise((r) => setTimeout(r, 100))
+    expect(put).toHaveBeenCalledTimes(1)
+  })
+
   it('guardar algo que no valida dice que quedó como borrador (RF-10)', async () => {
     const { host, router } = await mountApp('/anuncios/nuevo/culto', testDb())
     await until(() => !!input(host, 'titulo'))
