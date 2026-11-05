@@ -5,6 +5,7 @@ import UiPageHeader from '../../ui/UiPageHeader.vue'
 import AnnouncementList from '../announcements/shared/AnnouncementList.vue'
 import NewAnnouncementButton from '../announcements/shared/NewAnnouncementButton.vue'
 import { useAnnouncementList } from '../announcements/shared/useAnnouncementList'
+import ImportButton from '../transfer/shared/ImportButton.vue'
 import NextPresentationCard from '../presentations/shared/NextPresentationCard.vue'
 import ShareNoticesButton from './ShareNoticesButton.vue'
 
@@ -14,7 +15,8 @@ const { items, loaded, today } = useAnnouncementList({ limit: UPCOMING })
 
 <template>
   <UiPageHeader title="Próximos anuncios">
-    <NewAnnouncementButton />
+    <ImportButton icon />
+    <NewAnnouncementButton icon />
   </UiPageHeader>
   <NextPresentationCard />
   <ShareNoticesButton />

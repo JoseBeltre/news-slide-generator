@@ -3,7 +3,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createRepository } from '../../../src/data/local/repository'
 import { cleanupMounted } from '../helpers/mount'
-import { byLabel, cleanupDbs, mountApp, seed, testDb, until } from '../helpers/app'
+import { byLabel, chooseRowAction, cleanupDbs, mountApp, seed, testDb, until } from '../helpers/app'
 
 let downloads: { name: string; blob: Blob }[] = []
 beforeEach(() => {
@@ -30,8 +30,8 @@ describe('Exportar', () => {
     const db = testDb()
     await seed(db, { typeId: 'aviso', values: { titulo: 'Culto' } })
     const { host } = await mountApp('/anuncios', db)
-    await until(() => !!byLabel(host, 'Exportar «Culto»'))
-    byLabel(host, 'Exportar «Culto»')!.click()
+    await until(() => !!byLabel(host, 'Acciones de «Culto»'))
+    await chooseRowAction(host, 'Culto', 'export')
     await until(() => downloads.length === 1)
     expect(downloads[0]!.name).toBe('anuncio-culto.zip')
     expect(downloads[0]!.blob.type).toBe('application/zip')

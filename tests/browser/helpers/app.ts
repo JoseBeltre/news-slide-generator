@@ -7,6 +7,7 @@ import { createDb, type AppDb } from '../../../src/data/local/db'
 import { createRepository, type NewRecord } from '../../../src/data/local/repository'
 import type { Announcement } from '../../../src/data/models'
 import { dbPlugin } from '../../../src/data/useDb'
+import { resetSnackbar } from '../../../src/ui/useSnackbar'
 import { toIsoDate } from '../../../src/lib/format'
 import { frame, mountInHost } from './mount'
 import { until } from './slides'
@@ -23,6 +24,7 @@ export function testDb(): AppDb {
 
 /** Borra las bases de prueba; llamar en `afterEach` junto con `cleanupMounted`. */
 export async function cleanupDbs() {
+  resetSnackbar()
   for (const db of dbs.splice(0)) await db.delete()
 }
 
@@ -66,3 +68,13 @@ export function byLabel(root: ParentNode, label: string | RegExp): HTMLElement |
     (el) => matches(el.getAttribute('aria-label')) || matches(el.textContent),
   )
 }
+
+/** Abre el menú de tres puntos de la fila y elige una acción (`duplicate`, `export`, `remove`). */
+export async function chooseRowAction(host: ParentNode, title: string, action: 'duplicate' | 'export' | 'remove') {
+  byLabel(host, `Acciones de «${title}»`)!.click()
+  await until(() => !!document.querySelector(`[data-menu-item="${action}"]`))
+  document.querySelector<HTMLElement>(`[data-menu-item="${action}"]`)!.click()
+}
+
+/** El aviso (snackbar) que está en pantalla, o undefined. */
+export const snackbar = () => document.querySelector<HTMLElement>('[data-snackbar]') ?? undefined

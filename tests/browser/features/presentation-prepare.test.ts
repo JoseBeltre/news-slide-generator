@@ -86,15 +86,15 @@ describe('Inicio: la presentación del sábado (§6.1)', () => {
     const db = testDb()
     await withPresentation(db, [LONG])
     const { host } = await mountApp('/', db, undefined, { [OFFLINE_ENV]: fakeEnv() })
-    await until(() => host.textContent!.includes('Falta algo para usar sin internet'), 10000)
-    expect(host.textContent).not.toContain('✓ Lista para usar sin internet')
+    await until(() => host.textContent!.includes('falta algo para usar sin internet'), 10000)
+    expect(host.textContent).not.toContain('lista sin internet')
   })
 
-  it('con presentación lista → su fecha, "N slides" y "✓ Lista"', async () => {
+  it('con presentación lista → su fecha y «N anuncios · lista sin internet»', async () => {
     const db = testDb()
     await withPresentation(db, ['Vigilia'])
     const { host } = await mountApp('/', db, undefined, { [OFFLINE_ENV]: fakeEnv() })
-    await until(() => host.textContent!.includes('✓ Lista para usar sin internet'), 8000)
-    expect(host.textContent).toContain('3 slides')
+    await until(() => host.textContent!.includes('1 anuncio · lista sin internet'), 8000)
+    expect(host.textContent).not.toContain('Presentación del sábado')
   })
 })

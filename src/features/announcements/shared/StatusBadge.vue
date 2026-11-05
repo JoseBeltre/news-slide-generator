@@ -1,21 +1,19 @@
 <script setup lang="ts">
-// Etiquetas de estado de un anuncio en las listas: borrador, no cabe, pasado. "Listo" no lleva nada.
+// Etiquetas de estado de un anuncio en las listas: solo lo que pide atención, Borrador o No cabe.
+// "Listo" y "Pasado" no llevan nada (Pasado ya se ve en el filtro de la lista).
 import { computed } from 'vue'
-import { isPast } from '../../../data/announcements'
 import type { Announcement } from '../../../data/models'
 import UiBadge from '../../../ui/UiBadge.vue'
 
-const props = defineProps<{ announcement: Pick<Announcement, 'status' | 'eventDate'>; today: string }>()
+const props = defineProps<{ announcement: Pick<Announcement, 'status'> }>()
 
-const badges = computed(() => {
-  const out: { label: string; tone: 'neutral' | 'danger' }[] = []
-  if (props.announcement.status === 'borrador') out.push({ label: 'Borrador', tone: 'neutral' })
-  if (props.announcement.status === 'no_cabe') out.push({ label: 'No cabe', tone: 'danger' })
-  if (isPast(props.announcement, props.today)) out.push({ label: 'Pasado', tone: 'neutral' })
-  return out
+const badge = computed(() => {
+  if (props.announcement.status === 'borrador') return { label: 'Borrador', tone: 'warning' as const }
+  if (props.announcement.status === 'no_cabe') return { label: 'No cabe', tone: 'danger' as const }
+  return null
 })
 </script>
 
 <template>
-  <UiBadge v-for="b in badges" :key="b.label" :tone="b.tone">{{ b.label }}</UiBadge>
+  <UiBadge v-if="badge" :tone="badge.tone">{{ badge.label }}</UiBadge>
 </template>

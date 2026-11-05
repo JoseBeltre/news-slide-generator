@@ -10,6 +10,12 @@ export function useImport() {
   const db = useDb()
   const plan = shallowRef<ImportPlan | null>(null)
   const error = ref<string | null>(null)
+  /** Sube con cada fallo: el mismo mensaje dos veces seguidas debe avisar otra vez. */
+  const errorTick = ref(0)
+  const fail = (message: string) => {
+    error.value = message
+    errorTick.value++
+  }
   const done = shallowRef<ImportResult | null>(null)
   const applying = ref(false)
   const loaded = ref(false)
@@ -29,13 +35,14 @@ export function useImport() {
       setPendingImport(null)
       done.value = null
       plan.value = null
-      error.value = 'error' in pending ? pending.error : null
+      error.value = null
+      if ('error' in pending) fail(pending.error)
       if (!('bundle' in pending)) return void (loaded.value = true)
       try {
         const next = await planImport(db, pending.bundle)
         if (mine === generation) plan.value = next
       } catch {
-        if (mine === generation) error.value = 'No se pudo preparar la importación.'
+        if (mine === generation) fail('No se pudo preparar la importación.')
       } finally {
         if (mine === generation) loaded.value = true
       }
@@ -52,6 +59,7 @@ export function useImport() {
   return {
     plan,
     error,
+    errorTick,
     done,
     applying,
     loaded,
@@ -66,7 +74,7 @@ export function useImport() {
         done.value = await applyImport(db, plan.value)
         error.value = null
       } catch (e) {
-        error.value = (e as Error).message
+        fail((e as Error).message)
       } finally {
         applying.value = false
       }

@@ -7,7 +7,7 @@ import { exportAnnouncement, exportPresentation } from '../../../src/data/transf
 import { readTransferFile } from '../../../src/data/transfer/unpack'
 import { setPendingImport } from '../../../src/features/transfer/shared/pendingImport'
 import { cleanupMounted } from '../helpers/mount'
-import { byLabel, cleanupDbs, mountApp, seed, testDb, until } from '../helpers/app'
+import { byLabel, cleanupDbs, mountApp, seed, snackbar, testDb, until } from '../helpers/app'
 
 afterEach(async () => {
   vi.restoreAllMocks()
@@ -94,8 +94,9 @@ describe('Importar', () => {
     setPendingImport({ bundle: await readTransferFile((await exportAnnouncement(db, a.id)).blob) })
     vi.spyOn(db.announcements, 'bulkGet').mockRejectedValue(new Error('falla'))
     const { host } = await mountApp('/importar', db)
-    await until(() => !!host.textContent?.includes('No se pudo preparar la importación.'))
-    expect(host.textContent).toContain('Elegir otro archivo')
+    await until(() => !!snackbar())
+    expect(snackbar()!.textContent).toContain('No se pudo preparar la importación.')
+    expect(snackbar()!.dataset.tone).toBe('error')
   })
 
   it('si llegan dos archivos seguidos, gana el último', async () => {
@@ -122,8 +123,11 @@ describe('Importar', () => {
   it('error de formato', async () => {
     setPendingImport({ error: 'Este archivo no es una exportación de Anuncios del Sábado.' })
     const { host } = await mountApp('/importar', testDb())
-    await until(() => !!host.textContent?.includes('Este archivo no es una exportación de Anuncios del Sábado.'))
-    expect(host.textContent).toContain('Elegir otro archivo')
+    await until(() => !!snackbar())
+    expect(snackbar()!.getAttribute('role')).toBe('alert')
+    expect(snackbar()!.textContent).toContain('Este archivo no es una exportación de Anuncios del Sábado.')
+    expect(byLabel(snackbar()!, 'Reintentar')).toBeTruthy()
+    expect(host.textContent).toContain('Elige un archivo exportado')
   })
 
   it('sin archivo pendiente', async () => {
@@ -134,6 +138,6 @@ describe('Importar', () => {
   it.each(['/anuncios', '/presentaciones'])('%s tiene el botón Importar', async (path) => {
     const { host } = await mountApp(path, testDb())
     await until(() => !!host.querySelector('input[type="file"][accept*=".zip"]'))
-    expect(host.querySelector('input[type="file"][accept*=".zip"]')!.closest('label')!.textContent).toContain('Importar')
+    expect(host.querySelector('input[type="file"][accept*=".zip"]')!.closest('label')!.textContent + ' ' + host.querySelector('input[type="file"][accept*=".zip"]')!.closest('label')!.title).toContain('Importar')
   })
 })
