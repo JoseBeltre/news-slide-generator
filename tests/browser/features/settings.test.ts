@@ -79,4 +79,11 @@ describe('Configuración', () => {
     const { host } = await open()
     expect(host.querySelector('nav[aria-label="Principal"] a[href="/configuracion"]')).not.toBeNull()
   })
+
+  it('Página pública: "Solo el equipo" guarda publicPage', async () => {
+    const { db, host } = await open()
+    expect(host.querySelector('nav a[href="#pagina-publica"]')?.textContent).toBe('Página pública')
+    await choose(host, 'Solo el equipo')
+    await until(async () => (await loadSettings(db)).publicPage === 'equipo')
+  })
 })

@@ -16,6 +16,7 @@ export const DEFAULT_SETTINGS: Omit<Settings, 'id' | 'updatedAt'> = Object.freez
   dateStyle: 'largo',
   relativeDates: false,
   slideStyle: 'almanaque',
+  publicPage: 'todos',
 })
 
 /** El registro guardado o, si no hay, los valores por defecto. */

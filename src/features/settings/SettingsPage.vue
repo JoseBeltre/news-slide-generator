@@ -4,6 +4,7 @@
 import { computed } from 'vue'
 import { useSync } from '../../data/sync/useSync'
 import UiPageHeader from '../../ui/UiPageHeader.vue'
+import PublicPageSection from './PublicPageSection.vue'
 import SlidesSection from './SlidesSection.vue'
 import StorageSection from './StorageSection.vue'
 import TeamSection from './team/TeamSection.vue'
@@ -13,6 +14,7 @@ const sync = useSync()
 const sections = computed(() => [
   { id: 'slides', label: 'Presentaciones y slides' },
   { id: 'textos', label: 'Textos por defecto' },
+  { id: 'pagina-publica', label: 'Página pública' },
   ...(sync.value ? [{ id: 'equipo', label: 'Equipo' }] : []),
   { id: 'almacenamiento', label: 'Almacenamiento' },
 ])
@@ -32,6 +34,7 @@ const sections = computed(() => [
     </nav>
     <SlidesSection />
     <TextsSection />
+    <PublicPageSection />
     <TeamSection v-if="sync" />
     <StorageSection />
   </div>

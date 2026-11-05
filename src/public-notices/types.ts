@@ -19,6 +19,8 @@ export type LoadState =
   | { kind: 'fresh'; data: PublicNoticesData; savedAt: string }
   | { kind: 'cached'; data: PublicNoticesData; savedAt: string }
   | { kind: 'offline' }
+  /** "Solo el equipo" en Configuración: la página no muestra anuncios (spec P9 §6.3). */
+  | { kind: 'disabled' }
   | { kind: 'error' }
 
 export interface NoticeCard {

@@ -89,4 +89,10 @@ describe('página pública de anuncios', () => {
     const main = host.querySelector('main')!
     expect(main.scrollWidth).toBeLessThanOrEqual(main.clientWidth)
   })
+
+  it('apagada: dice que los anuncios no están disponibles', async () => {
+    const host = show({ kind: 'disabled' })
+    await until(() => !!host.textContent?.includes('Los anuncios no están disponibles por ahora.'))
+    expect(cards(host)).toHaveLength(0)
+  })
 })

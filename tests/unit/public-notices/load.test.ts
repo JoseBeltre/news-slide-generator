@@ -95,4 +95,16 @@ describe('loadNotices', () => {
     expect(await loadNotices({ config: CONFIG, fetch: offline, storage, now: () => NOW })).toEqual({ kind: 'offline' })
     expect(await loadNotices({ config: CONFIG, fetch: offline, storage: cached({ hola: 1 }), now: () => NOW })).toEqual({ kind: 'offline' })
   })
+
+  it('página apagada (enabled false) → disabled y borra la copia guardada', async () => {
+    const storage = cached()
+    const state = await loadNotices({ config: CONFIG, fetch: ok({ ...DATA, enabled: false, notices: [] }), storage, now: () => NOW })
+    expect(state).toEqual({ kind: 'disabled' })
+    expect(storage.getItem(CACHE_KEY)).toBeNull()
+  })
+
+  it('enabled true se trata como siempre', async () => {
+    const state = await loadNotices({ config: CONFIG, fetch: ok({ ...DATA, enabled: true }), storage: memoryStorage(), now: () => NOW })
+    expect(state.kind).toBe('fresh')
+  })
 })

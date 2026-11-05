@@ -139,4 +139,6 @@ export interface Settings extends SyncMeta {
   relativeDates: boolean
   /** Estilo de slide por defecto (§9): Himnario, Almanaque o Cartel. */
   slideStyle: SlideStyleId
+  /** Quién ve la página pública de anuncios (spec P9 §6.3); por defecto 'todos'. */
+  publicPage: 'todos' | 'equipo'
 }

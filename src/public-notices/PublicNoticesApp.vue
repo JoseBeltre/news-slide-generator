@@ -16,6 +16,7 @@ const cards = computed(() => (state.value && 'data' in state.value ? noticeCards
 const label = computed(() => (state.value ? stateLabel(state.value) : null))
 const message = computed(() => {
   if (state.value?.kind === 'offline') return 'Ábrela una vez con internet para guardarla en este celular.'
+  if (state.value?.kind === 'disabled') return 'Los anuncios no están disponibles por ahora.'
   if (state.value?.kind === 'error') return 'No se pudieron cargar los anuncios. Prueba más tarde.'
   return 'No hay anuncios por ahora.'
 })

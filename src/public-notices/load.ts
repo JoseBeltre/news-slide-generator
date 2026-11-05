@@ -8,6 +8,7 @@ export const CACHE_KEY = 'anuncios-publicos:v1'
 const TIMEOUT_MS = 15_000
 
 const dataSchema = z.object({
+  enabled: z.boolean().optional(),
   today: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   settings: z.object({
     timeFormat: z.enum(['12h', '24h']).optional(),
@@ -47,6 +48,14 @@ export async function loadNotices(deps: LoadDeps): Promise<LoadState> {
   }
   const data = response.ok ? await parse(response) : null
   if (!data) return fromCache(deps.storage, 'error')
+  if (data.enabled === false) {
+    try {
+      deps.storage?.removeItem(CACHE_KEY)
+    } catch {
+      // Almacenamiento bloqueado: no había nada que borrar.
+    }
+    return { kind: 'disabled' }
+  }
   const savedAt = deps.now().toISOString()
   try {
     deps.storage?.setItem(CACHE_KEY, JSON.stringify({ data, savedAt }))
@@ -56,10 +65,10 @@ export async function loadNotices(deps: LoadDeps): Promise<LoadState> {
   return { kind: 'fresh', data, savedAt }
 }
 
-async function parse(response: Response): Promise<PublicNoticesData | null> {
+async function parse(response: Response): Promise<(PublicNoticesData & { enabled?: boolean }) | null> {
   try {
     const parsed = dataSchema.safeParse(await response.json())
-    return parsed.success ? parsed.data : null
+    return parsed.success ? (parsed.data as PublicNoticesData & { enabled?: boolean }) : null
   } catch {
     return null
   }
