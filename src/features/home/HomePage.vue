@@ -6,6 +6,7 @@ import AnnouncementList from '../announcements/shared/AnnouncementList.vue'
 import NewAnnouncementButton from '../announcements/shared/NewAnnouncementButton.vue'
 import { useAnnouncementList } from '../announcements/shared/useAnnouncementList'
 import NextPresentationCard from '../presentations/shared/NextPresentationCard.vue'
+import ShareNoticesButton from './ShareNoticesButton.vue'
 
 const UPCOMING = 8
 const { items, loaded, today } = useAnnouncementList({ limit: UPCOMING })
@@ -16,6 +17,7 @@ const { items, loaded, today } = useAnnouncementList({ limit: UPCOMING })
     <NewAnnouncementButton />
   </UiPageHeader>
   <NextPresentationCard />
+  <ShareNoticesButton />
   <AnnouncementList :items="items" :today="today" :loaded="loaded" empty-message="Todavía no hay anuncios activos." />
   <div v-if="items.length" class="pt-4">
     <UiButton variant="ghost" :to="{ name: 'anuncios' }">Ver todos</UiButton>

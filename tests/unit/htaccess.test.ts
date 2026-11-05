@@ -8,8 +8,9 @@ describe('public/.htaccess (§8.6)', () => {
     expect(ht).toMatch(/RewriteRule \. \/index\.html \[L\]/)
   })
 
-  it('no cachea index.html, sw.js ni manifest.webmanifest', () => {
-    expect(ht).toContain('index\\.html|sw\\.js|manifest\\.webmanifest')
+  it('no cachea las páginas, los Service Workers ni manifest.webmanifest', () => {
+    const files = /<FilesMatch "\^\(([^)]+)\)\$">/.exec(ht)![1]!.split('|')
+    for (const f of ['index\\.html', 'publico\\.html', 'sw\\.js', 'publico-sw\\.js', 'manifest\\.webmanifest']) expect(files).toContain(f)
     expect(ht).toContain('Header set Cache-Control "no-cache"')
   })
 

@@ -36,7 +36,12 @@ funciona sin conexión después de abrirla una vez con internet.
   como copia (con "(2)", "(3)"…) o se sobrescribe, en una presentación se eligen sus anuncios, y si la
   fecha ya tiene otra presentación se pide otra. Los ministerios no viajan: se usan los precargados.
 
-La página de lectura para la congregación está planificada (ver `SRS.md`, §11).
+- **Anuncios públicos:** `/anuncios/publico` es una página fija para la congregación (el enlace se
+  comparte una vez en el grupo de WhatsApp) con los anuncios vigentes en texto, también sin internet si se
+  abrió una vez. Cada anuncio tiene la casilla "Mostrar al público"; los cumpleaños y las slides de imagen
+  nunca salen, ni las notas del presentador. En Inicio, "Compartir los anuncios" y "Ver". Google y Bing la
+  pueden indexar; los bots de IA quedan bloqueados (`public/robots.txt` y `.htaccess`). Necesita la
+  migración `supabase/migrations/20261105000000_anuncios_publicos.sql` aplicada en Supabase.
 
 ## Tecnología
 

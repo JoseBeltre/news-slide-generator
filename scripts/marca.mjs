@@ -1,5 +1,6 @@
 // Iconos e imagen para compartir de la app, desde public/icon.svg (sin fondo: escritorio y pestaña),
-// public/icon-maskable.svg (con fondo: Android e iPhone) y scripts/og-template.html.
+// public/icon-maskable.svg (con fondo: Android e iPhone), scripts/og-template.html (la app) y
+// scripts/og-publico-template.html (la página pública de anuncios, P9).
 // Uso: pnpm marca. Los PNG y el favicon.ico se guardan en public/ y se suben al repositorio.
 import { readFileSync, writeFileSync } from 'node:fs'
 import { chromium } from '@playwright/test'
@@ -51,4 +52,16 @@ await og.setContent(read('scripts/og-template.html').replace('/* @font-face: lo 
 await og.evaluate(() => document.fonts.ready)
 await og.screenshot({ path: 'public/og.png' })
 console.log('public/og.png')
+
+// Imagen "A" de la página pública de anuncios (P9). OG_PUBLICO_OUT permite capturarla aparte (mockups).
+const ogPublico = await browser.newPage({ viewport: { width: 1200, height: 630 } })
+await ogPublico.setContent(
+  read('scripts/og-publico-template.html')
+    .replace('/* @font-face: lo añade marca.mjs */', fonts)
+    .replace('<!-- icono: lo añade marca.mjs -->', read('public/icon.svg')),
+)
+await ogPublico.evaluate(() => document.fonts.ready)
+const ogPublicoOut = process.env.OG_PUBLICO_OUT ?? 'public/og-publico.png'
+await ogPublico.screenshot({ path: ogPublicoOut })
+console.log(ogPublicoOut)
 await browser.close()
