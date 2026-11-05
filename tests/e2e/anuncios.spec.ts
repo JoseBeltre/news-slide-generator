@@ -1,6 +1,6 @@
 // Flujo completo de P4 contra el build, sin red: crear, ver en Inicio, duplicar, recargar y eliminar.
 import { devices, expect, test } from '@playwright/test'
-import { goOffline, isoInDays } from './helpers'
+import { goOffline, isoInDays, rowAction } from './helpers'
 
 test('crear, duplicar, recargar y eliminar anuncios sin red (RF-01…RF-10, RNF-01, RNF-03)', async ({ page, context, baseURL }) => {
   const origin = new URL(baseURL!).origin
@@ -29,7 +29,7 @@ test('crear, duplicar, recargar y eliminar anuncios sin red (RF-01…RF-10, RNF-
   await expect(page.locator('[data-announcement-row] [data-title]')).toHaveText('Culto joven')
 
   // 3. Duplicar: abre la copia con el foco en la fecha; se cambia la fecha y se guarda.
-  await page.getByRole('button', { name: 'Duplicar «Culto joven»' }).click()
+  await rowAction(page, 'Culto joven', 'Duplicar')
   await expect(page.locator('#campo-fecha')).toBeFocused()
   await page.locator('#campo-fecha').fill(isoInDays(12))
   await page.keyboard.press('Control+s')
@@ -40,9 +40,12 @@ test('crear, duplicar, recargar y eliminar anuncios sin red (RF-01…RF-10, RNF-
   await expect(page.locator('[data-announcement-row]')).toHaveCount(2)
 
   // 5. Eliminar uno.
-  await page.getByRole('button', { name: 'Eliminar «Culto joven»' }).first().click()
+  await rowAction(page, 'Culto joven', 'Eliminar…')
   await page.locator('dialog[open]').getByRole('button', { name: 'Eliminar' }).click()
   await expect(page.locator('[data-announcement-row]')).toHaveCount(1)
+  // Deshacer devuelve la fila.
+  await page.getByRole('button', { name: 'Deshacer' }).click()
+  await expect(page.locator('[data-announcement-row]')).toHaveCount(2)
 
   expect(external).toEqual([])
 })

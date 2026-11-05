@@ -19,3 +19,9 @@ export async function goOffline(page: Page, context: BrowserContext) {
   await page.reload()
   await context.setOffline(true)
 }
+
+/** Abre el menú de tres puntos de la fila de un anuncio y elige una acción (Duplicar, Exportar, Eliminar…). */
+export async function rowAction(page: Page, title: string, action: string) {
+  await page.getByRole('button', { name: `Acciones de «${title}»` }).first().click()
+  await page.getByRole('menuitem', { name: action }).click()
+}
