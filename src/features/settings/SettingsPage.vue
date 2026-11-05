@@ -19,7 +19,8 @@ const sections = computed(() => [
 </script>
 
 <template>
-  <div>
+  <!-- Espacio al final: un enlace a #equipo o #almacenamiento puede subir la sección hasta arriba. -->
+  <div class="pb-[40vh]">
     <UiPageHeader title="Configuración" />
     <nav aria-label="Secciones" class="-mx-3 flex flex-wrap gap-1 pb-8">
       <a

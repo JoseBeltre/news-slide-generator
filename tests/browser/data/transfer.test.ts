@@ -251,6 +251,26 @@ describe('aplicar la importación', () => {
     expect(counts).toEqual([0, 0, 0, 0])
   })
 
+  it('una ruta de imagen manipulada se rehace desde el hash', async () => {
+    const [a, b] = [db(), db()]
+    const asset = await saveImage(a, await syntheticFlyer(300, 200), 'flyer')
+    const ann = await seed(a, { typeId: 'imagen', imageIds: [asset.id] })
+    const bundle = await readTransferFile((await exportAnnouncement(a, ann.id)).blob)
+    bundle.content.images[0]!.storagePath = `images/${'f'.repeat(64)}.webp`
+    await applyImport(b, await planImport(b, bundle))
+    expect((await b.images.get(asset.id))!.storagePath).toBe(asset.storagePath)
+  })
+
+  it('un archivo de imagen que no coincide con su hash se descarta', async () => {
+    const d = db()
+    const asset = await saveImage(d, await syntheticFlyer(300, 200), 'flyer')
+    const ann = await seed(d, { typeId: 'imagen', imageIds: [asset.id] })
+    const { content } = await readTransferFile((await exportAnnouncement(d, ann.id)).blob)
+    const forged = zipOf({ 'contenido.json': strToU8(JSON.stringify(content)), [`imagenes/${asset.hash}.webp`]: strToU8('otra cosa') })
+    const { blobs } = await readTransferFile(forged)
+    expect(blobs.has(asset.hash)).toBe(false)
+  })
+
   it('importSummary', () => {
     expect(importSummary({ announcementIds: ['a'] })).toBe('Se importó 1 anuncio')
     expect(importSummary({ announcementIds: ['a', 'b', 'c'] })).toBe('Se importaron 3 anuncios')

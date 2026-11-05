@@ -18,7 +18,9 @@ export async function importImages(db: AppDb, images: ImageAsset[], blobs: Map<s
     const deleted = sameHash[0]
     const taken = !deleted && (await db.images.get(image.id))
     const id = deleted?.id ?? (taken ? crypto.randomUUID() : image.id)
-    const record: ImageAsset = deleted ? { ...deleted, deletedAt: null, updatedAt: now } : { ...image, id, deletedAt: null, updatedAt: now }
+    // La ruta en la nube sale del hash, nunca del archivo: así no puede apuntar a la foto de otro.
+    const storagePath = `images/${image.hash}.${image.storagePath.endsWith('.svg') ? 'svg' : 'webp'}`
+    const record: ImageAsset = deleted ? { ...deleted, deletedAt: null, updatedAt: now } : { ...image, id, storagePath, deletedAt: null, updatedAt: now }
     await db.images.put(record)
     if (blob) await db.imageBlobs.put({ id, blob })
     await db.outbox.put({ table: 'images', id })

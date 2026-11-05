@@ -15,16 +15,30 @@ export function useImport() {
   const loaded = ref(false)
 
   // Lee el archivo pendiente (también si se elige otro desde esta pantalla) y lo deja en memoria aquí.
+  // Solo cuenta el último: si llegan dos seguidos, el plan del primero se descarta.
+  let generation = 0
   watch(
     pendingImport,
     async (pending) => {
-      if (!pending) return void (loaded.value = true)
+      if (!pending) {
+        if (!generation) loaded.value = true
+        return
+      }
+      const mine = ++generation
+      loaded.value = false
       setPendingImport(null)
       done.value = null
       plan.value = null
       error.value = 'error' in pending ? pending.error : null
-      if ('bundle' in pending) plan.value = await planImport(db, pending.bundle)
-      loaded.value = true
+      if (!('bundle' in pending)) return void (loaded.value = true)
+      try {
+        const next = await planImport(db, pending.bundle)
+        if (mine === generation) plan.value = next
+      } catch {
+        if (mine === generation) error.value = 'No se pudo preparar la importación.'
+      } finally {
+        if (mine === generation) loaded.value = true
+      }
     },
     { immediate: true },
   )

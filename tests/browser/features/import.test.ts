@@ -1,6 +1,6 @@
 // Importar (RF-112): revisión con "Ya está en este equipo", copia por defecto o sobrescribir, anuncios
 // con casilla en una presentación, fecha ocupada que bloquea, y la pantalla de hecho con su resumen.
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { AppDb } from '../../../src/data/local/db'
 import { createRepository } from '../../../src/data/local/repository'
 import { exportAnnouncement, exportPresentation } from '../../../src/data/transfer/pack'
@@ -10,6 +10,7 @@ import { cleanupMounted } from '../helpers/mount'
 import { byLabel, cleanupDbs, mountApp, seed, testDb, until } from '../helpers/app'
 
 afterEach(async () => {
+  vi.restoreAllMocks()
   setPendingImport(null)
   cleanupMounted()
   await cleanupDbs()
@@ -85,6 +86,37 @@ describe('Importar', () => {
     await until(() => !!host.textContent?.includes('Se importó'))
     const dates = (await createRepository(b.presentations).list()).map((q) => q.date).sort()
     expect(dates).toEqual(['2026-11-07', '2026-11-14'])
+  })
+
+  it('si no se puede preparar la revisión, lo dice', async () => {
+    const db = testDb()
+    const a = await seed(db, { typeId: 'aviso', values: { titulo: 'Culto' } })
+    setPendingImport({ bundle: await readTransferFile((await exportAnnouncement(db, a.id)).blob) })
+    vi.spyOn(db.announcements, 'bulkGet').mockRejectedValue(new Error('falla'))
+    const { host } = await mountApp('/importar', db)
+    await until(() => !!host.textContent?.includes('No se pudo preparar la importación.'))
+    expect(host.textContent).toContain('Elegir otro archivo')
+  })
+
+  it('si llegan dos archivos seguidos, gana el último', async () => {
+    const db = testDb()
+    const first = await seed(db, { typeId: 'aviso', values: { titulo: 'Primero' } })
+    const second = await seed(db, { typeId: 'aviso', values: { titulo: 'Segundo' } })
+    const [b1, b2] = [await readTransferFile((await exportAnnouncement(db, first.id)).blob), await readTransferFile((await exportAnnouncement(db, second.id)).blob)]
+    const original = db.announcements.bulkGet.bind(db.announcements)
+    let calls = 0
+    const slowFirst = async (keys: string[]) => {
+      if (calls++ === 0) await new Promise((r) => setTimeout(r, 300))
+      return original(keys)
+    }
+    vi.spyOn(db.announcements, 'bulkGet').mockImplementation(slowFirst as never)
+    setPendingImport({ bundle: b1 })
+    const { host } = await mountApp('/importar', db)
+    setPendingImport({ bundle: b2 })
+    await until(() => !!host.textContent?.includes('Segundo'))
+    await new Promise((r) => setTimeout(r, 500))
+    expect(host.textContent).toContain('Segundo')
+    expect(host.textContent).not.toContain('Primero')
   })
 
   it('error de formato', async () => {

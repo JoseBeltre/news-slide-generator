@@ -28,7 +28,10 @@ const linkClass =
           :class="linkClass"
           exact-active-class="text-ink! underline underline-offset-4"
         >
-          <component :is="link.icon" v-if="'icon' in link" :size="16" aria-hidden="true" class="mr-1.5" />{{ link.label }}
+          <template v-if="'icon' in link">
+            <component :is="link.icon" :size="18" aria-hidden="true" class="md:mr-1.5" /><span class="sr-only md:not-sr-only">{{ link.label }}</span>
+          </template>
+          <template v-else>{{ link.label }}</template>
         </RouterLink>
       </nav>
       <div class="ml-auto flex items-center gap-1 md:ml-0">
