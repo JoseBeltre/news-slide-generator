@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Anuncios (RF-08): todos, con filtros.
 import UiPageHeader from '../../../ui/UiPageHeader.vue'
+import ImportButton from '../../transfer/shared/ImportButton.vue'
 import AnnouncementList from '../shared/AnnouncementList.vue'
 import NewAnnouncementButton from '../shared/NewAnnouncementButton.vue'
 import { useAnnouncementList } from '../shared/useAnnouncementList'
@@ -11,6 +12,7 @@ const { view, typeId, items, loaded, today } = useAnnouncementList()
 
 <template>
   <UiPageHeader title="Anuncios">
+    <ImportButton />
     <NewAnnouncementButton />
   </UiPageHeader>
   <AnnouncementFilters v-model:view="view" v-model:type-id="typeId" />

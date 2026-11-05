@@ -26,7 +26,7 @@ const last = computed(() => {
     <div class="mt-4 flex flex-wrap items-center gap-2">
       <template v-if="email">
         <UiButton variant="primary" @click="emit('syncNow')">Sincronizar ahora</UiButton>
-        <UiButton variant="ghost" to="/equipo" @click="emit('close')">Equipo</UiButton>
+        <UiButton variant="ghost" to="/configuracion#equipo" @click="emit('close')">Equipo</UiButton>
       </template>
       <UiButton v-else variant="primary" to="/entrar" @click="emit('close')">Entrar</UiButton>
     </div>

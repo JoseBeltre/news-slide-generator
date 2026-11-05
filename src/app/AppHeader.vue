@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // Encabezado de la app: nombre (lleva a Inicio), navegación principal y estado de la sincronización.
+import { Settings } from '@lucide/vue'
 import { RouterLink } from 'vue-router'
 import SyncIndicator from '../features/sync/SyncIndicator.vue'
 import UiThemeToggle from '../ui/UiThemeToggle.vue'
@@ -8,6 +9,7 @@ const LINKS = [
   { to: { name: 'inicio' }, label: 'Inicio' },
   { to: { name: 'anuncios' }, label: 'Anuncios' },
   { to: { name: 'presentaciones' }, label: 'Presentaciones' },
+  { to: { name: 'configuracion' }, label: 'Configuración', icon: Settings },
 ] as const
 
 const linkClass =
@@ -26,7 +28,10 @@ const linkClass =
           :class="linkClass"
           exact-active-class="text-ink! underline underline-offset-4"
         >
-          {{ link.label }}
+          <template v-if="'icon' in link">
+            <component :is="link.icon" :size="18" aria-hidden="true" class="md:mr-1.5" /><span class="sr-only md:not-sr-only">{{ link.label }}</span>
+          </template>
+          <template v-else>{{ link.label }}</template>
         </RouterLink>
       </nav>
       <div class="ml-auto flex items-center gap-1 md:ml-0">

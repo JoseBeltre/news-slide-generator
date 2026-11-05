@@ -5,6 +5,9 @@ import { SyncError, type RemoteRow, type SyncErrorKind, type SyncRemote } from '
 
 const BUCKET = 'images'
 const COLUMNS = 'id, data, updated_at, deleted_at, synced_at'
+/** Las imágenes viven en `images/<hash>.<ext>` dentro del bucket; se listan por páginas. */
+const FOLDER = 'images'
+const PAGE = 1000
 
 interface ApiError {
   message: string
@@ -48,6 +51,16 @@ export function createSupabaseRemote(client: SupabaseClient): SyncRemote {
       const { data, error } = await client.storage.from(BUCKET).download(path)
       if (error || !data) throw classify((error as ApiError | null) ?? { message: 'Archivo vacío', statusCode: '404' })
       return data
+    },
+    async usedBytes() {
+      let total = 0
+      for (let offset = 0; ; offset += PAGE) {
+        const { data, error } = await client.storage.from(BUCKET).list(FOLDER, { limit: PAGE, offset })
+        if (error) throw classify(error as ApiError)
+        const page = data ?? []
+        for (const item of page) total += Number(item.metadata?.size ?? 0)
+        if (page.length < PAGE) return total
+      }
     },
   }
 }

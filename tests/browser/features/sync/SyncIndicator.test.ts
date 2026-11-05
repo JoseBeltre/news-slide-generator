@@ -52,7 +52,7 @@ describe('SyncIndicator', () => {
     await now.trigger('click')
     expect(ctx.service.syncNow).toHaveBeenCalled()
     expect(w.text()).toContain('ana@iglesia.do')
-    expect(w.find('a[href="/equipo"]').exists()).toBe(true)
+    expect(w.find('a[href="/configuracion#equipo"]').exists()).toBe(true)
   })
 
   it('el panel tiene fondo propio (no transparente)', async () => {

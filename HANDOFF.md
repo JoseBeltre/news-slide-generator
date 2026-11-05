@@ -62,6 +62,8 @@
 
 ## Próxima tarea
 
+**P10 (§11 paso 10, Configuración y exportar/importar) hecho en la rama `fase1-p10-configuracion`** (ejecución nativa; ledger `.superpowers/sdd/2026-11-05-fase1-p10-configuracion/progress.md`). Diseño: `docs/superpowers/specs/2026-11-04-p10-configuracion-y-traspaso-design.md`; plan: `docs/superpowers/plans/2026-11-05-fase1-p10-configuracion.md`. Incluye `/configuracion` (`src/features/settings/`: slides, textos, Equipo movido de `sync/team`, Almacenamiento con `SyncRemote.usedBytes`), `saveSettings`, y el traspaso (`src/data/transfer/`: `format`, `pack`, `unpack`, `plan`, `images`, `apply`; `src/features/transfer/`: `ExportButton`, `ImportButton`, `/importar`). `/equipo` redirige a `/configuracion#equipo`. Falta: revisión final y unir a `master`. **Siguiente:** §11 paso 9 (página de lectura pública + OG "A"). Fuera por ahora: respaldo completo (RF-103), y nombre de la iglesia, ministerios y logos (resto de RF-110).
+
 **P8 (§11 paso 8, Supabase y sincronización local-first) unido a `master` y subido** (antes en la rama `fase1-p8-sync`, ya borrada) (ejecución nativa; ledger `.superpowers/sdd/2026-11-03-fase1-p8-sincronizacion/progress.md`). Diseño: `docs/superpowers/specs/2026-11-03-p8-sincronizacion-design.md`; plan: `docs/superpowers/plans/2026-11-03-fase1-p8-sincronizacion.md`. Revisión final hecha (5 Important arreglados; menores en el ledger). **Proyecto Supabase de la iglesia** (cuenta de la iglesia, no la personal; la conexión MCP de Claude no tiene acceso): `jyxhnqbqzqrbahorigxq`, URL `https://jyxhnqbqzqrbahorigxq.supabase.co`. El responsable aplicó la migración a mano en el SQL Editor y añadió 2 editores; comprobado desde fuera con la clave pública (ping 200, `can_sign_in` true/false, anon recibe 401 en tablas y `sync_push`). `VITE_SUPABASE_URL`/`VITE_SUPABASE_PUBLISHABLE_KEY` están en GitHub como **secretos** (los workflows aceptan `vars` o `secrets`) y en `.env.local` (ignorado). Cuotas del plan gratuito: base de datos 500 MB por proyecto; almacenamiento 1 GB y egress 5 GB por **organización**. Falta: los **pasos manuales del responsable**:
 
 1. SMTP propio en Supabase (buzón de Hostinger, p. ej. `no-responder@jose-web.com`): sin él, el código solo llega a miembros de la organización de Supabase.
@@ -72,7 +74,7 @@
 
 Sigue pendiente la prueba real en la iglesia (laptop sin internet + pantallas en modo extendido). Después: §11 paso 9 (página de lectura pública + OG "A").
 
-**Configuración (RF-110…113) aplazada** (2026-11-03, decisión del responsable): la app es solo para la iglesia local; se retoma si hace falta un ministerio no precargado o cambiar el mensaje de cumpleaños por defecto.
+**Configuración (RF-110…113):** retomada en P10 (2026-11-04) con valores por defecto, textos, Equipo y Almacenamiento; ministerios, logos y nombre de la iglesia siguen aplazados.
 
 ### Sincronización (P8)
 
@@ -269,3 +271,4 @@ Hallazgos menores de la revisión final de P1, pendientes de programar (sobre to
 | 2026-11-03 | Proyecto Supabase de la iglesia conectado: migración aplicada por el responsable y verificada desde fuera; workflows aceptan las dos claves como `vars` o `secrets` | `pnpm test` workflows 4/4 | ver `git log` |
 | 2026-11-04 | P8 unido a `master` y subido. Las pruebas y las E2E ignoran `.env.local` (Vitest `envDir: false`; Playwright vacía las variables). El primer despliegue falló en CI: `checkOffline` pedía la persistencia después de esperar la descarga; ahora la pide al momento | typecheck 0; `pnpm test` 881/881; `test:e2e` (chromium) 10/10 | ver `git log` |
 | 2026-11-04 | Entrar en pantalla propia, sin encabezado y centrada (con "Volver a la app"); el panel del indicador usaba `bg-canvas` (no existe) y salía transparente: ahora `bg-surface`. Primer correo de cada cuenta = plantilla "Confirm signup" de Supabase (con enlace): hay que pegar ahí también `supabase/templates/codigo.html`, y poner la Site URL | typecheck 0; `pnpm test` 883/883; `test:e2e` (chromium) 10/10 | ver `git log` |
+| 2026-11-05 | P10: Configuración (valores por defecto, textos, Equipo, Almacenamiento) y exportar/importar un anuncio o una presentación en `.zip` con pantalla de revisión (copia "(n)" o sobrescribir, casillas, fecha ocupada), imágenes por hash, todo en una transacción y en `outbox` | typecheck 0; `pnpm test` 948/948; `test:e2e` (chromium) 39/39. Revisión final (Sonnet): 0 Critical, 2 Important arreglados (imágenes del archivo verificadas por hash y ruta rehecha; revisión robusta a errores y a dos archivos seguidos), 6 menores en el ledger | ver `git log` |

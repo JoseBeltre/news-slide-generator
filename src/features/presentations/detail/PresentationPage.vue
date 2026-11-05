@@ -9,6 +9,7 @@ import { formatDate, toIsoDate } from '../../../lib/format'
 import UiButton from '../../../ui/UiButton.vue'
 import UiEmptyState from '../../../ui/UiEmptyState.vue'
 import UiPageHeader from '../../../ui/UiPageHeader.vue'
+import ExportButton from '../../transfer/shared/ExportButton.vue'
 import AddAnnouncements from './AddAnnouncements.vue'
 import FrameOptions from './FrameOptions.vue'
 import PresentationItems from './PresentationItems.vue'
@@ -48,7 +49,7 @@ const add = (announcementId: string) => update((p) => ({ items: [...p.items, { a
     <UiButton :to="{ name: 'presentaciones' }">Ver presentaciones</UiButton>
   </UiEmptyState>
   <template v-else-if="p">
-    <UiPageHeader :title="formatDate(p.date)" />
+    <UiPageHeader :title="formatDate(p.date)"><ExportButton kind="presentacion" :id="p.id" /></UiPageHeader>
     <div class="grid gap-8 lg:grid-cols-[2fr_3fr] lg:items-start">
       <div class="flex flex-col gap-8">
         <PresentationItems :items="items" :by-id="byId" :today="today" @move="move" @remove="removeAt" />
