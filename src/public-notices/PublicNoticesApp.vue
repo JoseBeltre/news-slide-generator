@@ -49,10 +49,8 @@ const message = computed(() => {
 <template>
   <!-- Aviso de sin conexión: baja desde arriba y se queda mientras se muestra la copia guardada. -->
   <Transition
-    enter-active-class="transition duration-250 ease-out"
-    leave-active-class="transition duration-180 ease-in"
-    enter-from-class="-translate-y-full opacity-0 motion-reduce:translate-y-0"
-    leave-to-class="-translate-y-full opacity-0 motion-reduce:translate-y-0"
+    enter-active-class="motion-safe:animate-drop-in motion-reduce:animate-fade-in"
+    leave-active-class="motion-safe:animate-drop-out motion-reduce:animate-fade-out"
   >
     <p v-if="offline" role="status" class="sticky top-0 z-30 flex items-center gap-2.5 border-b border-warning bg-warning-bg px-4 py-3 text-[15px] font-medium text-warning">
       <WifiOff :size="20" aria-hidden="true" class="shrink-0" />{{ label }}

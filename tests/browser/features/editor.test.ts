@@ -63,6 +63,14 @@ describe('editor con vista previa (RF-03, RNF-04)', () => {
     expect(snackbar()!.dataset.tone).toBe('normal')
   })
 
+  it('el aviso de guardado se ve de verdad: termina de entrar (opacidad 1, sin clases de entrada)', async () => {
+    const { host } = await newCulto()
+    clickSave(host)
+    await until(() => !!snackbar())
+    const el = snackbar()!
+    await until(() => getComputedStyle(el).opacity === '1' && !el.className.includes('opacity-0'), 2000)
+  })
+
   it('el aviso de guardado ofrece Volver, que regresa a la lista de anuncios', async () => {
     const { host, router } = await newCulto()
     clickSave(host)

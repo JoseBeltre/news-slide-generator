@@ -64,10 +64,8 @@ watch(
       </button>
       <span v-if="max" data-counter :class="['ml-auto font-meta text-meta', counterTone]">{{ count ?? 0 }}/{{ max }}</span>
       <Transition
-        enter-active-class="transition duration-160 ease-out"
-        leave-active-class="transition duration-120 ease-in"
-        enter-from-class="translate-y-1 opacity-0 motion-reduce:translate-y-0"
-        leave-to-class="translate-y-1 opacity-0 motion-reduce:translate-y-0"
+        enter-active-class="motion-safe:animate-tip-in motion-reduce:animate-fade-in"
+        leave-active-class="motion-safe:animate-tip-out motion-reduce:animate-fade-out"
       >
         <p v-if="hint" v-show="tip" :id="hintId" role="tooltip" class="pointer-events-none absolute inset-x-0 top-full z-20 mt-0.5 rounded-md bg-ink px-3 py-2.5 text-sm/snug text-background">
           {{ hint }}

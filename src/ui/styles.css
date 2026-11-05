@@ -75,6 +75,54 @@
   --animate-fade-pulse: fade-pulse 1.4s ease-in-out infinite;
   --animate-spin-fast: spin 700ms linear infinite;
 
+  /* Entradas y salidas de capas flotantes (snackbar, menú, tooltip, aviso de arriba): animaciones de CSS que
+     arrancan al insertarse, sin depender de que Vue quite clases en el siguiente frame. */
+  --animate-snack-in: snack-in 220ms ease-out both;
+  --animate-snack-out: snack-out 150ms ease-in both;
+  --animate-menu-in: menu-in 160ms ease-out both;
+  --animate-menu-out: menu-out 120ms ease-in both;
+  --animate-tip-in: tip-in 160ms ease-out both;
+  --animate-tip-out: tip-out 120ms ease-in both;
+  --animate-drop-in: drop-in 250ms ease-out both;
+  --animate-drop-out: drop-out 180ms ease-in both;
+  --animate-fade-out: fade-out 150ms ease-in both;
+
+  @keyframes snack-in {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes snack-out {
+    from { opacity: 1; transform: none; }
+    to { opacity: 0; transform: translateY(24px); }
+  }
+  @keyframes menu-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes menu-out {
+    from { opacity: 1; transform: none; }
+    to { opacity: 0; transform: scale(0.95); }
+  }
+  @keyframes tip-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes tip-out {
+    from { opacity: 1; transform: none; }
+    to { opacity: 0; transform: translateY(4px); }
+  }
+  @keyframes drop-in {
+    from { opacity: 0; transform: translateY(-100%); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes drop-out {
+    from { opacity: 1; transform: none; }
+    to { opacity: 0; transform: translateY(-100%); }
+  }
+  @keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
   @keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }

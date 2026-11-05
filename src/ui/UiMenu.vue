@@ -100,10 +100,8 @@ function choose(key: string) {
   </button>
   <Teleport to="body">
     <Transition
-      enter-active-class="transition duration-160 ease-out"
-      leave-active-class="transition duration-120 ease-in"
-      enter-from-class="scale-95 opacity-0 motion-reduce:scale-100"
-      leave-to-class="scale-95 opacity-0 motion-reduce:scale-100"
+      enter-active-class="motion-safe:animate-menu-in motion-reduce:animate-fade-in"
+      leave-active-class="motion-safe:animate-menu-out motion-reduce:animate-fade-out"
     >
       <div
         v-if="open"

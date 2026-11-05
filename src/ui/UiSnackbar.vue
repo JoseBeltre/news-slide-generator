@@ -23,10 +23,8 @@ const ACTION = 'min-h-11 cursor-pointer rounded-sm px-3.5 text-[15px] font-semib
     <div v-for="live in LIVE" :key="live.role" :role="live.role" :aria-live="live.politeness" aria-atomic="true">
       <Transition
         mode="out-in"
-        enter-active-class="transition duration-220 ease-out"
-        leave-active-class="transition duration-150 ease-in"
-        enter-from-class="translate-y-6 opacity-0 motion-reduce:translate-y-0"
-        leave-to-class="translate-y-6 opacity-0 motion-reduce:translate-y-0"
+        enter-active-class="motion-safe:animate-snack-in motion-reduce:animate-fade-in"
+        leave-active-class="motion-safe:animate-snack-out motion-reduce:animate-fade-out"
       >
         <div
           v-if="snackbarState.current && (snackbarState.current.tone === 'error') === live.error"

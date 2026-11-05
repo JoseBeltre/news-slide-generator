@@ -22,6 +22,14 @@ const flush = () => new Promise((r) => setTimeout(r, 30))
 const Icon = defineComponent(() => () => h('i'))
 
 describe('UiSnackbar', () => {
+  it.each(['normal', 'error', 'warning'] as const)('el aviso %s termina de entrar: opacidad 1 y sin clases de entrada', async (tone) => {
+    const { host } = mountInHost(UiSnackbar, 390, 700)
+    notify({ message: 'Listo', tone })
+    await until(() => !!host.querySelector('[data-snackbar]'))
+    const el = host.querySelector<HTMLElement>('[data-snackbar]')!
+    await until(() => getComputedStyle(el).opacity === '1' && !el.className.includes('opacity-0'), 2000)
+  })
+
   it('las regiones vivas (status cortés y alert asertiva) existen desde el inicio, vacías', () => {
     const { host } = mountInHost(UiSnackbar, 390, 700)
     expect(host.querySelector('[role="status"][aria-live="polite"]')?.textContent).toBe('')
