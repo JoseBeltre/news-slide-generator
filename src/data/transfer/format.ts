@@ -43,6 +43,7 @@ const announcement = z.looseObject({
   values: z.record(z.string(), z.unknown()),
   imageIds: z.array(z.string()),
   status: z.enum(['borrador', 'listo', 'no_cabe']),
+  showPublic: z.boolean().optional(),
   createdAt: z.string(),
 })
 

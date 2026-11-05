@@ -55,6 +55,21 @@ describe('exportar y leer', () => {
     expect(blobs.get(asset.hash)!.type).toBe(saved.type)
   })
 
+  it('exportar y leer conserva showPublic false', async () => {
+    const d = db()
+    const a = await seed(d, { typeId: 'aviso', values: { titulo: 'Oculto' }, showPublic: false })
+    const { content } = await readTransferFile((await exportAnnouncement(d, a.id)).blob)
+    expect(content.announcements[0]!.showPublic).toBe(false)
+  })
+
+  it('showPublic que no es booleano da TransferFormatError', async () => {
+    const d = db()
+    const a = await seed(d, { typeId: 'aviso', values: { titulo: 'X' } })
+    const { content } = await readTransferFile((await exportAnnouncement(d, a.id)).blob)
+    const bad = { ...content, announcements: [{ ...content.announcements[0], showPublic: 'no' }] }
+    await expect(readTransferFile(contentFile(bad))).rejects.toBeInstanceOf(TransferFormatError)
+  })
+
   it('anuncio sin título se llama anuncio-<typeId>.zip', async () => {
     const d = db()
     const a = await seed(d, { typeId: 'cumpleanos' })

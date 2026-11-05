@@ -7,6 +7,7 @@ import { toIsoDate } from '../../../../lib/format'
 import type { SlideContext } from '../../../../slides/templates/contract'
 import { templatesFor } from '../../../../slides/templates/registry'
 import { hasMainDate, type AnnouncementTypeDef } from '../../../../slides/types/fields'
+import UiCheckbox from '../../../../ui/UiCheckbox.vue'
 import UiChoiceGroup from '../../../../ui/UiChoiceGroup.vue'
 import DateFormatPicker from '../../shared/DateFormatPicker.vue'
 import LogoPicker from './LogoPicker.vue'
@@ -47,5 +48,12 @@ const sampleDate = computed(() => {
       :today="ctx.today"
       :defaults="ctx.settings"
     />
+    <!-- Página pública (P9): los cumpleaños y los flyers nunca salen ahí. -->
+    <OptionGroup v-if="typeDef.id !== 'imagen' && typeDef.id !== 'cumpleanos'" title="Público">
+      <UiCheckbox :model-value="draft.showPublic !== false" @update:model-value="(v) => (draft.showPublic = v ? undefined : false)">
+        Mostrar al público
+      </UiCheckbox>
+      <p class="-mt-1 pl-7 text-xs text-ink-muted">Sale en la página que se comparte con la congregación.</p>
+    </OptionGroup>
   </div>
 </template>

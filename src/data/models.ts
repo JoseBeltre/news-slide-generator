@@ -57,6 +57,8 @@ export interface Announcement extends SyncMeta {
   values: Record<string, unknown>
   imageIds: string[]
   presenterNotes?: string
+  /** Sale en la página pública (P9). Sin el campo cuenta como visible; se guarda `false` solo al desmarcar. */
+  showPublic?: boolean
   /** 'YYYY-MM-DD', para archivar y sugerir. */
   eventDate?: string
   status: 'borrador' | 'listo' | 'no_cabe'
