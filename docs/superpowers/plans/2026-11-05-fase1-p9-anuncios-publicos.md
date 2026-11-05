@@ -472,3 +472,15 @@ Mockup aprobado: `.superpowers/sdd/2026-11-05-fase1-p9-anuncios-publicos/mockup-
   - `repair` lista exactamente esas dos versiones.
 - **README y HANDOFF:** cómo crear los dos secretos. El token se crea en supabase.com/dashboard/account/tokens con la cuenta de la iglesia; la contraseña está en Project Settings → Database.
 - **Commit:** `ci(despliegue): aplicar las migraciones de Supabase antes de publicar [§8.6]`.
+
+### Task 13: Vista del equipo en la página pública (spec §6.5)
+- **Migración** `supabase/migrations/20261105020000_vista_equipo.sql`: `public._team_notices_at(p_now)` (interna, sin grant a anon/authenticated) y `public.team_notices()` (`security definer`, `search_path = ''`, grant solo a `authenticated`; `raise exception` si no es editor). Mismo filtro que la pública, sin quitar `predicador`/`contacto` (sí `fotoPredicador`) y sin mirar `publicPage`.
+- **`src/public-notices/session.ts`:** `teamToken(storage, supabaseUrl, nowMs): string | null` lee `sb-<ref>-auth-token`; `null` si falta, no se entiende o `expires_at * 1000 <= nowMs`.
+- **`load.ts`:** con token, primero `rpc/team_notices` con `Authorization: Bearer`; si va bien, `team: true` en el estado y caché en `TEAM_CACHE_KEY = 'anuncios-equipo:v1'`; si falla por red, la copia del equipo; si responde error (401/403/4xx), la vista pública. Sin token, la pública de siempre.
+- **`cards.ts`:** `noticeCards(data, { team })`; con `team`, no quita los campos `audience: 'slides'` y muestra también el contacto público.
+- **`PublicNoticesApp.vue`:** `TeamBanner` (`role="note"`, candado 16 px, 14 px) bajo el encabezado si `state.team`.
+- **Pruebas:**
+  - **DB:** anon no puede llamar `team_notices`; un no editor recibe error; un editor ve `predicador` y `contacto`, y los ve también con `publicPage = 'equipo'`.
+  - **Unit:** `teamToken` (falta, vencida, válida); `load` (equipo bien, 403 → pública, sin red → copia del equipo, sin token nunca lee la copia del equipo); `cards` con `team`.
+  - **Browser:** la franja aparece solo con `team`.
+- **Commit:** `feat(publico): vista del equipo con nombres y contactos privados [RF-72]`.

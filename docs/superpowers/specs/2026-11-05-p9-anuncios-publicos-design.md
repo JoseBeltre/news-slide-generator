@@ -179,3 +179,12 @@ Bajo la casilla "Mostrar al público", en lugar de la línea actual, va este avi
   - **Proyecto:** la referencia va como variable (`SUPABASE_PROJECT_REF`, `jyxhnqbqzqrbahorigxq`) y el paso hace `supabase link --project-ref $SUPABASE_PROJECT_REF`.
 - **Migraciones ya aplicadas:** el responsable aplicó a mano `20261103000000` y `20261105000000`, así que antes de `supabase db push` el paso marca esas dos versiones con `supabase migration repair --status applied`. Si la versión ya está registrada, no cambia nada.
 - **Si faltan los secretos:** el paso falla con un mensaje claro, como ya hace con FTP.
+
+### 6.5 Vista del equipo (decidida por el responsable, 2026-11-05)
+
+- **Qué es:** la misma página `/anuncios/publico`, abierta en un celular con la sesión del equipo iniciada en la app, muestra también los datos que solo van en las slides: el predicador y el contacto privado. Sin sesión (congregación, Google, bots) no cambia nada.
+- **Servidor:** función nueva `public.team_notices()`, solo para `authenticated`. Si `public.is_editor()` es falso, lanza un error. Devuelve la misma forma que `public_notices()`, sin quitar `predicador` ni `contacto` (la foto sigue fuera: vive en el almacenamiento privado), y no mira el interruptor de §6.3: con "Solo el equipo", el equipo sigue viendo sus anuncios.
+- **Página:** lee la sesión que la app guarda en este mismo dominio (`localStorage`, clave `sb-<ref>-auth-token`, con `access_token` y `expires_at`). Sin sesión, con la sesión vencida o si `team_notices()` falla, usa la vista pública. No renueva la sesión: al abrir la app se renueva sola. La página no carga la librería de Supabase.
+- **Copia sin internet:** la del equipo va en otra clave (`anuncios-equipo:v1`) y nunca se mezcla con la pública. La vista pública sin sesión nunca lee la del equipo.
+- **Marca (mockup aprobado `mockup-p9-equipo`):** una franja naranja bajo el encabezado, con un candado: "**Vista del equipo.** Incluye nombres y contactos privados. No compartas capturas de esta pantalla."
+- **Tarjetas:** con los campos de `audience: 'slides'` y con el contacto público también, aunque haya privado.
