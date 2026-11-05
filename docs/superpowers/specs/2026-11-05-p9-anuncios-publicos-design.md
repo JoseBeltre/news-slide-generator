@@ -128,3 +128,54 @@ Una **página pública fija**, `https://anunciosm2.jose-web.com/anuncios/publico
 ## Fuera de alcance
 
 Los íconos de ayuda con tooltip en cada campo del editor (pedido del responsable, trabajo aparte después de P9), las imágenes en la página pública, las notas para editores con sesión, la presentación del sábado como fuente y un enlace por presentación.
+
+## 6. Cambios tras la revisión (2026-11-05): privacidad, interruptor y migraciones
+
+El responsable frenó la publicación: **ningún dato personal (PII) sale en la página pública**. No hay autorización para publicar nombres ni contactos personales.
+
+### 6.1 Campos con audiencia
+
+- **Atributos nuevos en `FieldDef`:**
+  - **`audience?: 'slides'`:** el campo se proyecta, pero nunca sale en la página pública.
+  - **`fallbackFor?: string`:** el campo sale en la slide solo si el campo que nombra está vacío.
+- **Nombres:**
+  - `predicador` y `fotoPredicador` (Culto) llevan `audience: 'slides'`.
+  - Los Cumpleaños ya estaban fuera.
+- **Contacto, en dos campos** (Salida, Obra misionera, Actividad y Aviso):
+  - **`contacto` (privado):**
+    - **Etiqueta:** "Contacto privado".
+    - **Ayuda:** "Sale en las slides. Nunca en la página pública."
+    - **Audiencia:** `audience: 'slides'`.
+    - **Datos viejos:** los contactos que ya existen quedan como privados.
+  - **`contactoPublico` (público):**
+    - **Etiqueta:** "Contacto público".
+    - **Ejemplo:** "Habla con el Director de Jóvenes".
+    - **Ayuda:** "Sale en la página pública, y en la slide si no hay contacto privado."
+    - **Atributos:** `fallbackFor: 'contacto'`, con el ícono y el largo del privado.
+- **Slides:** `normalizeAnnouncement` omite un campo con `fallbackFor` si el campo nombrado tiene valor. Es genérico, no hay código por tipo (RNF-08).
+- **Página pública:** las tarjetas omiten los campos con `audience: 'slides'`, sin importar `fallbackFor`.
+- **Servidor:** una migración nueva reemplaza `_public_notices_at` y quita de `values` las claves con `audience: 'slides'` y las de imagen (`predicador`, `fotoPredicador`, `contacto`). Una prueba deriva esa lista de las definiciones, así que un campo nuevo con audiencia la hace fallar.
+
+### 6.2 Aviso en el editor
+
+Bajo la casilla "Mostrar al público", en lugar de la línea actual, va este aviso: "Sale en la página que se comparte con la congregación. No escribas nombres ni teléfonos de personas." Aplica a los campos de texto libre (título, descripción, mensaje y lugar), que el sistema no puede revisar.
+
+### 6.3 Interruptor en Configuración
+
+- **Sección "Página pública"** en `/configuracion`, con dos opciones:
+  - **"Para todos"** (por defecto): la página funciona como hasta ahora.
+  - **"Solo el equipo"**: nadie ve los anuncios en la página.
+- **Campo nuevo:** `Settings.publicPage: 'todos' | 'equipo'`.
+- **Respuesta del servidor:** `public_notices()` devuelve `{ enabled: false, notices: [] }` si está en `'equipo'`.
+- **Mensaje de la página apagada:** "Los anuncios no están disponibles por ahora." Además se borra la copia guardada en el celular.
+- **En Inicio:** con la página apagada, la línea de compartir no aparece.
+
+### 6.4 Migraciones automáticas
+
+- **En `deploy.yml`:**
+  - **Orden:** después de las pruebas y antes de subir por FTP. Si la migración falla, no se publica nada.
+  - **Herramienta:** se instala la CLI de Supabase (`supabase/setup-cli`).
+  - **Secretos:** `SUPABASE_ACCESS_TOKEN` y `SUPABASE_DB_PASSWORD`, que los crea el responsable.
+  - **Proyecto:** la referencia va como variable (`SUPABASE_PROJECT_REF`, `jyxhnqbqzqrbahorigxq`) y el paso hace `supabase link --project-ref $SUPABASE_PROJECT_REF`.
+- **Migraciones ya aplicadas:** el responsable aplicó a mano `20261103000000` y `20261105000000`, así que antes de `supabase db push` el paso marca esas dos versiones con `supabase migration repair --status applied`. Si la versión ya está registrada, no cambia nada.
+- **Si faltan los secretos:** el paso falla con un mensaje claro, como ya hace con FTP.
