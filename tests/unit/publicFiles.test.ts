@@ -57,10 +57,12 @@ describe('.htaccess', () => {
     expect(rule).toBeLessThan(index(/^RewriteRule \. \/index\.html/))
   })
 
-  it('X-Robots-Tag noindex en todo salvo la página pública', () => {
-    const header = lines.find((l) => l.startsWith('Header set X-Robots-Tag'))!
-    expect(header).toContain('"noindex, nofollow"')
-    expect(header).toContain('expr=%{REQUEST_URI} !~ m#^/(anuncios/publico/?|publico\\.html|og-publico\\.png)$#')
+  it('X-Robots-Tag noindex en todo salvo la página pública, con <If> (sin Header expr=, que LiteSpeed puede rechazar)', () => {
+    const open = index(/^<If "%\{REQUEST_URI\} !~ m#\^\/\(anuncios\/publico\/\?\|publico\\\.html\|og-publico\\\.png\)\$#">$/)
+    expect(open).toBeGreaterThan(-1)
+    expect(lines[open + 1]).toBe('Header set X-Robots-Tag "noindex, nofollow"')
+    expect(lines[open + 2]).toBe('</If>')
+    expect(htaccess).not.toContain('expr=')
   })
 })
 

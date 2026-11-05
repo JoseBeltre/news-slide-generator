@@ -12,7 +12,8 @@ import { applySavedTheme } from './ui/useTheme'
 
 // Service Worker de la app (sin internet, C-03). Se registra aquí y no en el HTML para que la página
 // pública (publico.html) nunca lo instale. 'prompt': una versión nueva espera a que se vuelva a abrir.
-registerSW({ immediate: true })
+// Sin `immediate`: se registra al terminar de cargar, como antes, y el precache no compite con el primer pintado.
+registerSW()
 applySavedTheme()
 const db = createDb()
 // La nube llega después de montar: abrir y presentar sin internet nunca la esperan (C-03).

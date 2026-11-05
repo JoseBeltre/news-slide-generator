@@ -24,6 +24,9 @@ RewriteRule . /index.html [L]
   <If "%{REQUEST_URI} =~ m#^/assets/#">
     Header set Cache-Control "max-age=31536000, immutable"
   </If>
-  # Fuera de los buscadores, salvo la página pública y su imagen para compartir.
-  Header set X-Robots-Tag "noindex, nofollow" "expr=%{REQUEST_URI} !~ m#^/(anuncios/publico/?|publico\.html|og-publico\.png)$#"
+  # Fuera de los buscadores, salvo la página pública y su imagen para compartir. Con <If>, la misma forma
+  # que ya funciona arriba para /assets/ (un Header con expresión podría dar 500 en LiteSpeed).
+  <If "%{REQUEST_URI} !~ m#^/(anuncios/publico/?|publico\.html|og-publico\.png)$#">
+    Header set X-Robots-Tag "noindex, nofollow"
+  </If>
 </IfModule>

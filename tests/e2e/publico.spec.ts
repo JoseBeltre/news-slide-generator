@@ -24,13 +24,12 @@ test('la app sigue con noindex', async ({ page }) => {
   expect(await page.locator('meta[name="robots"]').getAttribute('content')).toBe('noindex, nofollow')
 })
 
-test('abre sin internet tras una visita', async ({ page, context }) => {
+test('abre sin internet tras una sola visita, sin recargar con red', async ({ page, context }) => {
   await page.goto('/anuncios/publico')
+  // `ready` llega cuando el Service Worker está activo, y se activa solo después de guardar la página.
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready
   })
-  await page.reload() // la página queda controlada por su Service Worker
-  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true)
   await context.setOffline(true)
   await page.reload()
   await expect(page.getByRole('heading', { name: 'Anuncios', level: 1 })).toBeVisible()
