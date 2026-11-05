@@ -2,9 +2,9 @@
 // Formato de la fecha en la slide, con un ejemplo de cada uno, y "Fechas relativas" (HOY, MAÑANA).
 // Si el anuncio no lo elige, sigue a Configuración.
 import { computed } from 'vue'
-import { formatEventDate, type DateStyle } from '../../../../lib/format'
-import UiCheckbox from '../../../../ui/UiCheckbox.vue'
-import UiChoiceGroup from '../../../../ui/UiChoiceGroup.vue'
+import { formatEventDate, type DateStyle } from '../../../lib/format'
+import UiCheckbox from '../../../ui/UiCheckbox.vue'
+import UiChoiceGroup from '../../../ui/UiChoiceGroup.vue'
 import OptionGroup from './OptionGroup.vue'
 
 const props = defineProps<{ sampleDate: string; today: string; defaults: { dateStyle: DateStyle; relativeDates: boolean } }>()

@@ -36,13 +36,15 @@ describe('rutas de la app', () => {
 
   it('Entrar va sin el marco de la app (sin encabezado)', () => {
     expect(resolve('/entrar').meta.bare).toBe(true)
-    expect(resolve('/equipo').meta.bare).toBeFalsy()
+    expect(resolve('/configuracion').meta.bare).toBeFalsy()
   })
 
-  it('sin nube configurada, /entrar y /equipo vuelven a inicio', async () => {
+  it('sin nube configurada, /entrar vuelve a inicio', async () => {
     expect(resolve('/entrar').name).toBe('entrar')
-    expect(resolve('/equipo').name).toBe('equipo')
     expect((await go('/entrar')).name).toBe('inicio')
-    expect((await go('/equipo')).name).toBe('inicio')
+  })
+
+  it('/equipo lleva a la sección Equipo de Configuración', async () => {
+    expect((await go('/equipo')).fullPath).toBe('/configuracion#equipo')
   })
 })

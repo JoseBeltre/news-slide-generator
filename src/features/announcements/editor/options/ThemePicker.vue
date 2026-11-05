@@ -7,7 +7,7 @@ import type { AnnouncementTypeId } from '../../../../slides/types/fields'
 import UiBanner from '../../../../ui/UiBanner.vue'
 import UiButton from '../../../../ui/UiButton.vue'
 import UiChoiceGroup from '../../../../ui/UiChoiceGroup.vue'
-import OptionGroup from './OptionGroup.vue'
+import OptionGroup from '../../shared/OptionGroup.vue'
 
 const props = defineProps<{ typeId: AnnouncementTypeId }>()
 const themeId = defineModel<string | undefined>('themeId')

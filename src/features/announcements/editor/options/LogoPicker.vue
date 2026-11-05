@@ -5,7 +5,7 @@ import { CHURCH_MINISTRY_ID, MAX_LOGOS } from '../../../../data/ministries'
 import type { LogoForm, LogoSelection, Ministry } from '../../../../data/models'
 import UiCheckbox from '../../../../ui/UiCheckbox.vue'
 import UiChoiceGroup from '../../../../ui/UiChoiceGroup.vue'
-import OptionGroup from './OptionGroup.vue'
+import OptionGroup from '../../shared/OptionGroup.vue'
 
 const props = defineProps<{ ministries: readonly Ministry[] }>()
 const logo = defineModel<LogoSelection>({ required: true })

@@ -8,7 +8,7 @@ import type { Auth } from '../../../../src/data/sync/auth'
 import type { SyncService, SyncState } from '../../../../src/data/sync/service'
 import { syncPlugin, type SyncContext } from '../../../../src/data/sync/useSync'
 import SignInPage from '../../../../src/features/sync/signin/SignInPage.vue'
-import TeamPage from '../../../../src/features/sync/team/TeamPage.vue'
+import TeamPage from '../../../../src/features/settings/team/TeamSection.vue'
 import { answerConfirm, confirmState } from '../../../../src/ui/useConfirm'
 
 const wrappers: { unmount(): void }[] = []
@@ -117,6 +117,6 @@ describe('Equipo', () => {
   it('sin sesión invita a entrar', async () => {
     const { w } = await render(TeamPage, fakeAuth())
     await flushPromises()
-    expect(w.get('a[href="/entrar?volver=/equipo"]').text()).toBe('Entrar')
+    expect(w.get('a[href="/entrar?volver=/configuracion"]').text()).toBe('Entrar')
   })
 })

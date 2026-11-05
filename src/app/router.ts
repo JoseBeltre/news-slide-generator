@@ -5,7 +5,7 @@ import HomePage from '../features/home/HomePage.vue'
 import { ANNOUNCEMENT_TYPES } from '../slides/types/definitions'
 
 const isKnownType = (id: unknown) => ANNOUNCEMENT_TYPES.some((t) => t.id === id)
-/** Entrar y Equipo solo existen si este build tiene nube (P8). */
+/** Entrar solo existe si este build tiene nube (P8). */
 const needsCloud = () => (supabaseConfig() ? true : { name: 'inicio' })
 
 export const routes: RouteRecordRaw[] = [
@@ -27,10 +27,17 @@ export const routes: RouteRecordRaw[] = [
   { path: '/publica/:id', name: 'publica', component: () => import('../features/presenting/public/PublicPage.vue'), meta: { bare: true } },
   // Sincronización (P8).
   { path: '/entrar', name: 'entrar', component: () => import('../features/sync/signin/SignInPage.vue'), beforeEnter: needsCloud, meta: { bare: true } },
-  { path: '/equipo', name: 'equipo', component: () => import('../features/sync/team/TeamPage.vue'), beforeEnter: needsCloud },
+  // Configuración (P10); Equipo es una de sus secciones.
+  { path: '/configuracion', name: 'configuracion', component: () => import('../features/settings/SettingsPage.vue') },
+  { path: '/equipo', redirect: { path: '/configuracion', hash: '#equipo' } },
   { path: '/:pathMatch(.*)*', redirect: { name: 'inicio' } },
 ]
 
 export function createAppRouter(history: RouterHistory = createWebHistory()) {
-  return createRouter({ history, routes })
+  return createRouter({
+    history,
+    routes,
+    // Un enlace con ancla (/configuracion#equipo) baja a su sección; el resto empieza arriba.
+    scrollBehavior: (to) => (to.hash ? { el: to.hash } : { top: 0 }),
+  })
 }
