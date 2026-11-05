@@ -67,7 +67,7 @@ onMounted(() => {
     <UiBadge v-if="badge" :tone="badge === 'No cabe' ? 'danger' : 'warning'">{{ badge }}</UiBadge>
   </EditorBackRow>
   <UiPageHeader :title="typeDef.name">
-    <ExportButton v-if="initial.id" kind="anuncio" :id="initial.id" />
+    <ExportButton v-if="initial.id" kind="anuncio" :id="initial.id" class="max-md:hidden" />
     <SaveButton :busy="saveState" class="max-md:hidden" @click="onSave" />
   </UiPageHeader>
   <EditorLayout>
