@@ -4,10 +4,16 @@
 import { formatEventDate, formatTime } from '../lib/format'
 import { normalizeAnnouncement } from '../slides/normalize'
 import { ANNOUNCEMENT_TYPES } from '../slides/types/definitions'
-import type { AnnouncementTypeId } from '../slides/types/fields'
+import type { AnnouncementTypeId, FieldDef } from '../slides/types/fields'
 import type { LoadState, NoticeCard, PublicNotice, PublicNoticesData } from './types'
 
 const NEVER_PUBLIC = new Set(['cumpleanos', 'imagen'])
+
+/** Sin los campos que solo van en las slides (nombres, contacto privado): la página no los muestra nunca. */
+function publicValues(fields: FieldDef[], values: Record<string, unknown>): Record<string, unknown> {
+  const hidden = new Set(fields.filter((f) => f.audience === 'slides').map((f) => f.key))
+  return Object.fromEntries(Object.entries(values).filter(([key]) => !hidden.has(key)))
+}
 
 export function noticeCards(data: PublicNoticesData): NoticeCard[] {
   const cards: NoticeCard[] = []
@@ -23,7 +29,7 @@ function toCard(notice: PublicNotice, data: PublicNoticesData): Omit<NoticeCard,
   if (!def || NEVER_PUBLIC.has(def.id)) return null
   try {
     const { timeFormat, currency } = data.settings
-    const normalized = normalizeAnnouncement(def.id as AnnouncementTypeId, notice.values, {
+    const normalized = normalizeAnnouncement(def.id as AnnouncementTypeId, publicValues(def.fields, notice.values), {
       today: data.today,
       reference: data.today,
       dateStyle: 'largo',

@@ -36,7 +36,7 @@ const count = computed(() => {
 </script>
 
 <template>
-  <UiField :id="id" :label="field.label" :required="field.required" :max="field.maxLength" :count="count" :error="error">
+  <UiField :id="id" :label="field.label" :required="field.required" :max="field.maxLength" :count="count" :error="error" :hint="field.hint">
     <template #default="{ describedBy, invalid }">
       <component
         :is="CONTROLS[field.kind]"

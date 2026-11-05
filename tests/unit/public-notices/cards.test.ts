@@ -69,3 +69,18 @@ describe('stateLabel', () => {
     expect(stateLabel({ kind: 'error' })).toBeNull()
   })
 })
+
+describe('noticeCards y los datos personales', () => {
+  it('nunca muestra predicador ni contacto privado; sí el contacto público', () => {
+    const cards = noticeCards(
+      data([
+        notice('c', 'culto', { titulo: 'Culto', fecha: '2026-11-07', hora: '19:00', predicador: 'Pr. Juan Pérez' }),
+        notice('s', 'salida', { titulo: 'Paseo', fecha: '2026-11-15', hora: '06:30', contacto: 'María 809', contactoPublico: 'Habla con el Director de Jóvenes' }),
+      ]),
+    )
+    const texts = cards.flatMap((c) => c.rows.map((r) => r.text))
+    expect(texts).not.toContain('Pr. Juan Pérez')
+    expect(texts).not.toContain('María 809')
+    expect(texts).toContain('Habla con el Director de Jóvenes')
+  })
+})

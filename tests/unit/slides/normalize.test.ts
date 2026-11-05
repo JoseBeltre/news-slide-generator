@@ -65,4 +65,13 @@ describe('normalizeAnnouncement', () => {
     expect(() => normalizeAnnouncement('cumpleanos', {}, ctx)).toThrow()
     expect(() => normalizeAnnouncement('imagen', {}, ctx)).toThrow()
   })
+
+  it('contactoPublico sale en la slide solo sin contacto privado', () => {
+    const base = { titulo: 'Paseo', fecha: '2026-11-15', hora: '06:30', destino: 'Najayo', contactoPublico: 'Habla con el Director de Jóvenes' }
+    const sinPrivado = normalizeAnnouncement('salida', base, ctx)
+    expect(row(sinPrivado, 'contactoPublico')?.text).toBe('Habla con el Director de Jóvenes')
+    const conPrivado = normalizeAnnouncement('salida', { ...base, contacto: 'María 809-555-0101' }, ctx)
+    expect(row(conPrivado, 'contactoPublico')).toBeUndefined()
+    expect(row(conPrivado, 'contacto')?.text).toBe('María 809-555-0101')
+  })
 })

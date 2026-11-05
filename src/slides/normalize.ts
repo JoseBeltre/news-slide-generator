@@ -68,7 +68,8 @@ export function normalizeAnnouncement(
     const t = formatTime(hhmm, { timeFormat: ctx.timeFormat })
     return uppercase ? upper(t) : t
   }
-  const filled = def.fields.filter((f) => isFilled(values[f.key]))
+  // Un campo de respaldo (fallbackFor) solo sale si el campo que respalda está vacío.
+  const filled = def.fields.filter((f) => isFilled(values[f.key]) && !(f.fallbackFor && isFilled(values[f.fallbackFor])))
   // La fecha principal se une con la primera hora del tipo en una sola fila.
   const mainDate = filled.find(isMainDate)
   const mainTime = mainDate ? filled.find((f) => f.kind === 'time') : undefined

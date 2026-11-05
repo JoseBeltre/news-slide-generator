@@ -53,6 +53,22 @@ describe('formulario generado desde FieldDef (RF-01, RF-04)', () => {
     def.fields.forEach((f, i) => expect(labels[i]!.endsWith('*')).toBe(f.required))
   })
 
+  it('salida: contacto privado y público, con su ayuda y el ejemplo', () => {
+    const { host } = mountForm('salida')
+    const labelOf = (k: string) => host.querySelector(`label[for="campo-${k}"]`)?.textContent ?? ''
+    const hintOf = (k: string) => document.getElementById(`campo-${k}-ayuda`)?.textContent ?? ''
+    expect(labelOf('contacto')).toContain('Contacto privado')
+    expect(hintOf('contacto')).toBe('Sale en las slides. Nunca en la página pública.')
+    expect(labelOf('contactoPublico')).toContain('Contacto público')
+    expect(hintOf('contactoPublico')).toBe('Sale en la página pública, y en la slide si no hay contacto privado.')
+    expect(field(host, 'contactoPublico').placeholder).toBe('Habla con el Director de Jóvenes')
+  })
+
+  it('culto: el predicador avisa que solo sale en las slides', () => {
+    const { host } = mountForm('culto')
+    expect(document.getElementById('campo-predicador-ayuda')?.textContent).toBe('Solo en las slides. Nunca en la página pública.')
+  })
+
   it('57 de 60 caracteres en el título → contador en aviso', async () => {
     const { host } = mountForm('culto')
     type(field(host, 'titulo'), 'x'.repeat(57))

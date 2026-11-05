@@ -29,6 +29,14 @@ export interface FieldDef {
   /** Solo para kind 'choice'. */
   options?: FieldOption[]
   defaultValue?: unknown
+  /** 'slides': se proyecta, pero nunca sale en la página pública (sin datos personales, spec P9 §6.1). */
+  audience?: 'slides'
+  /** Sale en la slide solo si el campo nombrado está vacío (el contacto público respalda al privado). */
+  fallbackFor?: string
+  /** Ayuda bajo el campo en el formulario. */
+  hint?: string
+  /** Ejemplo dentro del campo vacío. */
+  placeholder?: string
 }
 
 export type AnnouncementTypeId = 'culto' | 'salida' | 'obra_misionera' | 'cumpleanos' | 'actividad' | 'aviso' | 'imagen'

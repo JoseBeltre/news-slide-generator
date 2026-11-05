@@ -25,6 +25,7 @@ const inputType = computed(() => (props.field.kind === 'date' || props.field.kin
     v-else
     :id="id"
     :type="inputType"
+    :placeholder="field.placeholder"
     :model-value="value"
     :aria-invalid="invalid"
     :aria-describedby="describedBy"

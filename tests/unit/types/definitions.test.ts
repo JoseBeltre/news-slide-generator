@@ -34,11 +34,11 @@ describe('tipos de anuncio del MVP (§3.2)', () => {
 
   it.each([
     ['culto', ['titulo', 'fecha', 'hora', 'predicador', 'fotoPredicador', 'lugar', 'lema', 'versiculo']],
-    ['salida', ['titulo', 'fecha', 'horaSalida', 'destino', 'puntoEncuentro', 'precio', 'queLlevar', 'fechaLimite', 'contacto']],
-    ['obra_misionera', ['titulo', 'fecha', 'hora', 'puntoEncuentro', 'zona', 'queLlevar', 'contacto']],
+    ['salida', ['titulo', 'fecha', 'horaSalida', 'destino', 'puntoEncuentro', 'precio', 'queLlevar', 'fechaLimite', 'contacto', 'contactoPublico']],
+    ['obra_misionera', ['titulo', 'fecha', 'hora', 'puntoEncuentro', 'zona', 'queLlevar', 'contacto', 'contactoPublico']],
     ['cumpleanos', ['modo', 'personas', 'mostrarDia', 'mensaje', 'versiculo']],
-    ['actividad', ['titulo', 'fecha', 'hora', 'lugar', 'descripcion', 'precio', 'contacto']],
-    ['aviso', ['titulo', 'mensaje', 'fecha', 'contacto']],
+    ['actividad', ['titulo', 'fecha', 'hora', 'lugar', 'descripcion', 'precio', 'contacto', 'contactoPublico']],
+    ['aviso', ['titulo', 'mensaje', 'fecha', 'contacto', 'contactoPublico']],
     ['imagen', ['imagen', 'tituloInterno']],
   ])('campos de %s, en orden', (id, claves) => {
     expect(getTypeDef(id).fields.map((f) => f.key)).toEqual(claves)
