@@ -13,13 +13,18 @@ export function useNotices(load: () => Promise<LoadState>) {
   const pulse = ref(false)
   let timer: ReturnType<typeof setTimeout> | undefined
 
+  /** Número de la última petición: una respuesta anterior a ella llegó tarde y se descarta. */
+  let latest = 0
+
   async function refresh() {
+    const mine = ++latest
     let next: LoadState
     try {
       next = await load()
     } catch {
       next = { kind: 'error' }
     }
+    if (mine !== latest) return
     const before = dataOf(state.value)
     // Un fallo al refrescar no tira lo que ya se ve.
     if (state.value && (next.kind === 'error' || next.kind === 'offline') && before) return
