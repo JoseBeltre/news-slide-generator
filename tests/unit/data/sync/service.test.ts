@@ -111,6 +111,15 @@ describe('createSyncService', () => {
     expect(s.state.value.syncing).toBe(false)
   })
 
+  it('errorTick sube en cada vuelta fallida aunque el estado no cambie', async () => {
+    const run = vi.fn().mockRejectedValue(new SyncError('server'))
+    const s = createSyncService({ ...deps(device()), run })
+    await s.syncNow()
+    await s.syncNow()
+    expect(s.state.value.status).toBe('nube-no-responde')
+    expect(s.state.value.errorTick).toBe(2)
+  })
+
   it('sin sesión no llama a la nube', async () => {
     const run = vi.fn()
     const s = createSyncService({ ...deps(device()), signedIn: ref(false), run })

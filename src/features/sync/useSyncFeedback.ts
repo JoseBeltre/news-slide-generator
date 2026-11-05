@@ -2,7 +2,7 @@
 // pulsa una vez), si acaba de fallar (el ícono se sacude) y el aviso de error con "Reintentar".
 import { computed, ref, watch, type ComputedRef } from 'vue'
 import type { SyncService, SyncState } from '../../data/sync/service'
-import { notify } from '../../ui/useSnackbar'
+import { dismiss, notify } from '../../ui/useSnackbar'
 
 export const FEEDBACK_MS = 1200
 
@@ -24,16 +24,29 @@ export function useSyncFeedback(service: ComputedRef<SyncService | undefined>) {
       if (before && !now && state.value?.status === 'sincronizado') flash(justSynced)
     },
   )
+  // Un aviso por intento fallido (también si Reintentar falla con el mismo estado); el anterior se reemplaza.
+  let noticeId: number | undefined
   watch(
-    () => state.value?.status,
-    (status, before) => {
-      if (status !== 'nube-no-responde' || before === 'nube-no-responde') return
+    () => state.value?.errorTick,
+    (tick, before) => {
+      if (!tick || tick === before || state.value?.status !== 'nube-no-responde') return
+      if (noticeId !== undefined) dismiss(noticeId)
       flash(justFailed)
-      notify({
+      noticeId = notify({
         message: 'No se pudo sincronizar. Tus cambios están guardados en este equipo.',
         tone: 'error',
         action: { label: 'Reintentar', run: () => void service.value?.syncNow() },
       })
+    },
+  )
+  // Al recuperarse, el aviso de error ya no tiene sentido.
+  watch(
+    () => state.value?.status,
+    (status) => {
+      if (status !== 'nube-no-responde' && noticeId !== undefined) {
+        dismiss(noticeId)
+        noticeId = undefined
+      }
     },
   )
 

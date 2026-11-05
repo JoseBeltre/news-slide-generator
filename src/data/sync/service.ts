@@ -47,6 +47,8 @@ export interface SyncState {
   lastSyncAt: string | null
   /** Hay una vuelta en curso (el ícono del encabezado gira). */
   syncing?: boolean
+  /** Sube con cada vuelta fallida (aunque el estado siga igual): permite avisar de cada intento. */
+  errorTick?: number
 }
 
 export interface SyncService {
@@ -65,6 +67,7 @@ export function createSyncService(deps: SyncServiceDeps): SyncService {
   const lastError = ref<SyncErrorKind | null>(null)
   const lastSyncAt = ref<string | null>(null)
   const syncing = ref(false)
+  const errorTick = ref(0)
   let failures = 0
   let retry: number | undefined
   let debounce: number | undefined
@@ -83,6 +86,7 @@ export function createSyncService(deps: SyncServiceDeps): SyncService {
     pending: pending.value,
     lastSyncAt: lastSyncAt.value,
     syncing: syncing.value,
+    errorTick: errorTick.value,
   }))
 
   const refreshPending = async () => void (pending.value = await deps.db.outbox.count())
@@ -111,6 +115,7 @@ export function createSyncService(deps: SyncServiceDeps): SyncService {
       if (!(e instanceof SyncError)) console.error('Sincronización falló', e)
       const kind = e instanceof SyncError ? e.kind : 'server'
       lastError.value = kind
+      errorTick.value++
       // Sin sesión no sirve reintentar: se sincroniza al volver a entrar.
       if (kind !== 'auth') retry = timers.setTimeout(() => void syncNow(), nextDelay(++failures))
     } finally {
