@@ -1,5 +1,5 @@
 // Indicador de sincronización (RF-101): un texto corto por estado; sin nube no aparece; el panel ofrece
-// "Sincronizar ahora" con sesión y "Entrar" sin ella.
+// "Sincronizar" con sesión y "Entrar" sin ella.
 import { mount } from '@vue/test-utils'
 import { computed, ref, shallowRef } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
@@ -36,7 +36,9 @@ describe('SyncIndicator', () => {
     ['sin-sesion', 0, 'Entra para sincronizar'],
     ['nube-no-responde', 0, 'La nube no responde'],
   ] as const)('%s → «%s»', (status, pending, text) => {
-    expect(render(context(status, pending)).get('button').text()).toBe(text)
+    const button = render(context(status, pending)).get('button')
+    expect(button.text()).toBe(text)
+    expect(button.attributes('aria-label')).toBe(text) // en el celular solo se ve el ícono
   })
 
   it('sin nube configurada o desactivado no muestra nada', () => {
@@ -44,11 +46,11 @@ describe('SyncIndicator', () => {
     expect(render(context('desactivado')).find('button').exists()).toBe(false)
   })
 
-  it('con sesión, el panel ofrece "Sincronizar ahora" y Equipo', async () => {
+  it('con sesión, el panel ofrece "Sincronizar" y Equipo', async () => {
     const ctx = context('pendiente', 2)
     const w = render(ctx)
     await w.get('button').trigger('click')
-    const now = w.findAll('button').find((b) => b.text() === 'Sincronizar ahora')!
+    const now = w.findAll('button').find((b) => b.text() === 'Sincronizar')!
     await now.trigger('click')
     expect(ctx.service.syncNow).toHaveBeenCalled()
     expect(w.text()).toContain('ana@iglesia.do')

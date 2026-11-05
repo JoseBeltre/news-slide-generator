@@ -94,6 +94,23 @@ describe('createSyncService', () => {
     expect(s.state.value).toMatchObject({ status: 'sincronizado', pending: 0, lastSyncAt: '2026-11-07T09:00:00.000Z' })
   })
 
+  it('syncing es verdadero mientras corre la vuelta y falso al terminar, también si falla', async () => {
+    let finish!: () => void
+    const run = vi
+      .fn()
+      .mockImplementationOnce(() => new Promise((r) => (finish = () => r({ pushed: 0, pulled: 0 }))))
+      .mockRejectedValueOnce(new SyncError('server'))
+    const s = createSyncService({ ...deps(device()), run })
+    expect(s.state.value.syncing).toBe(false)
+    const first = s.syncNow()
+    await vi.waitFor(() => expect(s.state.value.syncing).toBe(true))
+    finish()
+    await first
+    expect(s.state.value.syncing).toBe(false)
+    await s.syncNow()
+    expect(s.state.value.syncing).toBe(false)
+  })
+
   it('sin sesión no llama a la nube', async () => {
     const run = vi.fn()
     const s = createSyncService({ ...deps(device()), signedIn: ref(false), run })

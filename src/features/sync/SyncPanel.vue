@@ -5,9 +5,10 @@ import type { SyncState } from '../../data/sync/service'
 import type { SyncStatus } from '../../data/sync/status'
 import { formatDate, formatTime, toIsoDate } from '../../lib/format'
 import UiButton from '../../ui/UiButton.vue'
+import type { BusyState } from '../../ui/useBusy'
 import { statusDetail } from './syncLabels'
 
-const props = defineProps<{ state: SyncState & { status: Exclude<SyncStatus, 'desactivado'> }; email: string | null }>()
+const props = defineProps<{ state: SyncState & { status: Exclude<SyncStatus, 'desactivado'> }; email: string | null; busy?: BusyState }>()
 const emit = defineEmits<{ syncNow: []; close: [] }>()
 
 const last = computed(() => {
@@ -25,7 +26,7 @@ const last = computed(() => {
     <p v-if="email" class="mt-1 truncate font-meta text-meta text-ink-muted">{{ email }}</p>
     <div class="mt-4 flex flex-wrap items-center gap-2">
       <template v-if="email">
-        <UiButton variant="primary" @click="emit('syncNow')">Sincronizar ahora</UiButton>
+        <UiButton variant="primary" :busy="busy" @click="emit('syncNow')">Sincronizar</UiButton>
         <UiButton variant="ghost" to="/configuracion#equipo" @click="emit('close')">Equipo</UiButton>
       </template>
       <UiButton v-else variant="primary" to="/entrar" @click="emit('close')">Entrar</UiButton>

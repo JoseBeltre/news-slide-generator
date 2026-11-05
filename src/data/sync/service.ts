@@ -45,6 +45,8 @@ export interface SyncState {
   status: SyncStatus
   pending: number
   lastSyncAt: string | null
+  /** Hay una vuelta en curso (el ícono del encabezado gira). */
+  syncing?: boolean
 }
 
 export interface SyncService {
@@ -62,6 +64,7 @@ export function createSyncService(deps: SyncServiceDeps): SyncService {
   const pending = ref(0)
   const lastError = ref<SyncErrorKind | null>(null)
   const lastSyncAt = ref<string | null>(null)
+  const syncing = ref(false)
   let failures = 0
   let retry: number | undefined
   let debounce: number | undefined
@@ -79,6 +82,7 @@ export function createSyncService(deps: SyncServiceDeps): SyncService {
     }),
     pending: pending.value,
     lastSyncAt: lastSyncAt.value,
+    syncing: syncing.value,
   }))
 
   const refreshPending = async () => void (pending.value = await deps.db.outbox.count())
@@ -95,6 +99,7 @@ export function createSyncService(deps: SyncServiceDeps): SyncService {
     if (retry !== undefined) timers.clear(retry)
     retry = undefined
     let pushedSome = false
+    syncing.value = true
     try {
       const done = await deps.withLock(() => run(deps.db, remote, { isPresenting: deps.isPresenting, now: deps.now }))
       if (done === undefined) return // otra pestaña está sincronizando
@@ -109,6 +114,7 @@ export function createSyncService(deps: SyncServiceDeps): SyncService {
       // Sin sesión no sirve reintentar: se sincroniza al volver a entrar.
       if (kind !== 'auth') retry = timers.setTimeout(() => void syncNow(), nextDelay(++failures))
     } finally {
+      syncing.value = false
       await refreshPending()
     }
     // Se editó algo mientras se subía: queda en la cola sin que el conteo crezca. Si la vuelta subió algo
