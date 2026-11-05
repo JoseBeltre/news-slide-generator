@@ -70,6 +70,23 @@ describe('createRepository', () => {
     expect(await table.count()).toBe(0)
   })
 
+  it('restore deshace un remove: vuelve a get y list con updatedAt nuevo, sin deletedAt', async () => {
+    const table = itemsTable()
+    const repo = createRepository(table, stepClock())
+    const a = await repo.put({ name: 'Ana' })
+    await repo.remove(a.id)
+    await repo.restore(a.id)
+    expect(await repo.get(a.id)).toMatchObject({ name: 'Ana', updatedAt: '2026-11-01T12:02:00.000Z' })
+    expect((await table.get(a.id))?.deletedAt).toBeUndefined()
+    expect(await repo.list()).toHaveLength(1)
+  })
+
+  it('restore de un id inexistente no falla ni crea nada', async () => {
+    const table = itemsTable()
+    await createRepository(table, stepClock()).restore('no-existe')
+    expect(await table.count()).toBe(0)
+  })
+
   it('list ordena por updatedAt descendente', async () => {
     const repo = createRepository(itemsTable(), stepClock())
     await repo.put({ name: 'primero' })

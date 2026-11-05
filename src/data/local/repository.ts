@@ -13,6 +13,8 @@ export interface Repository<T extends SyncMeta> {
   /** Sin borrados, por `updatedAt` descendente. */
   list(): Promise<T[]>
   remove(id: string): Promise<void>
+  /** Deshace un `remove` (Deshacer del snackbar): quita `deletedAt` y mueve `updatedAt` para que gane al sincronizar. */
+  restore(id: string): Promise<void>
 }
 
 export function createRepository<T extends SyncMeta>(
@@ -50,6 +52,10 @@ export function createRepository<T extends SyncMeta>(
     async remove(id) {
       const now = clock().toISOString()
       await write(() => table.update(id, { deletedAt: now, updatedAt: now } as Partial<T> as never), () => id)
+    },
+    async restore(id) {
+      const now = clock().toISOString()
+      await write(() => table.update(id, { deletedAt: undefined, updatedAt: now } as Partial<T> as never), () => id)
     },
   }
 }

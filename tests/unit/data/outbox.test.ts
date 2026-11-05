@@ -43,6 +43,13 @@ describe('outbox', () => {
     expect(await d.outbox.toArray()).toEqual([{ table: 'announcements', id: 'a1' }])
   })
 
+  it('restore deja entrada', async () => {
+    const d = db()
+    await d.announcements.put({ ...announcement('a1'), id: 'a1', updatedAt: '2026-01-01T00:00:00.000Z', deletedAt: '2026-01-02T00:00:00.000Z' } as Announcement)
+    await createRepository(d.announcements).restore('a1')
+    expect(await d.outbox.toArray()).toEqual([{ table: 'announcements', id: 'a1' }])
+  })
+
   it('un put dentro de una transacción que incluye outbox funciona', async () => {
     const d = db()
     const repo = createRepository(d.presentations)

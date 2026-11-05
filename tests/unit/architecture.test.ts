@@ -46,7 +46,8 @@ describe('arquitectura de la interfaz', () => {
   it('styles.css solo declara tokens: ninguna regla para elementos o clases', () => {
     const css = read(STYLESHEET).replace(/\/\*[\s\S]*?\*\//g, '')
     const selectors = [...css.matchAll(/([^{};]+)\{/g)].map((m) => m[1]!.trim())
-    const allowed = /^(@theme|@layer theme|:root|:root\[data-theme="(light|dark)"\])$/
+    // Los @keyframes del movimiento viven en el @theme (tokens de animación): su nombre y sus pasos son válidos.
+    const allowed = /^(@theme|@layer theme|:root|:root\[data-theme="(light|dark)"\]|@keyframes [\w-]+|from|to|\d+%(,\s*\d+%)*)$/
     expect(selectors.filter((s) => !allowed.test(s))).toEqual([])
   })
 
