@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, ref } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import AppBottomNav from '../../../src/app/AppBottomNav.vue'
+import UiCollapse from '../../../src/ui/UiCollapse.vue'
 import UiButton from '../../../src/ui/UiButton.vue'
 import UiField from '../../../src/ui/UiField.vue'
 import UiMenu from '../../../src/ui/UiMenu.vue'
@@ -90,6 +91,21 @@ describe('UiMenu', () => {
     expect(document.activeElement).toBe(trigger)
   })
 
+  it('Tab lo cierra devolviendo el foco al botón; Inicio y Fin van al primer y último elemento', async () => {
+    const { host } = mountInHost(Menu, 390, 700)
+    const trigger = host.querySelector<HTMLElement>('[aria-haspopup="menu"]')!
+    trigger.click()
+    await until(() => document.activeElement?.getAttribute('role') === 'menuitem')
+    const key = (k: string) => document.activeElement!.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true }))
+    key('End')
+    expect(document.activeElement?.getAttribute('data-menu-item')).toBe('b')
+    key('Home')
+    expect(document.activeElement?.getAttribute('data-menu-item')).toBe('a')
+    key('Tab')
+    await until(() => !document.querySelector('[role="menu"]'))
+    expect(document.activeElement).toBe(trigger)
+  })
+
   it('un toque fuera lo cierra', async () => {
     const { host } = mountInHost(Menu, 390, 700)
     host.querySelector<HTMLElement>('[aria-haspopup="menu"]')!.click()
@@ -128,6 +144,13 @@ describe('UiField: ayuda y error', () => {
     error.value = 'Escribe un título.'
     await until(() => !host.querySelector('[inert]'))
     expect(host.querySelector('[role="alert"]')!.textContent).toContain('Escribe un título.')
+  })
+})
+
+describe('UiCollapse', () => {
+  it('con «reducir movimiento» solo transiciona la opacidad, no la altura', () => {
+    const { host } = mountInHost(defineComponent(() => () => h(UiCollapse, { open: true }, () => 'x')), 300, 100)
+    expect(host.querySelector('div.grid')!.className).toContain('motion-reduce:transition-opacity')
   })
 })
 

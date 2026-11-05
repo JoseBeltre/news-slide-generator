@@ -10,7 +10,7 @@ defineProps<{ open: boolean }>()
     :inert="!open"
     :aria-hidden="!open"
     :class="[
-      'grid transition-[grid-template-rows,opacity] motion-reduce:duration-150',
+      'grid transition-[grid-template-rows,opacity] motion-reduce:transition-opacity motion-reduce:duration-150',
       open ? 'grid-rows-[1fr] opacity-100 duration-220 ease-out' : 'grid-rows-[0fr] opacity-0 duration-200 ease-in',
     ]"
   >

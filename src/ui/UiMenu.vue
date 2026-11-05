@@ -72,6 +72,11 @@ function move(step: number) {
   items[(at + step + items.length) % items.length]?.focus()
 }
 
+function focusAt(index: number) {
+  const items = [...(menu.value?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])]
+  items.at(index)?.focus()
+}
+
 function choose(key: string) {
   close()
   emit('select', key)
@@ -111,7 +116,9 @@ function choose(key: string) {
         @keydown.escape.stop.prevent="close()"
         @keydown.down.prevent="move(1)"
         @keydown.up.prevent="move(-1)"
-        @keydown.tab="close(false)"
+        @keydown.tab.prevent="close()"
+        @keydown.home.prevent="focusAt(0)"
+        @keydown.end.prevent="focusAt(-1)"
       >
         <template v-for="item in items" :key="item.key">
           <hr v-if="item.separatorBefore" class="my-1 border-t border-hairline" />
