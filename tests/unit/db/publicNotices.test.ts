@@ -88,4 +88,24 @@ describe('public_notices', () => {
     await expect(as(db, null, 'select public._public_notices_at(now())')).rejects.toThrow(/permission denied/)
     await expect(as(db, null, 'select * from public.announcements')).rejects.toThrow(/permission denied/)
   })
+
+  it('sin datos personales: nunca salen los campos de solo slides; sí el contacto público', async () => {
+    const publishable = ANNOUNCEMENT_TYPES.filter((t) => t.id !== 'cumpleanos' && t.id !== 'imagen')
+    const privateKeys = [...new Set(publishable.flatMap((t) => t.fields.filter((f) => f.audience === 'slides' || f.kind === 'image').map((f) => f.key)))]
+    expect(privateKeys).toEqual(expect.arrayContaining(['predicador', 'fotoPredicador', 'contacto']))
+    const values = Object.fromEntries([['titulo', 'Paseo'], ['contactoPublico', 'Habla con el Director de Jóvenes'], ...privateKeys.map((k) => [k, 'privado'])])
+    await push('announcements', [notice('s1', { typeId: 'salida', values })])
+    const [n] = (await at()).notices
+    expect(n!.values).toEqual({ titulo: 'Paseo', contactoPublico: 'Habla con el Director de Jóvenes' })
+  })
+
+  it('con publicPage equipo: enabled false y sin anuncios', async () => {
+    await push('announcements', [notice('a1')])
+    const before = await at()
+    expect((before as Result & { enabled: boolean }).enabled).toBe(true)
+    await push('settings', [row('configuracion', '2026-11-04T10:00:00Z', { publicPage: 'equipo' })])
+    const r = (await at()) as Result & { enabled: boolean }
+    expect(r.enabled).toBe(false)
+    expect(r.notices).toEqual([])
+  })
 })
