@@ -21,13 +21,19 @@ const flush = () => new Promise((r) => setTimeout(r, 30))
 const Icon = defineComponent(() => () => h('i'))
 
 describe('UiSnackbar', () => {
+  it('las regiones vivas (status cortés y alert asertiva) existen desde el inicio, vacías', () => {
+    const { host } = mountInHost(UiSnackbar, 390, 700)
+    expect(host.querySelector('[role="status"][aria-live="polite"]')?.textContent).toBe('')
+    expect(host.querySelector('[role="alert"][aria-live="assertive"]')?.textContent).toBe('')
+  })
+
   it('normal: role status, con ✓ en éxito y barra que se vacía; sin botón de cerrar', async () => {
     const { host } = mountInHost(UiSnackbar, 390, 700)
     notify({ message: 'Listo', success: true })
     await until(() => !!host.querySelector('[data-snackbar]'))
     const bar = host.querySelector('[data-snackbar]')!
-    expect(bar.getAttribute('role')).toBe('status')
-    expect(bar.getAttribute('aria-live')).toBe('polite')
+    expect(bar.closest('[role]')!.getAttribute('role')).toBe('status')
+    expect(bar.closest('[aria-live]')!.getAttribute('aria-live')).toBe('polite')
     expect(bar.querySelector('svg')).toBeTruthy()
     expect(bar.querySelector('[aria-label="Cerrar aviso"]')).toBeNull()
   })
@@ -37,7 +43,7 @@ describe('UiSnackbar', () => {
     const { host } = mountInHost(UiSnackbar, 390, 700)
     notify({ message: 'Falló', tone: 'error', action: { label: 'Reintentar', run: retry } })
     await until(() => !!host.querySelector('[data-snackbar]'))
-    expect(host.querySelector('[data-snackbar]')!.getAttribute('role')).toBe('alert')
+    expect(host.querySelector('[data-snackbar]')!.closest('[role]')!.getAttribute('role')).toBe('alert')
     host.querySelector<HTMLElement>('[data-snackbar-action]')!.click()
     await until(() => retry.mock.calls.length === 1)
     await until(() => !host.querySelector('[data-snackbar]'))

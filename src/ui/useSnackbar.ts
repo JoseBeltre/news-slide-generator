@@ -40,11 +40,15 @@ function showNext(): void {
   if (state.current?.tone === 'normal') timer = setTimeout(() => dismiss(state.current?.id), NORMAL_MS)
 }
 
-/** Pone un aviso en la cola (o lo muestra ya, si no hay otro). Devuelve su id. */
+/**
+ * Pone un aviso en la cola (o lo muestra ya, si no hay otro). Devuelve su id.
+ * Decisión: un error o advertencia que sigue abierto no bloquea la cola; al llegar un aviso nuevo se descarta
+ * (el nuevo suele ser el resultado de lo que el usuario hizo después, p. ej. un "Reintentar").
+ */
 export function notify(input: SnackInput): number {
   const item: SnackItem = { ...input, tone: input.tone ?? 'normal', id: nextId++ }
   state.queue.push(item)
-  if (!state.current) showNext()
+  if (!state.current || state.current.tone !== 'normal') showNext()
   return item.id
 }
 
@@ -58,10 +62,11 @@ export function dismiss(id?: number): void {
   if (state.current) showNext()
 }
 
-/** Ejecuta la acción del aviso actual (Deshacer, Reintentar…) y lo cierra. */
-export async function runSnackAction(): Promise<void> {
+/** Ejecuta, una sola vez, la acción del aviso actual (Deshacer, Reintentar…) y lo cierra. */
+export async function runSnackAction(id?: number): Promise<void> {
   const current = state.current
-  if (!current) return
+  // Con `id` (el del aviso donde se hizo clic) un clic tardío, durante la salida, no ejecuta la acción del siguiente.
+  if (!current || (id !== undefined && current.id !== id)) return
   dismiss(current.id)
   await current.action?.run()
 }

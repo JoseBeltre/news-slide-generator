@@ -46,10 +46,9 @@ describe('useSnackbar', () => {
     expect(snackbarState.current).toBeNull()
   })
 
-  it('el siguiente normal cuenta sus 4 s desde que aparece', () => {
+  it('un aviso nuevo reemplaza al error o advertencia que sigue abierto (no bloquea la cola)', () => {
     notify({ message: 'Error', tone: 'error' })
     notify({ message: 'Hecho' })
-    dismiss()
     expect(snackbarState.current?.message).toBe('Hecho')
     vi.advanceTimersByTime(NORMAL_MS - 1)
     expect(snackbarState.current?.message).toBe('Hecho')
@@ -57,11 +56,10 @@ describe('useSnackbar', () => {
     expect(snackbarState.current).toBeNull()
   })
 
-  it('cerrar (×) quita el aviso actual y pasa al siguiente', () => {
+  it('cerrar (×) quita el aviso actual', () => {
     notify({ message: 'Falló', tone: 'error' })
-    notify({ message: 'Luego' })
     dismiss()
-    expect(snackbarState.current?.message).toBe('Luego')
+    expect(snackbarState.current).toBeNull()
   })
 
   it('la acción se ejecuta una vez y cierra el aviso', async () => {
@@ -81,6 +79,18 @@ describe('useSnackbar', () => {
     })
     await runSnackAction()
     expect(snackbarState.current?.message).toBe('Sigue sin poder')
+  })
+
+  it('la acción solo corre si el clic es del aviso actual (dos clics durante la salida no ejecutan la del siguiente)', async () => {
+    const first = vi.fn()
+    const second = vi.fn()
+    const id1 = notify({ message: 'Uno', action: { label: 'A', run: first } })
+    notify({ message: 'Dos', action: { label: 'B', run: second } })
+    await runSnackAction(id1)
+    await runSnackAction(id1) // segundo clic sobre el aviso que se está yendo
+    expect(first).toHaveBeenCalledTimes(1)
+    expect(second).not.toHaveBeenCalled()
+    expect(snackbarState.current?.message).toBe('Dos')
   })
 
   it('sin aviso, runSnackAction y dismiss no hacen nada', async () => {

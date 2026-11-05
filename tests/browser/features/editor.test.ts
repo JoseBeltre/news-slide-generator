@@ -76,7 +76,7 @@ describe('editor con vista previa (RF-03, RNF-04)', () => {
     const put = vi.spyOn(db.announcements, 'put').mockRejectedValueOnce(new Error('sin espacio'))
     clickSave(host)
     await until(() => snackbar()?.dataset.tone === 'error')
-    expect(snackbar()!.getAttribute('role')).toBe('alert')
+    expect(snackbar()!.closest('[role]')!.getAttribute('role')).toBe('alert')
     expect(snackbar()!.textContent).toContain('No se pudo guardar')
     byLabel(snackbar()!, 'Reintentar')!.click()
     await until(() => put.mock.calls.length >= 2)

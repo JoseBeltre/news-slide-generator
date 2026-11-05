@@ -124,7 +124,7 @@ describe('Importar', () => {
     setPendingImport({ error: 'Este archivo no es una exportación de Anuncios del Sábado.' })
     const { host } = await mountApp('/importar', testDb())
     await until(() => !!snackbar())
-    expect(snackbar()!.getAttribute('role')).toBe('alert')
+    expect(snackbar()!.closest('[role]')!.getAttribute('role')).toBe('alert')
     expect(snackbar()!.textContent).toContain('Este archivo no es una exportación de Anuncios del Sábado.')
     expect(byLabel(snackbar()!, 'Reintentar')).toBeTruthy()
     expect(host.textContent).toContain('Elige un archivo exportado')
