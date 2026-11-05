@@ -5,6 +5,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   base: '/',
+  // Dos páginas: la app del equipo y la página pública de anuncios (P9), con su propio bundle.
+  build: { rollupOptions: { input: { main: 'index.html', publico: 'publico.html' } } },
   plugins: [
     vue(),
     tailwindcss(),
