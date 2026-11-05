@@ -119,3 +119,34 @@ describe('fetchWithTimeout (revisión)', () => {
     await expect(fetchWithTimeout(20, hanging)('https://x')).rejects.toThrow()
   })
 })
+
+describe('usedBytes', () => {
+  function listingClient(pages: Result[]) {
+    const offsets: number[] = []
+    const client = {
+      storage: {
+        from: (bucket: string) => ({
+          list: async (prefix: string, opts: { limit: number; offset: number }) => {
+            expect([bucket, prefix, opts.limit]).toEqual(['images', 'images', 1000])
+            offsets.push(opts.offset)
+            return pages.shift() ?? { data: [], error: null }
+          },
+        }),
+      },
+    }
+    return { remote: createSupabaseRemote(client as never), offsets }
+  }
+
+  it('usedBytes suma las páginas', async () => {
+    const full = Array.from({ length: 1000 }, () => ({ metadata: { size: 10 } }))
+    const rest = Array.from({ length: 5 }, () => ({ metadata: { size: 1 } }))
+    const { remote, offsets } = listingClient([{ data: full, error: null }, { data: rest, error: null }])
+    expect(await remote.usedBytes()).toBe(10005)
+    expect(offsets).toEqual([0, 1000])
+  })
+
+  it('usedBytes traduce el error', async () => {
+    const { remote } = listingClient([{ data: null, error: { message: 'x', statusCode: '500' } }])
+    await expect(remote.usedBytes()).rejects.toMatchObject({ kind: 'server' })
+  })
+})

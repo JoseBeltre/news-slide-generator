@@ -5,6 +5,7 @@ import { computed } from 'vue'
 import { useSync } from '../../data/sync/useSync'
 import UiPageHeader from '../../ui/UiPageHeader.vue'
 import SlidesSection from './SlidesSection.vue'
+import StorageSection from './StorageSection.vue'
 import TeamSection from './team/TeamSection.vue'
 import TextsSection from './TextsSection.vue'
 
@@ -13,6 +14,7 @@ const sections = computed(() => [
   { id: 'slides', label: 'Presentaciones y slides' },
   { id: 'textos', label: 'Textos por defecto' },
   ...(sync.value ? [{ id: 'equipo', label: 'Equipo' }] : []),
+  { id: 'almacenamiento', label: 'Almacenamiento' },
 ])
 </script>
 
@@ -30,5 +32,6 @@ const sections = computed(() => [
     <SlidesSection />
     <TextsSection />
     <TeamSection v-if="sync" />
+    <StorageSection />
   </div>
 </template>

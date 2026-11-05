@@ -21,6 +21,8 @@ export interface SyncRemote {
   /** "Ya existe" cuenta como éxito: la ruta es el hash del contenido. */
   uploadFile(path: string, blob: Blob): Promise<void>
   downloadFile(path: string): Promise<Blob>
+  /** Bytes que ocupan las imágenes en la nube (para Configuración → Almacenamiento). */
+  usedBytes(): Promise<number>
 }
 
 /**

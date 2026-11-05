@@ -70,6 +70,10 @@ export function memoryRemote(): MemoryRemote {
       if (!blob) throw new SyncError('rejected', `no existe: ${path}`)
       return blob
     },
+    async usedBytes() {
+      check()
+      return [...files.values()].reduce((sum, b) => sum + b.size, 0)
+    },
   }
   return remote
 }
