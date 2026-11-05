@@ -4,6 +4,7 @@ import { computed } from 'vue'
 import { CHURCH_MINISTRY_ID, MAX_LOGOS } from '../../../../data/ministries'
 import type { LogoForm, LogoSelection, Ministry } from '../../../../data/models'
 import UiCheckbox from '../../../../ui/UiCheckbox.vue'
+import UiCollapse from '../../../../ui/UiCollapse.vue'
 import UiChoiceGroup from '../../../../ui/UiChoiceGroup.vue'
 import OptionGroup from '../../shared/OptionGroup.vue'
 
@@ -55,7 +56,8 @@ function setForm(f: string) {
 <template>
   <OptionGroup title="Logo en la slide">
     <UiChoiceGroup :model-value="mode" :options="modes" label="Logo en la slide" @update:model-value="setMode" />
-    <div v-if="mode === 'ministerios'" class="flex flex-col">
+    <UiCollapse :open="mode === 'ministerios'">
+      <div class="flex flex-col">
       <UiCheckbox
         v-for="m in ministries"
         :key="m.id"
@@ -66,13 +68,10 @@ function setForm(f: string) {
         {{ m.name }}
       </UiCheckbox>
       <p class="text-sm text-ink-muted">Hasta {{ MAX_LOGOS }} logos.</p>
-    </div>
-    <UiChoiceGroup
-      v-if="mode !== 'ninguno'"
-      :model-value="form ?? 'logotipo'"
-      :options="FORMS"
-      label="Forma del logo"
-      @update:model-value="setForm"
-    />
+      </div>
+    </UiCollapse>
+    <UiCollapse :open="mode !== 'ninguno'">
+      <UiChoiceGroup :model-value="form ?? 'logotipo'" :options="FORMS" label="Forma del logo" @update:model-value="setForm" />
+    </UiCollapse>
   </OptionGroup>
 </template>
