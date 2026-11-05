@@ -398,3 +398,77 @@ En `robots.txt` se agrega además `Google-Extended`.
 - [ ] **Step 6: Capturas finales y aprobación.** Se toman capturas de la página pública, Inicio y el editor, a 375 px y en escritorio, en claro y en oscuro.
   - **Dónde quedan:** las capturas se guardan solo en local.
   - **Qué se espera:** el visto bueno del responsable antes de la revisión final y de unir la rama a master.
+
+---
+
+## Tareas 8–12: privacidad, interruptor y migraciones (spec §6, mockup aprobado 2026-11-05)
+
+Mockup aprobado: `.superpowers/sdd/2026-11-05-fase1-p9-anuncios-publicos/mockup-p9-privacidad.html`.
+
+### Task 8: Campos con audiencia y contacto en dos campos
+- **Archivos:** `src/slides/types/fields.ts`, `src/slides/types/definitions.ts`, `src/slides/normalize.ts`, `src/features/announcements/editor/form/FieldControl.vue`, `src/public-notices/cards.ts`.
+- **Tipos en `FieldDef`:**
+  - `audience?: 'slides'` (se proyecta, nunca sale en la página pública);
+  - `fallbackFor?: string` (sale en la slide solo si el campo nombrado está vacío);
+  - `hint?: string` (lo muestra `UiField`, vía FieldControl).
+- **Contacto, en Salida, Obra misionera, Actividad y Aviso:**
+  - **`contacto`:**
+    - etiqueta "Contacto privado";
+    - `audience: 'slides'`;
+    - ayuda "Sale en las slides. Nunca en la página pública.".
+  - **`contactoPublico`, justo después:**
+    - etiqueta "Contacto público";
+    - kind `text`, role `secondary`, ícono `message-square`, `maxLength` 40;
+    - `fallbackFor: 'contacto'`;
+    - ayuda "Sale en la página pública, y en la slide si no hay contacto privado.";
+    - placeholder o ejemplo "Habla con el Director de Jóvenes" (si el control acepta placeholder).
+- **Culto:** `predicador` y `fotoPredicador` llevan `audience: 'slides'`; `predicador` lleva la ayuda "Solo en las slides. Nunca en la página pública.".
+- **`normalize`:** omite un campo con `fallbackFor` si el campo nombrado tiene valor.
+- **`cards`:** omite los campos con `audience: 'slides'`. Lo más simple es quitar esas claves de `values` antes de normalizar.
+- **Pruebas:**
+  - **Unit:**
+    - `'contactoPublico sale en la slide solo sin contacto privado'`;
+    - en cards, `'nunca muestra predicador ni contacto privado; sí el contacto público'`.
+  - **Browser (editor):** las etiquetas "Contacto privado" y "Contacto público" con sus ayudas.
+- **Commit:** `feat(privacidad): contacto privado y público; el predicador solo en las slides [RF-72]`.
+
+### Task 9: Migración v2 de `public_notices` (sin PII y con interruptor)
+- **Archivo:** `supabase/migrations/20261105010000_anuncios_publicos_privacidad.sql`, con `create or replace` de `public._public_notices_at`. La migración ya aplicada no se toca.
+- **`values`:** se les quitan `predicador`, `fotoPredicador` y `contacto`.
+- **Respuesta:** agrega `enabled`, que es `false` si `settings.data->>'publicPage' = 'equipo'`; en ese caso `notices` es `[]`.
+- **Pruebas** (`tests/unit/db/publicNotices.test.ts`):
+  - **La lista se deriva de las definiciones:** las claves con `audience: 'slides'` o `kind: 'image'` de los tipos publicables no aparecen en `values`, y `contactoPublico` sí.
+  - **Interruptor:** `'con publicPage equipo: enabled false y sin anuncios'`.
+- **Commit:** `feat(nube): public_notices sin datos personales y con interruptor [§8.5]`.
+
+### Task 10: Interruptor en Configuración, página apagada e Inicio
+- **Ajuste nuevo:** `Settings.publicPage: 'todos' | 'equipo'`, con `DEFAULT_SETTINGS.publicPage = 'todos'`.
+- **Configuración:** `src/features/settings/PublicPageSection.vue`, con `SettingsSection id="pagina-publica"`, título "Página pública" y `UiChoiceGroup` "Quién ve los anuncios" ("Para todos" / "Solo el equipo"). La ayuda dice: 'Con "Solo el equipo", el enlace de la congregación dice que los anuncios no están disponibles.' La sección va después de Textos y el índice gana la entrada "Página pública".
+- **Página pública:**
+  - **Carga:** `load.ts` acepta `enabled` (opcional; si falta, cuenta como `true`). Con `false`, borra `CACHE_KEY` y devuelve `{ kind: 'disabled' }`.
+  - **Mensaje:** "Los anuncios no están disponibles por ahora.".
+- **Inicio:** `ShareNoticesButton` se oculta si `publicPage === 'equipo'`. Lee el ajuste con `useLiveQuery(loadSettings)`.
+- **Pruebas:**
+  - **Unit (`load`):** `disabled` borra la caché.
+  - **Browser:** la página apagada, la sección de Configuración que guarda `publicPage`, y que Inicio no muestre "Compartir" con `'equipo'`.
+- **Commit:** `feat(publico): interruptor de la página pública en Configuración [RF-110, RF-72]`.
+
+### Task 11: Aviso en el editor
+- **Cambio:** en `SlideOptions.vue`, la ayuda bajo "Mostrar al público" pasa a "Sale en la página que se comparte con la congregación. No escribas nombres ni teléfonos de personas.".
+- **Prueba:** una más en `public-toggle.test.ts`.
+- **Commit:** `feat(privacidad): aviso de no escribir nombres ni teléfonos [RF-72]`.
+
+### Task 12: Migraciones automáticas en el despliegue
+- **`supabase/config.toml` mínimo:** `project_id = "anuncios"`, si la CLI lo pide.
+- **`.github/workflows/deploy.yml`:** después de las pruebas y antes de "Subir a Hostinger", agrega `supabase/setup-cli@v1` y el paso "Migraciones de Supabase":
+  - **Secretos:** comprueba `SUPABASE_ACCESS_TOKEN` y `SUPABASE_DB_PASSWORD`.
+  - **Comandos:**
+    - `supabase link --project-ref "${SUPABASE_PROJECT_REF:-jyxhnqbqzqrbahorigxq}"`;
+    - `supabase migration repair --status applied 20261103000000 20261105000000`, para las aplicadas a mano (si ya están registradas, no cambia nada);
+    - `supabase db push`.
+- **Prueba** (`tests/unit/deployWorkflow.test.ts`):
+  - el paso de migraciones va antes de la subida por FTP;
+  - nombra los dos secretos;
+  - `repair` lista exactamente esas dos versiones.
+- **README y HANDOFF:** cómo crear los dos secretos. El token se crea en supabase.com/dashboard/account/tokens con la cuenta de la iglesia; la contraseña está en Project Settings → Database.
+- **Commit:** `ci(despliegue): aplicar las migraciones de Supabase antes de publicar [§8.6]`.
