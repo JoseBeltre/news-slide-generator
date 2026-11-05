@@ -8,6 +8,7 @@ import type { Announcement } from '../../../data/models'
 import { useDb } from '../../../data/useDb'
 import UiButton from '../../../ui/UiButton.vue'
 import UiPageHeader from '../../../ui/UiPageHeader.vue'
+import ExportButton from '../../transfer/shared/ExportButton.vue'
 import { useShortcut } from '../../../ui/useShortcut'
 import EditorLayout from './EditorLayout.vue'
 import { flaggedFields } from './fitMessages'
@@ -72,6 +73,7 @@ onMounted(() => {
     <span v-if="savedAs" role="status" :class="['text-sm', savedAs === 'listo' ? 'text-success' : 'text-warning']">
       {{ savedAs === 'listo' ? 'Guardado' : 'Guardado como borrador' }}
     </span>
+    <ExportButton v-if="initial.id" kind="anuncio" :id="initial.id" />
     <UiButton variant="primary" aria-keyshortcuts="Control+S" :disabled="saving" @click="onSave">Guardar</UiButton>
   </UiPageHeader>
   <EditorLayout>

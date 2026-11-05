@@ -7,6 +7,7 @@ import { displayTitle } from '../../../data/announcements'
 import type { Announcement } from '../../../data/models'
 import { formatEventDate } from '../../../lib/format'
 import UiIconButton from '../../../ui/UiIconButton.vue'
+import ExportButton from '../../transfer/shared/ExportButton.vue'
 import StatusBadge from './StatusBadge.vue'
 import TypeMark from './TypeMark.vue'
 import { typeVisual } from './typeVisual'
@@ -37,6 +38,7 @@ const date = computed(() => {
       </span>
     </RouterLink>
     <UiIconButton :label="`Duplicar «${name}»`" :icon="Copy" @click="emit('duplicate')" />
+    <ExportButton kind="anuncio" :id="announcement.id" :label="`Exportar «${name}»`" icon />
     <UiIconButton :label="`Eliminar «${name}»`" :icon="Trash2" variant="danger" @click="emit('remove')" />
   </li>
 </template>
