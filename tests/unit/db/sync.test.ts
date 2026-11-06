@@ -65,7 +65,10 @@ describe('tablas sincronizadas', () => {
 })
 
 describe('equipo', () => {
-  it('un editor añade y quita a otro', async () => {
+  // Solo el rol admin gestiona el equipo; el rol se da a mano en el proyecto, nunca desde la app.
+  beforeEach(async () => void (await db.query(`update public.editors set role = 'admin' where email = $1`, [ANA])))
+
+  it('un admin añade y quita a otro', async () => {
     await as(db, ANA, 'insert into public.editors (email) values ($1)', ['nuevo@iglesia.do'])
     await as(db, ANA, 'delete from public.editors where email = $1', [LUIS])
     const emails = (await as<{ email: string }>(db, ANA, 'select email from public.editors order by email')).map((r) => r.email)
@@ -75,6 +78,23 @@ describe('equipo', () => {
   it('nadie se quita a sí mismo', async () => {
     await as(db, ANA, 'delete from public.editors where email = $1', [ANA])
     expect(await as(db, ANA, 'select email from public.editors where email = $1', [ANA])).toHaveLength(1)
+  })
+
+  it('un editor sin rol admin no añade ni quita a nadie', async () => {
+    await expect(as(db, LUIS, 'insert into public.editors (email) values ($1)', ['nuevo@iglesia.do'])).rejects.toThrow(/row-level security/)
+    await as(db, LUIS, 'delete from public.editors where email = $1', [ANA])
+    expect(await as(db, LUIS, 'select email from public.editors where email = $1', [ANA])).toHaveLength(1)
+  })
+
+  it('un admin no crea otro admin ni cambia roles desde la app', async () => {
+    await expect(as(db, ANA, `insert into public.editors (email, role) values ($1, 'admin')`, ['nuevo@iglesia.do'])).rejects.toThrow(/row-level security/)
+    await expect(as(db, ANA, `update public.editors set role = 'admin' where email = $1`, [LUIS])).rejects.toThrow(/permission denied/)
+  })
+
+  it('is_team_admin dice quién gestiona el equipo', async () => {
+    expect((await as<{ ok: boolean }>(db, ANA, 'select public.is_team_admin() as ok'))[0]!.ok).toBe(true)
+    expect((await as<{ ok: boolean }>(db, LUIS, 'select public.is_team_admin() as ok'))[0]!.ok).toBe(false)
+    await expect(as(db, null, 'select public.is_team_admin()')).rejects.toThrow(/permission denied/)
   })
 
   it('alguien de fuera no se añade', async () => {

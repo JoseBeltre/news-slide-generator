@@ -15,6 +15,8 @@ export interface Auth {
   sendCode(email: string): Promise<void>
   verifyCode(email: string, code: string): Promise<void>
   signOut(): Promise<void>
+  /** Solo el rol admin añade o quita personas; ante cualquier error, no. */
+  isTeamAdmin(): Promise<boolean>
   listEditors(): Promise<string[]>
   addEditor(email: string): Promise<void>
   removeEditor(email: string): Promise<void>
@@ -52,6 +54,10 @@ export function createAuth(client: SupabaseClient): Auth {
       await client.auth.signOut({ scope: 'local' })
       session.value = null
     },
+    async isTeamAdmin() {
+      const { data, error } = await client.rpc('is_team_admin')
+      return !error && data === true
+    },
     async listEditors() {
       const { data, error } = await client.from('editors').select('email').order('email', { ascending: true })
       if (error) throw new Error(NO_CONNECTION)
@@ -62,6 +68,7 @@ export function createAuth(client: SupabaseClient): Auth {
       if (!EMAIL.test(email)) throw new Error('Escribe un correo válido.')
       const { error } = await client.from('editors').insert({ email })
       if (error?.code === '23505') throw new Error('Ese correo ya está en el equipo.')
+      if (error?.code === '42501') throw new Error('Solo un administrador puede añadir personas al equipo.')
       if (error) throw new Error(NO_CONNECTION)
     },
     async removeEditor(email) {

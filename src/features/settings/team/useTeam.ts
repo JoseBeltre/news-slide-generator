@@ -1,4 +1,4 @@
-// Equipo (§8.5): leer, añadir y quitar correos, y cerrar sesión avisando de los cambios sin subir.
+// Equipo (§8.5): leer, saber si se es admin, añadir y quitar correos, y cerrar sesión avisando de los cambios sin subir.
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSync } from '../../../data/sync/useSync'
@@ -10,12 +10,15 @@ export function useTeam() {
   const confirm = useConfirm()
   const me = computed(() => sync.value?.auth.session.value?.email ?? null)
   const editors = ref<string[]>([])
+  const admin = ref(false)
   const loadError = ref<string>()
 
   async function load() {
     if (!sync.value || !me.value) return
     try {
-      editors.value = await sync.value.auth.listEditors()
+      const [list, isAdmin] = await Promise.all([sync.value.auth.listEditors(), sync.value.auth.isTeamAdmin()])
+      editors.value = list
+      admin.value = isAdmin
       loadError.value = undefined
     } catch (e) {
       loadError.value = (e as Error).message
@@ -52,5 +55,5 @@ export function useTeam() {
     await router.push('/')
   }
 
-  return { available: computed(() => sync.value !== null), me, editors, loadError, add, remove, signOut }
+  return { available: computed(() => sync.value !== null), me, editors, admin, loadError, add, remove, signOut }
 }

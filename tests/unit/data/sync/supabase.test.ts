@@ -100,6 +100,15 @@ describe('createAuth', () => {
     await expect(dup.addEditor('ana@x.com')).rejects.toThrow('Ese correo ya está en el equipo.')
   })
 
+  it('isTeamAdmin pregunta a la base; sin permiso, añadir lo dice claro', async () => {
+    const { client, calls } = fakeClient({ rpc: { data: true, error: null } })
+    expect(await createAuth(client).isTeamAdmin()).toBe(true)
+    expect(calls).toContainEqual(['rpc', 'is_team_admin'])
+    expect(await createAuth(fakeClient({ rpc: { error: { message: 'x' } } }).client).isTeamAdmin()).toBe(false)
+    const denied = createAuth(fakeClient({ insert: { error: { message: 'row-level security', code: '42501' }, status: 403 } }).client)
+    await expect(denied.addEditor('ana@x.com')).rejects.toThrow('Solo un administrador puede añadir personas al equipo.')
+  })
+
   it('verifyCode con error da un mensaje claro', async () => {
     const auth = createAuth(fakeClient({ verify: { error: { message: 'Token has expired or is invalid' } } }).client)
     await expect(auth.verifyCode('ana@x.com', '123456')).rejects.toThrow('El código no es correcto o ya caducó.')

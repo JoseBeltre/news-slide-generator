@@ -23,6 +23,7 @@ function fakeAuth(over: Partial<Auth> = {}, email: string | null = null) {
     sendCode: vi.fn(async () => {}),
     verifyCode: vi.fn(async () => {}),
     signOut: vi.fn(async () => {}),
+    isTeamAdmin: vi.fn(async () => true),
     listEditors: vi.fn(async () => [...editors.value]),
     addEditor: vi.fn(async (e: string) => void editors.value.push(e.trim().toLowerCase())),
     removeEditor: vi.fn(async (e: string) => void (editors.value = editors.value.filter((x) => x !== e))),
@@ -112,6 +113,16 @@ describe('Equipo', () => {
     answerConfirm(false)
     await flushPromises()
     expect(auth.signOut).not.toHaveBeenCalled()
+  })
+
+  it('sin rol admin ve la lista, pero no añade ni quita', async () => {
+    const auth = fakeAuth({ isTeamAdmin: vi.fn(async () => false) }, 'luis@iglesia.do')
+    const { w } = await render(TeamPage, auth)
+    await flushPromises()
+    expect(w.findAll('li')).toHaveLength(2)
+    expect(w.find('form').exists()).toBe(false)
+    expect(w.findAll('li button')).toHaveLength(0)
+    expect(w.text()).toContain('Solo un administrador puede añadir o quitar personas.')
   })
 
   it('sin sesión invita a entrar', async () => {
