@@ -8,7 +8,6 @@ import { useRouter } from 'vue-router'
 import { TransferFormatError } from '../../../data/transfer/format'
 import { readTransferFile } from '../../../data/transfer/unpack'
 import UiButton from '../../../ui/UiButton.vue'
-import UiIconButton from '../../../ui/UiIconButton.vue'
 import { useBusy } from '../../../ui/useBusy'
 import { setPendingImport } from './pendingImport'
 
@@ -38,11 +37,10 @@ async function pick(event: Event) {
 </script>
 
 <template>
-  <UiIconButton v-if="icon" as="label" :label="props.label === 'Importar' ? 'Importar anuncio' : props.label" :icon="Upload" variant="line" :busy="state">
-    <input ref="input" type="file" accept=".zip,application/zip" aria-label="Importar anuncio" class="sr-only" @change="pick" />
-  </UiIconButton>
-  <UiButton v-else as="label" :busy="state">
-    <Upload :size="16" aria-hidden="true" />{{ label }}
-    <input ref="input" type="file" accept=".zip,application/zip" class="sr-only" @change="pick" />
+  <!-- Con `icon`: en el celular solo el ícono; desde md, con texto. -->
+  <UiButton as="label" :busy="state" :class="icon && 'max-md:size-11 max-md:px-0'">
+    <Upload :size="icon ? 20 : 16" aria-hidden="true" class="md:size-4" />
+    <span :class="icon && 'max-md:sr-only'">{{ label }}</span>
+    <input ref="input" type="file" accept=".zip,application/zip" :aria-label="icon ? 'Importar anuncio' : undefined" class="sr-only" @change="pick" />
   </UiButton>
 </template>

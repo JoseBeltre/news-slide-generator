@@ -12,8 +12,8 @@ const { view, typeId, items, loaded, today } = useAnnouncementList()
 
 <template>
   <UiPageHeader title="Anuncios">
-    <div class="flex gap-2 md:hidden"><ImportButton icon /><NewAnnouncementButton icon /></div>
-    <div class="hidden gap-2 md:flex"><ImportButton /><NewAnnouncementButton /></div>
+    <ImportButton icon />
+    <NewAnnouncementButton icon />
   </UiPageHeader>
   <AnnouncementFilters v-model:view="view" v-model:type-id="typeId" />
   <AnnouncementList
