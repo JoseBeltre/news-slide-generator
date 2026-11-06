@@ -17,6 +17,8 @@ const props = withDefaults(
     as?: 'button' | 'label'
     disabled?: boolean
     busy?: BusyState
+    /** Al lado de un campo: mismo alto que UiInput. */
+    tall?: boolean
   }>(),
   { variant: 'secondary', type: 'button', as: 'button', busy: 'idle' },
 )
@@ -30,7 +32,8 @@ const VARIANTS: Record<ButtonVariant, string> = {
 
 const working = computed(() => props.busy !== 'idle')
 const classes = computed(() => [
-  'relative inline-flex h-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-sm px-4 text-[15px] font-medium transition-[background-color,opacity,transform] duration-150 ease-out active:scale-97 md:h-10 md:text-sm',
+  'relative inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-sm px-4 text-[15px] font-medium transition-[background-color,opacity,transform] duration-150 ease-out active:scale-97 md:text-sm',
+  props.tall ? 'h-12 md:h-11' : 'h-11 md:h-10',
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:pointer-events-none disabled:opacity-50',
   props.as === 'label' && 'has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ink',
   working.value && 'pointer-events-none',

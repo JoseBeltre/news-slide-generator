@@ -41,8 +41,9 @@ watch(
 </script>
 
 <template>
-  <div class="flex flex-col gap-1.5">
-    <div class="relative flex min-h-6 items-center">
+  <!-- Sin gap: el error plegado no deja hueco bajo el control (un botón al lado queda alineado). -->
+  <div class="flex flex-col">
+    <div class="relative mb-1.5 flex min-h-6 items-center">
       <label :id="`${id}-etiqueta`" :for="id" data-field-label class="text-sm font-medium text-ink">
         {{ label }}<span v-if="required" aria-hidden="true"> *</span>
       </label>
@@ -80,7 +81,7 @@ watch(
         v-if="shownError"
         :id="errorId"
         :role="error ? 'alert' : undefined"
-        class="flex items-start gap-1.5 pt-0.5 text-sm font-medium text-danger motion-safe:animate-err-in motion-reduce:animate-fade-in"
+        class="flex items-start gap-1.5 pt-2 text-sm font-medium text-danger motion-safe:animate-err-in motion-reduce:animate-fade-in"
       >
         <CircleAlert :size="16" aria-hidden="true" class="mt-0.5 shrink-0" />{{ shownError }}
       </p>
