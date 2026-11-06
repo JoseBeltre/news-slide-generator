@@ -108,3 +108,21 @@ describe('página pública de anuncios', () => {
     expect(pub.querySelector('[data-team-banner]')).toBeNull()
   })
 })
+
+describe('refresco de la página pública', () => {
+  it('una respuesta vieja que llega tarde no pisa a la nueva', async () => {
+    const NEW = { ...DATA, notices: [{ ...DATA.notices[0]!, values: { titulo: 'Título nuevo' } }] }
+    const resolvers: ((s: LoadState) => void)[] = []
+    const load = () => new Promise<LoadState>((r) => resolvers.push(r))
+    const { host } = mountInHost(PublicNoticesApp, 390, 844, { props: { load } })
+    await until(() => resolvers.length === 1) // carga del montaje (lenta)
+    window.dispatchEvent(new Event('online'))
+    await until(() => resolvers.length === 2) // refresco posterior
+    resolvers[1]!({ kind: 'fresh', data: NEW, savedAt: SAVED })
+    await until(() => cards(host).length === 1 && host.textContent!.includes('Título nuevo'))
+    resolvers[0]!({ kind: 'fresh', data: DATA, savedAt: SAVED }) // llega tarde
+    await new Promise((r) => setTimeout(r, 100))
+    expect(cards(host)).toHaveLength(1)
+    expect(host.textContent).toContain('Título nuevo')
+  })
+})

@@ -4,10 +4,17 @@
 import { reactive, watch } from 'vue'
 import type { SlideContext, SlideSpec, SlideStatus } from '../../../../slides/templates/contract'
 import SlideView from '../../../../slides/templates/SlideView.vue'
+import { useFadeOnChange } from './useFadeOnChange'
 
 const props = defineProps<{ slides: SlideSpec[]; ctx: SlideContext }>()
 const emit = defineEmits<{ status: [status: SlideStatus] }>()
 
+/** Estilo, plantilla y colores de lo que se ve: si cambian, la vista previa se funde. */
+const look = () =>
+  props.slides
+    .map((s) => ('palette' in s ? `${'templateId' in s ? s.templateId : s.kind}|${s.slideStyle}|${JSON.stringify(s.palette)}` : s.kind))
+    .join('/')
+const dim = useFadeOnChange(look)
 const statuses = reactive(new Map<number, SlideStatus>())
 const RANK = { no_cabe: 2, midiendo: 1, ok: 0 } as const
 
@@ -36,7 +43,7 @@ watch(
 <template>
   <div data-preview class="flex flex-col gap-3">
     <figure v-for="(spec, i) in slides" :key="i" class="flex flex-col gap-1">
-      <div class="aspect-video overflow-hidden rounded-md border border-hairline bg-surface">
+      <div :class="['aspect-video overflow-hidden rounded-md border border-hairline bg-surface transition-opacity ease-out motion-reduce:duration-100', dim ? 'opacity-50 duration-90' : 'opacity-100 duration-200']">
         <SlideView :spec="spec" :ctx="ctx" @status="onStatus(i, $event)" />
       </div>
       <figcaption v-if="slides.length > 1" class="font-meta text-meta text-ink-muted">Slide {{ i + 1 }}/{{ slides.length }}</figcaption>

@@ -1,7 +1,7 @@
 // Exportar e importar (RF-112) contra el build y sin red: exportar un anuncio, volver a importarlo en el
 // mismo equipo y obtener la copia "(2)".
 import { expect, test } from '@playwright/test'
-import { goOffline, isoInDays } from './helpers'
+import { goOffline, isoInDays, rowAction } from './helpers'
 
 test('exportar un anuncio y reimportarlo como copia sin red (RF-112)', async ({ page, context }, testInfo) => {
   await goOffline(page, context)
@@ -18,7 +18,7 @@ test('exportar un anuncio y reimportarlo como copia sin red (RF-112)', async ({ 
   // 2. Exportarlo desde la lista.
   await page.getByRole('link', { name: 'Anuncios', exact: true }).click()
   const downloading = page.waitForEvent('download')
-  await page.getByRole('button', { name: 'Exportar «Culto»' }).click()
+  await rowAction(page, 'Culto', 'Exportar')
   const download = await downloading
   expect(download.suggestedFilename()).toBe('anuncio-culto.zip')
   const file = testInfo.outputPath('anuncio-culto.zip')

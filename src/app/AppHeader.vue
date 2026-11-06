@@ -1,5 +1,6 @@
 <script setup lang="ts">
-// Encabezado de la app: nombre (lleva a Inicio), navegación principal y estado de la sincronización.
+// Encabezado de la app: nombre (lleva a Inicio), el estado de la sincronización y el tema. Desde 768 px
+// también la navegación principal; en el celular ésta va en la barra inferior (AppBottomNav).
 import { Settings } from '@lucide/vue'
 import { RouterLink } from 'vue-router'
 import SyncIndicator from '../features/sync/SyncIndicator.vue'
@@ -13,14 +14,14 @@ const LINKS = [
 ] as const
 
 const linkClass =
-  'inline-flex min-h-11 items-center rounded-sm px-3 text-sm font-medium text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink'
+  'inline-flex min-h-11 items-center rounded-sm px-3 text-sm font-medium text-ink-muted transition-colors duration-150 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink'
 </script>
 
 <template>
   <header class="border-b border-hairline">
-    <div class="mx-auto flex min-h-14 max-w-7xl flex-wrap items-center gap-x-4 px-4 md:px-8">
-      <RouterLink :to="{ name: 'inicio' }" class="inline-flex min-h-11 items-center font-display text-heading-sm whitespace-nowrap text-ink">Anuncios del Sábado</RouterLink>
-      <nav aria-label="Principal" class="order-last -mx-3 flex w-full items-center gap-1 overflow-x-auto md:order-none md:mx-0 md:ml-auto md:w-auto">
+    <div class="mx-auto flex min-h-14 max-w-7xl items-center gap-x-4 pr-2 pl-4 md:px-8">
+      <RouterLink :to="{ name: 'inicio' }" class="inline-flex min-h-11 items-center font-display text-brand whitespace-nowrap text-ink md:text-heading-sm">Anuncios del Sábado</RouterLink>
+      <nav aria-label="Principal" class="ml-auto hidden items-center gap-1 md:flex">
         <RouterLink
           v-for="link in LINKS"
           :key="link.label"

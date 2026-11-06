@@ -7,15 +7,18 @@ type Size = 'xs' | 'sm'
 const props = withDefaults(defineProps<{ typeId: string; size?: Size }>(), { size: 'sm' })
 const visual = computed(() => typeVisual(props.typeId))
 
-const BOX: Record<Size, string> = { xs: 'size-6 border-l-2', sm: 'size-9 border-l-4' }
-const ICON: Record<Size, number> = { xs: 14, sm: 18 }
+const BOX: Record<Size, string> = {
+  xs: 'size-6 rounded-sm border-l-2 border-(--type-accent) bg-muted',
+  sm: 'size-10 rounded-md bg-(--type-accent)/40',
+}
+const ICON: Record<Size, number> = { xs: 14, sm: 20 }
 </script>
 
 <template>
   <span
     aria-hidden="true"
     :style="{ '--type-accent': visual.accent }"
-    :class="['inline-flex shrink-0 items-center justify-center rounded-sm border-(--type-accent) bg-muted text-ink', BOX[size]]"
+    :class="['inline-flex shrink-0 items-center justify-center text-ink', BOX[size]]"
   >
     <component :is="visual.icon" v-if="visual.icon" :size="ICON[size]" />
   </span>

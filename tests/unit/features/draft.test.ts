@@ -25,6 +25,7 @@ function memoryRepo() {
     get: async () => undefined,
     list: async () => saved,
     remove: async () => {},
+    restore: async () => {},
   }
   return { repo, saved }
 }

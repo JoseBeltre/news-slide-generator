@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import AnnouncementRow from '../../../src/features/announcements/shared/AnnouncementRow.vue'
-import { byLabel, cleanupDbs, daysFromToday, mountApp, seed, testDb, until } from '../helpers/app'
+import { byLabel, chooseRowAction, cleanupDbs, daysFromToday, mountApp, seed, snackbar, testDb, until } from '../helpers/app'
 import { cleanupMounted } from '../helpers/mount'
 
 afterEach(async () => {
@@ -41,7 +41,7 @@ describe('lista de anuncios (RF-08)', () => {
     const db = await seedThree()
     const { host } = await mountApp('/anuncios', db)
     await until(() => rowTitles(host).length === 2)
-    byLabel(host, 'Eliminar «Culto joven»')!.click()
+    await chooseRowAction(host, 'Culto joven', 'remove')
     await until(() => !!document.querySelector('dialog[open]'))
     expect(document.querySelector('dialog[open]')!.textContent).toContain('¿Eliminar «Culto joven»?')
     byLabel(document.querySelector('dialog[open]')!, 'Eliminar')!.click()
@@ -50,11 +50,27 @@ describe('lista de anuncios (RF-08)', () => {
     expect(all.find((a) => a.values.titulo === 'Culto joven')?.deletedAt).toBeTruthy()
   })
 
+  it('tras eliminar, el aviso ofrece Deshacer: la fila vuelve y el registro deja de estar borrado', async () => {
+    const db = await seedThree()
+    const { host } = await mountApp('/anuncios', db)
+    await until(() => rowTitles(host).length === 2)
+    await chooseRowAction(host, 'Culto joven', 'remove')
+    await until(() => !!document.querySelector('dialog[open]'))
+    byLabel(document.querySelector('dialog[open]')!, 'Eliminar')!.click()
+    await until(() => rowTitles(host).length === 1)
+    await until(() => !!snackbar())
+    expect(snackbar()!.textContent).toContain('Anuncio eliminado')
+    byLabel(snackbar()!, 'Deshacer')!.click()
+    await until(() => rowTitles(host).length === 2)
+    expect((await db.announcements.toArray()).every((a) => !a.deletedAt)).toBe(true)
+    expect(snackbar()).toBeUndefined()
+  })
+
   it('Eliminar + Esc → no borra', async () => {
     const db = await seedThree()
     const { host } = await mountApp('/anuncios', db)
     await until(() => rowTitles(host).length === 2)
-    byLabel(host, 'Eliminar «Culto joven»')!.click()
+    await chooseRowAction(host, 'Culto joven', 'remove')
     await until(() => !!document.querySelector('dialog[open]'))
     document.querySelector('dialog[open]')!.dispatchEvent(new Event('cancel', { cancelable: true }))
     await until(() => !document.querySelector('dialog[open]'))
@@ -67,7 +83,7 @@ describe('lista de anuncios (RF-08)', () => {
     const db = await seedThree()
     const { host, router } = await mountApp('/anuncios', db)
     await until(() => rowTitles(host).length === 2)
-    byLabel(host, 'Eliminar «Culto joven»')!.click()
+    await chooseRowAction(host, 'Culto joven', 'remove')
     await until(() => !!document.querySelector('dialog[open]'))
     document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'n', bubbles: true }))
     await new Promise((r) => setTimeout(r, 50))
@@ -81,7 +97,7 @@ describe('lista de anuncios (RF-08)', () => {
     const db = await seedThree()
     const { host, router } = await mountApp('/anuncios', db)
     await until(() => rowTitles(host).length === 2)
-    byLabel(host, 'Duplicar «Culto joven»')!.click()
+    await chooseRowAction(host, 'Culto joven', 'duplicate')
     await until(() => router.currentRoute.value.name === 'editar')
     const copies = (await db.announcements.toArray()).filter((a) => a.values.titulo === 'Culto joven')
     expect(copies).toHaveLength(2)

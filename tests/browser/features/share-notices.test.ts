@@ -7,6 +7,7 @@ import { syncPlugin, type SyncContext } from '../../../src/data/sync/useSync'
 import { saveSettings } from '../../../src/data/settings'
 import { dbPlugin } from '../../../src/data/useDb'
 import ShareNoticesButton from '../../../src/features/home/ShareNoticesButton.vue'
+import { snackbarState } from '../../../src/ui/useSnackbar'
 import { byLabel, cleanupDbs, mountApp, testDb, until } from '../helpers/app'
 import { cleanupMounted } from '../helpers/mount'
 
@@ -67,23 +68,25 @@ describe('Compartir los anuncios', () => {
     await until(() => share.mock.calls.length === 1)
     await new Promise((r) => setTimeout(r, 50))
     expect(writeText).not.toHaveBeenCalled()
-    expect(host.textContent).not.toContain('Enlace copiado')
+    expect(snackbarState.current).toBeNull()
   })
 
-  it('sin share: copia y dice Enlace copiado', async () => {
+  it('sin share: copia y avisa «Enlace copiado» en el snackbar', async () => {
     const writeText = vi.fn(async () => {})
     vi.stubGlobal('navigator', fakeNavigator({ clipboard: { writeText } }))
     const host = await withCloud()
     byLabel(host, 'Compartir los anuncios')!.click()
-    await until(() => !!host.querySelector('[role="status"]')?.textContent?.includes('Enlace copiado'))
+    await until(() => snackbarState.current?.message === 'Enlace copiado')
+    expect(snackbarState.current?.tone).toBe('normal')
     expect(writeText).toHaveBeenCalledWith(URL_PUBLICA)
   })
 
-  it('sin share ni portapapeles: muestra el enlace para copiarlo a mano', async () => {
+  it('sin share ni portapapeles: una advertencia con el enlace para copiarlo a mano', async () => {
     vi.stubGlobal('navigator', fakeNavigator({ clipboard: { writeText: async () => Promise.reject(new Error('no')) } }))
     const host = await withCloud()
     byLabel(host, 'Compartir los anuncios')!.click()
-    await until(() => !!host.textContent?.includes(URL_PUBLICA))
+    await until(() => !!snackbarState.current?.message.includes(URL_PUBLICA))
+    expect(snackbarState.current?.tone).toBe('warning')
   })
 
   it('el enlace Ver abre /anuncios/publico en otra pestaña', async () => {

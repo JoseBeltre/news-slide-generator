@@ -1,9 +1,11 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { NORMAL } from '../../fixtures/announcements'
-import { byLabel, cleanupDbs, daysFromToday, mountApp, seed, testDb, until } from '../helpers/app'
+import { createRepository } from '../../../src/data/local/repository'
+import { byLabel, cleanupDbs, daysFromToday, mountApp, seed, snackbar, testDb, until } from '../helpers/app'
 import { cleanupMounted, frame } from '../helpers/mount'
 
 afterEach(async () => {
+  vi.restoreAllMocks()
   cleanupMounted()
   await cleanupDbs()
 })
@@ -56,7 +58,38 @@ describe('editor con vista previa (RF-03, RNF-04)', () => {
     await until(() => router.currentRoute.value.name === 'editar')
     const saved = await db.announcements.get(router.currentRoute.value.params.id as string)
     expect(saved).toMatchObject({ status: 'listo', eventDate: daysFromToday(5), typeId: 'culto' })
-    await until(() => host.textContent!.includes('Guardado'))
+    await until(() => !!snackbar())
+    expect(snackbar()!.textContent).toContain('Anuncio guardado')
+    expect(snackbar()!.dataset.tone).toBe('normal')
+  })
+
+  it('el aviso de guardado se ve de verdad: termina de entrar (opacidad 1, sin clases de entrada)', async () => {
+    const { host } = await newCulto()
+    clickSave(host)
+    await until(() => !!snackbar())
+    const el = snackbar()!
+    await until(() => getComputedStyle(el).opacity === '1' && !el.className.includes('opacity-0'), 2000)
+  })
+
+  it('el aviso de guardado ofrece Volver, que regresa a la lista de anuncios', async () => {
+    const { host, router } = await newCulto()
+    clickSave(host)
+    await until(() => !!snackbar() && router.currentRoute.value.name === 'editar')
+    byLabel(snackbar()!, 'Volver')!.click()
+    await until(() => router.currentRoute.value.name === 'anuncios')
+  })
+
+  it('un error al guardar en el dispositivo sale como aviso de error con Reintentar', async () => {
+    const { host, db } = await newCulto()
+    const put = vi.spyOn(db.announcements, 'put').mockRejectedValueOnce(new Error('sin espacio'))
+    clickSave(host)
+    await until(() => snackbar()?.dataset.tone === 'error')
+    expect(snackbar()!.closest('[role]')!.getAttribute('role')).toBe('alert')
+    expect(snackbar()!.textContent).toContain('No se pudo guardar')
+    byLabel(snackbar()!, 'Reintentar')!.click()
+    await until(() => put.mock.calls.length >= 2)
+    await until(() => snackbar()?.textContent?.includes('Anuncio guardado') ?? false)
+    expect(await createRepository(db.announcements).list()).toHaveLength(1)
   })
 
   // Revisión final P4: guardar al instante tras cambiar de estilo no puede guardar "listo" algo que no cabe.
@@ -70,6 +103,32 @@ describe('editor con vista previa (RF-03, RNF-04)', () => {
     clickSave(host)
     await until(() => router.currentRoute.value.name === 'editar', 8000)
     expect((await db.announcements.get(router.currentRoute.value.params.id as string))?.status).toBe('no_cabe')
+    await until(() => snackbar()?.dataset.tone === 'warning')
+    expect(snackbar()!.textContent).toContain('el texto no cabe en la slide')
+  })
+
+  it('al salir del editor se descarta el aviso de error y Reintentar ya no guarda', async () => {
+    const { host, db, router } = await newCulto()
+    const put = vi.spyOn(db.announcements, 'put').mockRejectedValueOnce(new Error('sin espacio'))
+    clickSave(host)
+    await until(() => snackbar()?.dataset.tone === 'error')
+    void router.push('/configuracion')
+    await until(() => !!dialog())
+    byLabel(dialog()!, 'Salir sin guardar')!.click()
+    await until(() => router.currentRoute.value.name === 'configuracion')
+    await until(() => !snackbar())
+    expect(put).toHaveBeenCalledTimes(1)
+  })
+
+  it('Reintentar no guarda si el formulario cambió desde el fallo', async () => {
+    const { host, db } = await newCulto()
+    const put = vi.spyOn(db.announcements, 'put').mockRejectedValueOnce(new Error('sin espacio'))
+    clickSave(host)
+    await until(() => snackbar()?.dataset.tone === 'error')
+    type(input(host, 'titulo'), 'Otro título')
+    byLabel(snackbar()!, 'Reintentar')!.click()
+    await new Promise((r) => setTimeout(r, 100))
+    expect(put).toHaveBeenCalledTimes(1)
   })
 
   it('guardar algo que no valida dice que quedó como borrador (RF-10)', async () => {
@@ -78,7 +137,8 @@ describe('editor con vista previa (RF-03, RNF-04)', () => {
     type(input(host, 'titulo'), 'Solo el título')
     clickSave(host)
     await until(() => router.currentRoute.value.name === 'editar')
-    await until(() => host.textContent!.includes('Guardado como borrador'))
+    await until(() => !!snackbar())
+    expect(snackbar()!.textContent).toContain('Guardado como borrador')
   })
 
   it('Ctrl+S dentro del título guarda', async () => {

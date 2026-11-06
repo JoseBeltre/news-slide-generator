@@ -1,24 +1,27 @@
 <script setup lang="ts">
 // El editor de un anuncio: formulario y notas a un lado, vista previa y opciones al otro.
 // Guardar (Ctrl+S) siempre se puede: si no valida o no cabe, queda como borrador (RF-10).
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { createRepository, type NewRecord } from '../../../data/local/repository'
 import type { Announcement } from '../../../data/models'
 import { useDb } from '../../../data/useDb'
-import UiButton from '../../../ui/UiButton.vue'
+import UiBadge from '../../../ui/UiBadge.vue'
 import UiPageHeader from '../../../ui/UiPageHeader.vue'
 import ExportButton from '../../transfer/shared/ExportButton.vue'
 import { useShortcut } from '../../../ui/useShortcut'
+import EditorBackRow from './EditorBackRow.vue'
 import EditorLayout from './EditorLayout.vue'
 import { flaggedFields } from './fitMessages'
 import AnnouncementForm from './form/AnnouncementForm.vue'
 import PresenterNotes from './form/PresenterNotes.vue'
+import SaveButton from './SaveButton.vue'
 import SlideOptions from './options/SlideOptions.vue'
 import FitStatusBanner from './preview/FitStatusBanner.vue'
 import PreviewPanel from './preview/PreviewPanel.vue'
 import { useAnnouncementDraft } from './useAnnouncementDraft'
 import { useSlideContext } from '../../../data/useSlideContext'
+import { useEditorSave } from './useEditorSave'
 import { useUnsavedGuard } from './useUnsavedGuard'
 
 const props = defineProps<{ initial: NewRecord<Announcement> }>()
@@ -38,28 +41,20 @@ useUnsavedGuard(dirty)
 const submitted = ref(!!props.initial.id && !validation.value.ok)
 const errors = computed(() => (validation.value.ok ? {} : validation.value.errors))
 const flagged = computed(() => flaggedFields(slideStatus.value))
-const saving = ref(false)
-/** Qué se guardó la última vez: "listo" o un borrador (no valida o no cabe, RF-10). */
-const savedAs = ref<Announcement['status']>()
-watch(dirty, (d) => d && (savedAs.value = undefined))
-
-async function onSave() {
-  if (saving.value) return
-  saving.value = true
-  submitted.value = true
-  try {
-    const wasNew = !draft.value.id
-    const saved = await save()
-    savedAs.value = saved.status
-    if (wasNew) {
-      emit('saved', saved)
-      await router.replace({ name: 'editar', params: { id: saved.id } })
-    }
-  } finally {
-    saving.value = false
-  }
-}
+const { state: saveState, onSave } = useEditorSave({
+  save,
+  isNew: () => !draft.value.id,
+  submitted,
+  version: () => JSON.stringify(draft.value),
+  onFirstSave: async (saved) => {
+    emit('saved', saved)
+    await router.replace({ name: 'editar', params: { id: saved.id } })
+  },
+})
 useShortcut('mod+s', () => void onSave(), { allowInFields: true })
+const badge = computed(() =>
+  slideStatus.value.status === 'no_cabe' ? 'No cabe' : draft.value.status === 'borrador' ? 'Borrador' : null,
+)
 
 // Duplicar abre con el foco en la fecha (RF-02).
 onMounted(() => {
@@ -69,12 +64,12 @@ onMounted(() => {
 </script>
 
 <template>
+  <EditorBackRow class="md:hidden">
+    <UiBadge v-if="badge" :tone="badge === 'No cabe' ? 'danger' : 'warning'">{{ badge }}</UiBadge>
+  </EditorBackRow>
   <UiPageHeader :title="typeDef.name">
-    <span v-if="savedAs" role="status" :class="['text-sm', savedAs === 'listo' ? 'text-success' : 'text-warning']">
-      {{ savedAs === 'listo' ? 'Guardado' : 'Guardado como borrador' }}
-    </span>
-    <ExportButton v-if="initial.id" kind="anuncio" :id="initial.id" />
-    <UiButton variant="primary" aria-keyshortcuts="Control+S" :disabled="saving" @click="onSave">Guardar</UiButton>
+    <ExportButton v-if="initial.id" kind="anuncio" :id="initial.id" class="max-md:hidden" />
+    <SaveButton :busy="saveState" class="max-md:hidden" @click="onSave" />
   </UiPageHeader>
   <EditorLayout>
     <template #form>
@@ -87,6 +82,7 @@ onMounted(() => {
         @update:field="(key, value) => (draft.values[key] = value)"
       />
       <PresenterNotes v-model="draft.presenterNotes" />
+      <SaveButton :busy="saveState" class="w-full md:hidden" @click="onSave" />
     </template>
     <template #preview>
       <PreviewPanel :slides="slides" :ctx="ctx" @status="slideStatus = $event" />

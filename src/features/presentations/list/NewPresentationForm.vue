@@ -16,6 +16,6 @@ const date = ref(nextSaturday(props.today))
     <UiField id="fecha-presentacion" label="Fecha">
       <UiInput id="fecha-presentacion" v-model="date" type="date" required />
     </UiField>
-    <UiButton variant="primary" type="submit">Crear presentación</UiButton>
+    <UiButton variant="primary" type="submit" tall>Crear presentación</UiButton>
   </form>
 </template>

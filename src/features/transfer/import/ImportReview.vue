@@ -50,7 +50,7 @@ const missing = computed(() => {
     </section>
     <UiBanner v-if="missing">{{ missing }}</UiBanner>
     <div class="flex flex-wrap gap-3">
-      <UiButton variant="primary" :disabled="applying || !canApply(plan)" @click="emit('confirm')">Importar</UiButton>
+      <UiButton variant="primary" :disabled="!canApply(plan)" :busy="applying ? 'loading' : 'idle'" @click="emit('confirm')">Importar</UiButton>
       <UiButton variant="ghost" @click="emit('cancel')">Cancelar</UiButton>
     </div>
   </div>
