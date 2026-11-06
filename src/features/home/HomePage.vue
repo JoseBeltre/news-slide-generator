@@ -15,8 +15,9 @@ const { items, loaded, today } = useAnnouncementList({ limit: UPCOMING })
 
 <template>
   <UiPageHeader title="Próximos anuncios">
-    <ImportButton icon />
-    <NewAnnouncementButton icon />
+    <!-- Solo icono en el celular (no caben juntos); con texto desde md, como en Presentaciones. -->
+    <div class="flex gap-2 md:hidden"><ImportButton icon /><NewAnnouncementButton icon /></div>
+    <div class="hidden gap-2 md:flex"><ImportButton /><NewAnnouncementButton /></div>
   </UiPageHeader>
   <NextPresentationCard />
   <ShareNoticesButton />
