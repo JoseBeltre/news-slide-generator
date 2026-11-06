@@ -49,7 +49,6 @@ jobs:
           done
 
       # Migraciones de Supabase (spec P9 §6.4): la base se pone al día antes de publicar; si falla, no se sube nada.
-      # 20261103000000 y 20261105000000 se aplicaron a mano: repair las marca (si ya lo están, no cambia nada).
       # CLI fijada: la 3 apunta a la base local salvo con --remote y pide --yes para cambios en la nube.
       - uses: supabase/setup-cli@v1
         with:
@@ -64,7 +63,6 @@ jobs:
             if [ -z "${!name}" ]; then echo "::error::Falta el secreto $name (Settings → Secrets and variables → Actions)"; exit 1; fi
           done
           supabase link --project-ref "${SUPABASE_PROJECT_REF:-jyxhnqbqzqrbahorigxq}"
-          supabase migration repair --status applied 20261103000000 20261105000000 --remote --password "$SUPABASE_DB_PASSWORD" --yes
           supabase db push --remote --password "$SUPABASE_DB_PASSWORD" --yes
       # dist/ ya trae el .htaccess (public/) y el Service Worker. local-dir debe terminar en '/'.
       - name: Subir a Hostinger (FTPS)

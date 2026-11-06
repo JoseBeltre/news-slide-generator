@@ -12,3 +12,6 @@ __screenshots__
 # Capturas de la galería de slides: solo locales (se regeneran con pnpm dev → /galeria.html)
 docs/slides-direcciones/
 tests/e2e/galeria.spec.ts-snapshots/
+
+# Volcado de Git Bash en Windows
+bash.exe.stackdump

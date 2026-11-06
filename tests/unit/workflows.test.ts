@@ -49,9 +49,9 @@ describe('deploy.yml: migraciones de Supabase (spec P9 §6.4)', () => {
     expect(yml).toMatch(/for name in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD/)
   })
 
-  it('enlaza el proyecto de la iglesia y marca como aplicadas solo las dos migraciones hechas a mano', () => {
+  it('enlaza el proyecto de la iglesia; el repair de una sola vez ya no está', () => {
     expect(yml).toContain('supabase link --project-ref "${SUPABASE_PROJECT_REF:-jyxhnqbqzqrbahorigxq}"')
-    expect(yml).toContain('supabase migration repair --status applied 20261103000000 20261105000000 --remote --password "$SUPABASE_DB_PASSWORD" --yes')
+    expect(yml).not.toContain('migration repair')
   })
 
   it('CLI fijada en 3.0.0, que exige --remote para el proyecto enlazado y --yes para cambios en la nube', () => {
